@@ -1,6 +1,6 @@
 # MaisGuinchos – Frontend
 
-Frontend do projeto **MaisGuinchos**, desenvolvido em **React + TypeScript**, responsável pela interface de autenticação, cadastro de usuários e fluxos iniciais da aplicação.
+Frontend do projeto **MaisGuinchos**, desenvolvido em **React + TypeScript + Leaflet**, responsável pela interface de autenticação, cadastro de usuários e fluxos iniciais da aplicação.
 
 Este projeto consome uma API backend (ASP.NET) utilizando autenticação via **JWT**.
 
