@@ -1,4 +1,4 @@
-import type { CreateUserRequest } from "../dtos/CreateUserRequest";
+import type { CreateUserRequest } from "../../dtos/CreateUserRequest";
 
 type Props = {
     setForm: React.Dispatch<React.SetStateAction<CreateUserRequest>>;

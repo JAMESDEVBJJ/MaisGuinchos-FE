@@ -1,11 +1,10 @@
-import "../App.css";
 import { Link, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 import SignStep1 from "./SignStep1";
-import type { CreateUserRequest } from "../dtos/CreateUserRequest";
+import type { CreateUserRequest } from "../../dtos/CreateUserRequest";
 import SignStep2 from "./SignStep2";
 import SignStep3 from "./SignStep3";
-import { api } from "../services/api";
+import { api } from "../../services/api";
 
 function Signup() {
   const [step, setStep] = useState(1);

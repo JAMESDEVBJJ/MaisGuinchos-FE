@@ -1,5 +1,5 @@
 import React from "react";
-import type { CreateUserRequest } from "../dtos/CreateUserRequest";
+import type { CreateUserRequest } from "../../dtos/CreateUserRequest";
 
 type Props = {
     form: CreateUserRequest;

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { api } from "../services/api";
-import guinchoIcon from "../assets/car-breakdown-tow-svgrepo-com.svg";
+import { api } from "../../services/api";
+import guinchoIcon from "../../assets/icons/car-breakdown-tow-svgrepo-com.svg";
 import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
@@ -15,7 +15,7 @@ const Login = () => {
 
     const response = await api.post("/user/login", { email, password });
 
-    const token = response.data;
+    const token = response.data?.token;
 
     localStorage.setItem("token", token);
 
