@@ -1,73 +1,86 @@
-# React + TypeScript + Vite
+# MaisGuinchos – Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend do projeto **MaisGuinchos**, desenvolvido em **React + TypeScript + Leaflet**, responsável pela interface de autenticação, cadastro de usuários e fluxos iniciais da aplicação.
 
-Currently, two official plugins are available:
+Este projeto consome uma API backend (ASP.NET) utilizando autenticação via **JWT**.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+> ⚠️ Projeto em desenvolvimento.
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🧱 Tecnologias utilizadas
 
-## Expanding the ESLint configuration
+- React
+- TypeScript
+- Vite
+- React Router DOM
+- Axios
+- CSS puro (sem framework)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 📂 Estrutura do projeto
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+src/
+├─ styles e assets/ # Css e imagens
+├─ components/ # Componentes reutilizáveis
+├─ pages/ # Páginas (Login, Signup, etc)
+├─ services/ # Configuração do Axios / API
+├─ dtos/ # Tipagens (DTOs)
+├─ App.tsx # Componente principal
+└─ main.tsx # Entry point da aplicação
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🔐 Funcionalidades atuais
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- Tela de login
+- Cadastro de usuário em múltiplos passos (steps)
+- Seleção de tipo de conta:
+  - Cliente
+  - Motorista
+  - Empresa
+- Fluxo condicional para cadastro de motorista
+- Integração com API via Axios
+- Persistência de estado entre steps do formulário
+- Tela home com função de setar localização do usuario e buscar guinchos proximos 
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
+
+## ▶️ Como rodar o projeto
+
+### 1. Instalar dependências
+```bash
+npm install
+
+### 2. Rodar em ambiente de desenvolvimento
+npm run dev
+
+A aplicação ficará disponível em:
+
+http://localhost:5173
+
+🔗 Backend
+
+Este frontend depende do backend do projeto MaisGuinchos.
+
+API em ASP.NET
+
+Autenticação JWT
+
+Endpoints REST
+
+Certifique-se de que o backend esteja rodando antes de utilizar as funcionalidades de login e cadastro.
+
+📌 Observações
+
+O layout está em evolução
+
+Validações avançadas ainda serão implementadas
+
+Fluxos de motorista/guincho estão em construção
+
+👤 Autor
+
+Desenvolvido por James
+Projeto de estudo e portfólio.
