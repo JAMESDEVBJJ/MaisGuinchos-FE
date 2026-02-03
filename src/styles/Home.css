@@ -2,6 +2,15 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+input,
+textarea,
+select {
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 html,
@@ -21,12 +30,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0px;
-  background:
-  linear-gradient(
-    135deg,
-    #13222f,
-    #0d202c
-  );
+  background: linear-gradient(135deg, #141d25, #0f1a21);
   height: 100%;
 }
 
@@ -34,14 +38,27 @@ body {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  margin-bottom: 45%;
+  margin-bottom: 25%;
   margin-top: 40%;
 }
 
 .search input {
   height: 40px;
   border-radius: 10px;
-  background-color: rgb(40, 38, 80);
+}
+
+input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(234, 84, 3),
+              0 4px 10px rgba(0,0,0,0.6);
+}
+
+input {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #1b2832;
+  color: #fff;
 }
 
 .search input::placeholder {
@@ -49,7 +66,9 @@ body {
 }
 
 .search button {
-  height: 50px;
+  height: 45px;
+  width: 80%;
+  align-self: center;
   background-color: rgb(234, 84, 3);
   border-radius: 12px;
   font-size: large;
@@ -76,39 +95,190 @@ body {
   display: flex;
   flex-direction: column;
   /*gap: 5px;*/
-  background-color: rgb(37, 37, 71);
-  height: 50%;
+  background-color: #1b2832;
+
   align-items: center;
-  max-height: 100vh; 
-  overflow-y: auto; 
+  height: 55vh;            
+  max-height: 55vh;       
+  max-height: none;    
+  overflow-y: scroll;
+  border-radius: 10px;
+
 }
 
-/* largura da barra */
 .results::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
 }
 
-/* fundo da barra */
 .results::-webkit-scrollbar-track {
   background: transparent;
 }
 
-/* a "alça" do scroll */
 .results::-webkit-scrollbar-thumb {
   background-color: #555;
   border-radius: 6px;
 }
 
-/* hover */
 .results::-webkit-scrollbar-thumb:hover {
   background-color: #777;
 }
 
 .result-card {
-  padding: 12px;
-  margin: 10px;
-  border: 1px solid #ccc;
+  margin: 14px auto;
   width: 90%;
+  border-radius: 12px;
+  background-color: #0f1a21;
+  cursor: pointer;
+
+  padding: 12px 14px;
+
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+
+  display: flex;
+  flex-direction: column;
+
+  transition:
+    box-shadow 0.25s ease,
+    transform 0.15s ease,
+    filter 0.2s ease;
+}
+.result-card:hover {
+  transform: scale(1.03);
+  filter: brightness(1.08);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.60);
+}
+
+.result-card:active {
+  transform: scale(0.97);
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.status {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status.available .dot {
+  background-color: #2ecc71;
+}
+
+.status.available .status-text {
+  color: #2ecc71;
+}
+
+.status.unavailable .dot {
+  background-color: #e74c3c;
+}
+
+.status.unavailable .status-text {
+  color: #e74c3c;
+  opacity: 0.85;
+}
+
+.card-extra {
+  overflow: hidden;
+
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-4px);
+
+  display: flex;
+  justify-content: space-between;
+
+  margin-top: 0;
+
+  transition:
+    max-height 0.25s ease,
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    margin-top 0.25s ease;
+}
+
+.result-card:hover .card-extra {
+  max-height: 40px;
+  opacity: 1;
+  transform: translateY(0);
+  margin-top: 8px;
+}
+
+.card-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #e5f0ff;
+}
+
+.distance {
+  font-size: 0.95rem;
+  opacity: 0.85;
+}
+.result-card span {
+  display: inline-block;
+
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+
+  color: #e5f0ff;
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+
+  padding: 6px 10px;
+
+  transition:
+    color 0.2s ease,
+    transform 0.15s ease,
+    background-color 0.2s ease;
+}
+
+
+.sidebar {
+  position: relative;
+  height: 100vh;
+  min-width: 280px;
+  max-width: 600px;
+  background-color: #0f1a21;
+}
+
+.resize-handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 6px;
+  height: 100%;
+
+  cursor: col-resize;
+
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.15)
+  );
+}
+
+.resize-handle:hover {
+  background: rgba(255, 255, 255, 0.25);
 }
 
 .map-container {

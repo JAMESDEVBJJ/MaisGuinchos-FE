@@ -2,9 +2,13 @@ import type { GuinchosDto } from "../dtos/MapPropsDTO";
 
 type guinchosResultsProps = {
   guinchos: GuinchosDto[];
+  isCompact: boolean;
 };
 
-export default function GuinchosResults({ guinchos }: guinchosResultsProps) {
+export default function GuinchosResults({
+  isCompact,
+  guinchos,
+}: guinchosResultsProps) {
   if (guinchos.length <= 0) {
     return null;
   }
@@ -13,8 +17,28 @@ export default function GuinchosResults({ guinchos }: guinchosResultsProps) {
     <div className="results">
       {guinchos.map((m) => (
         <div className="result-card">
-          <span>TRUCK  </span>
-          <span>{m.distanceKm.toFixed(1)}Km</span>
+          <div className="card-main">
+            <div className="left">
+              {!isCompact && <span className="title">TRUCK</span>}
+              <span className="distance">{m.distanceKm.toFixed(1)} km</span>
+            </div>
+
+            <div
+              className={`status ${m.available ? "available" : "unavailable"}`}
+            >
+              <span className="dot" />
+              {!isCompact && (
+                <span className="status-text">
+                  {m.available ? "Disponível" : "Indisponível"}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="card-extra">
+            <span>⭐ {m.stars}</span>
+            <span>{m.motorista.name}</span>
+          </div>
         </div>
       ))}
     </div>

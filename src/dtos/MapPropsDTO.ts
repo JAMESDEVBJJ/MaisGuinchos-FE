@@ -8,6 +8,10 @@ export type MotoristaDto = {
 
 export type GuinchosDto = {
     "motorista": MotoristaDto;
+    "stars": number;
+    "available": boolean;
+    "color": string;
+    "model": string;
     "distanceKm": number;
   }
 
