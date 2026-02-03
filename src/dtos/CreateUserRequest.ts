@@ -7,4 +7,12 @@ export type CreateUserRequest = {
     password: string;
     confirmPass: string; 
     tipo: number;
+    guincho?: CreateGuinchoDTO;
 };
+
+export type CreateGuinchoDTO = {
+    modelo: string;
+    cor: string;
+    placa: string;
+    cnh?: string;
+}

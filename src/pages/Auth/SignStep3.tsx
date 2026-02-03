@@ -2,7 +2,7 @@ import type { CreateUserRequest } from "../../dtos/CreateUserRequest";
 
 type Props = {
     setForm: React.Dispatch<React.SetStateAction<CreateUserRequest>>;
-    onNext: () => void;
+    onNext: (tipo: number) => void;
 };
 
 export default function SignStep3({setForm, onNext }: Props) {
@@ -13,7 +13,7 @@ export default function SignStep3({setForm, onNext }: Props) {
       "tipo": tipo,
     }));
 
-    onNext();
+    onNext(tipo);
   }
 
   return (

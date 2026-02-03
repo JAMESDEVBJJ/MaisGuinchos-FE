@@ -27,19 +27,30 @@ const HomePage = () => {
   async function buscarGuinchos() {
     setLoading(true);
 
-    const response = await api.get("/user/proximos", {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
+    let response = null;
 
-    console.log(localStorage.getItem("token"));
+    try {
+      response = await api.get("/user/proximos", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ||
+        error?.response?.data?.title ||
+        "Erro inesperado. Tente novamente.";
+    
+      alert(message);
+    }
+   
 
-    if (response.data) {
+    if (response?.data) {
       setGuinchos(response.data);
     }
 
     setLoading(false);
+    console.log(loading)
   }
 
   async function handleUpdateLocation() {
@@ -72,7 +83,7 @@ const HomePage = () => {
 
     setUserLocation({ lat: latN, lon: lonN });
   }
-
+  
   return (
     <>
       <div className="page">

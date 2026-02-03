@@ -1,0 +1,129 @@
+.guinchoLayout {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 60px;
+}
+.page {
+  min-height: 100vh;
+  width: 100vw;             
+  display: flex;
+  flex-direction: column;
+}
+
+.h2Cadastro {
+  text-align: center;
+  margin-top: 40px;
+  margin-bottom: 40px;
+  font-size: 2.6rem;
+  font-weight: 900;
+  letter-spacing: 3px;
+  text-align: center;
+}
+
+.guinchoSide {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-right: 20px;
+  height: 420px;
+}
+
+.photoBox {
+  width: 220px;
+  height: 220px;
+
+  border: 2px dashed #ea5403;
+  border-radius: 14px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #ea5403;
+  font-weight: 700;
+  cursor: pointer;
+
+  transition: background 0.2s ease, transform 0.1s ease;
+
+  margin-right: 40px;
+}
+
+.photoBoxHover {
+  background: rgba(234, 84, 3, 0.08);
+  transform: scale(1.02);
+}
+
+.loginForm {
+  width: 350px;
+  padding-top: 50px;
+  align-self: flex-start;
+  padding-left: 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.field {
+  width: 100%;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field span {
+  font-size: 1.1rem;
+  color: #c8d6e5;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  font-family: Trebuchet MS, sans-serif;
+  margin-bottom: 4px;
+}
+
+.loginForm input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(234, 84, 3), 0 4px 10px rgba(0, 0, 0, 0.6);
+}
+
+.loginForm input {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #1b2832;
+  color: #fff;
+  font-size: 1.15rem;
+  padding: 16px 18px;
+}
+
+.loginBtn {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  width: 90%;
+  padding: 14px;
+  margin-top: 5px;
+  background: rgb(234, 84, 3);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: filter 0.2s ease, transform 0.1s ease;
+  color: whitesmoke;
+  font-size: larger;
+  font-weight: 900;
+  letter-spacing: 2.2px;
+}
+
+.loginBtn:hover {
+  filter: brightness(0.79);
+}
+
+.loginBtn:active {
+  transform: scale(0.96);
+}
+
+.signBtn {
+  height: 45px;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+}
