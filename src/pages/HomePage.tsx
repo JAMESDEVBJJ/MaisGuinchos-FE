@@ -45,7 +45,7 @@ const HomePage = () => {
     setIsResizing(false);
   }
 
-  const COMPACT_WIDTH = 340;
+  const COMPACT_WIDTH = 350;
 
   const [isCompact, setIsCompact] = useState<Boolean>(false);
 

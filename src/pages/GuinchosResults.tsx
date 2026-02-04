@@ -2,7 +2,7 @@ import type { GuinchosDto } from "../dtos/MapPropsDTO";
 
 type guinchosResultsProps = {
   guinchos: GuinchosDto[];
-  isCompact: boolean;
+  isCompact: Boolean;
 };
 
 export default function GuinchosResults({
@@ -36,8 +36,8 @@ export default function GuinchosResults({
           </div>
 
           <div className="card-extra">
-            <span>⭐ {m.stars}</span>
-            <span>{m.motorista.name}</span>
+            <span className="title">⭐ {m.stars}</span>
+            <span className="title">{m.motorista.name}</span>
           </div>
         </div>
       ))}
