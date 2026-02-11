@@ -8,6 +8,8 @@ import {
   type GuinchosDto,
 } from "../dtos/MapPropsDTO";
 import GuinchosResults from "./GuinchosResults";
+import { useRef } from "react";
+import L from "leaflet";
 
 const HomePage = () => {
   const [guinchos, setGuinchos] = useState<GuinchosDto[]>([]);
@@ -19,9 +21,19 @@ const HomePage = () => {
   //const [userData, setUserData] = useState<UserDto>({userPosition: });
   const [locationText, setLocationText] = useState<string>("");
 
+  const [hoveredGuinchoId, setHoveredGuinchoId] = useState<number | null>(null);
+
+  const mapRef = useRef<L.Map | null>(null);
+
+  const [selectedCenter, setSelectedCenter] = useState<[number, number] | null>(
+    null
+  );
+
   const locations: MapProps = {
     motoristasPosition: guinchos,
     userPosition: userLocation,
+    hoveredGuinchoId: hoveredGuinchoId,
+    mapRef: mapRef,
   };
 
   const [sidebarW, setSideBarW] = useState(360);
@@ -47,7 +59,7 @@ const HomePage = () => {
 
   const COMPACT_WIDTH = 350;
 
-  const [isCompact, setIsCompact] = useState<Boolean>(false);
+  const [isCompact, setIsCompact] = useState<boolean>(false);
 
   function mouseMove(e: MouseEvent) {
     if (!isResizing) return;
@@ -84,7 +96,7 @@ const HomePage = () => {
     if (response?.data) {
       setGuinchos(response.data);
     }
-    console.dir(guinchos)
+    console.dir(guinchos);
     setLoading(false);
     console.log(loading);
   }
@@ -136,6 +148,17 @@ const HomePage = () => {
                 }
               }}
             />
+            <input
+              type="text"
+              placeholder="Setar destino"
+              value={locationText}
+              onChange={(e) => setLocationText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleUpdateLocation();
+                }
+              }}
+            />
             <button onClick={buscarGuinchos}>Buscar guinchos</button>
           </div>
           {loading && (
@@ -144,10 +167,19 @@ const HomePage = () => {
             </>
           )}
 
-          {!loading && guinchos.length === 0 && <>Nenhum guincho encontrado.</>}
+          {!loading && guinchos.length === 0 && (
+            <div className="empty-state">
+              <p>Digite sua localização e procure por guinchos.</p>
+            </div>
+          )}
 
           {!loading && guinchos.length >= 1 && (
-            <GuinchosResults isCompact={isCompact} guinchos={guinchos}></GuinchosResults>
+            <GuinchosResults
+              isCompact={isCompact}
+              guinchos={guinchos}
+              setHovered={setHoveredGuinchoId}
+              mapRef={mapRef}
+            ></GuinchosResults>
           )}
 
           <div className="resize-handle" onMouseDown={handleMouseDown} />
@@ -158,6 +190,8 @@ const HomePage = () => {
             <Maps
               motoristasPosition={locations.motoristasPosition}
               userPosition={locations.userPosition}
+              hoveredGuinchoId={locations.hoveredGuinchoId}
+              mapRef={mapRef}
             ></Maps>
           </div>
         </main>

@@ -30,4 +30,6 @@ export type UserDto = {
 export type MapProps = {
     motoristasPosition: GuinchosDto[];
     userPosition: Position;
+    hoveredGuinchoId: number | null;
+    mapRef: React.RefObject<L.Map | null>;
 }
