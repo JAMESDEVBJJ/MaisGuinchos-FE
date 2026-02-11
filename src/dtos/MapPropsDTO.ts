@@ -1,3 +1,4 @@
+import { useState } from 'react';
 export type MotoristaDto = {
     "userId": number;
     "name": string;
@@ -32,4 +33,5 @@ export type MapProps = {
     userPosition: Position;
     hoveredGuinchoId: number | null;
     mapRef: React.RefObject<L.Map | null>;
-}
+    route: [number, number][] | null;
+  };

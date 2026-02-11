@@ -11,6 +11,12 @@ import GuinchosResults from "./GuinchosResults";
 import { useRef } from "react";
 import L from "leaflet";
 
+
+interface CoordinateDto {
+  lat: number;
+  lon: number;
+}
+
 const HomePage = () => {
   const [guinchos, setGuinchos] = useState<GuinchosDto[]>([]);
   const [loading, setLoading] = useState(false);
@@ -20,20 +26,21 @@ const HomePage = () => {
   });
   //const [userData, setUserData] = useState<UserDto>({userPosition: });
   const [locationText, setLocationText] = useState<string>("");
+  const [destinationText, setDestinationText] = useState<string>("");
+  const [route, setRoute] = useState<[number, number][] | null>(null);
+  const [destinationPosition, setDestinationPosition] =
+    useState<Position | null>(null);
 
   const [hoveredGuinchoId, setHoveredGuinchoId] = useState<number | null>(null);
 
   const mapRef = useRef<L.Map | null>(null);
-
-  const [selectedCenter, setSelectedCenter] = useState<[number, number] | null>(
-    null
-  );
 
   const locations: MapProps = {
     motoristasPosition: guinchos,
     userPosition: userLocation,
     hoveredGuinchoId: hoveredGuinchoId,
     mapRef: mapRef,
+    route: route,
   };
 
   const [sidebarW, setSideBarW] = useState(360);
@@ -56,6 +63,23 @@ const HomePage = () => {
   function handleMouseUp() {
     setIsResizing(false);
   }
+
+  useEffect(() => {
+    async function updateRoute() {
+      if (!userLocation || !destinationPosition) return;
+
+      const response = await api.post("/route", {
+        originLat: userLocation.lat,
+        originLon: userLocation.lon,
+        destLat: destinationPosition.lat,
+        destLon: destinationPosition.lon,
+      });
+
+      setRoute(response.data.polyline);
+    }
+
+    updateRoute();
+  }, [userLocation, destinationPosition]);
 
   const COMPACT_WIDTH = 350;
 
@@ -130,6 +154,48 @@ const HomePage = () => {
     }
 
     setUserLocation({ lat: latN, lon: lonN });
+    if (destinationPosition) {
+      handleUpdateDestination();
+    }
+  }
+
+  async function handleUpdateDestination() {
+    if (!destinationText.trim()) {
+      return;
+    }
+
+    const response = await api.post(
+      "/maps/route/calculate",
+      {
+        originLat: userLocation.lat,
+        originLon: userLocation.lon,
+        destination: destinationText,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    console.dir(response.data);
+    const route = response.data;
+
+    const routePositions: [number, number][] = (
+      route.polyline as CoordinateDto[]
+    ).map((p) => [p.lat, p.lon]);
+
+    console.dir(routePositions);
+
+    const lastPoint = routePositions[routePositions.length - 1];
+
+    const destinationPosition: Position = {
+      lat: lastPoint[0],
+      lon: lastPoint[1],
+    };
+    console.dir( destinationPosition);
+
+    setDestinationPosition(destinationPosition);
+    setRoute(routePositions);
   }
 
   return (
@@ -151,11 +217,11 @@ const HomePage = () => {
             <input
               type="text"
               placeholder="Setar destino"
-              value={locationText}
-              onChange={(e) => setLocationText(e.target.value)}
+              value={destinationText}
+              onChange={(e) => setDestinationText(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
-                  handleUpdateLocation();
+                  handleUpdateDestination();
                 }
               }}
             />
@@ -192,6 +258,7 @@ const HomePage = () => {
               userPosition={locations.userPosition}
               hoveredGuinchoId={locations.hoveredGuinchoId}
               mapRef={mapRef}
+              route={route}
             ></Maps>
           </div>
         </main>

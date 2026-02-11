@@ -6,7 +6,7 @@ import {
   Polyline,
   useMap,
 } from "react-leaflet";
-import { useEffect, useState, type MutableRefObject, useRef } from "react";
+import { useEffect, useRef } from "react";
 import type { MapProps } from "../dtos/MapPropsDTO";
 import iconUser from "../assets/icons/iconUser.png";
 import iconGuincho from "../assets/icons/guinchoMarkup.png";
@@ -27,37 +27,29 @@ export function Maps({
   motoristasPosition,
   userPosition,
   hoveredGuinchoId,
-  mapRef
+  mapRef,
+  route,
 }: MapProps) {
-  console.dir(motoristasPosition);
-  //const route: Position[] = [motoristasPosition[1], userPosition];
+  const lastUserPosRef = useRef<[number, number] | null>(null);
 
-  const center: [number, number] = [userPosition.lat, userPosition.lon];
+  useEffect(() => {
+    if (!mapRef.current) return;
 
-  
-const lastUserPosRef = useRef<[number, number] | null>(null);
+    const newCenter: [number, number] = [userPosition.lat, userPosition.lon];
 
-useEffect(() => {
-  if (!mapRef.current) return;
+    // só move se a posição realmente mudou
+    if (
+      !lastUserPosRef.current ||
+      lastUserPosRef.current[0] !== newCenter[0] ||
+      lastUserPosRef.current[1] !== newCenter[1]
+    ) {
+      mapRef.current.flyTo(newCenter, mapRef.current.getZoom(), {
+        animate: true,
+      });
 
-  const newCenter: [number, number] = [
-    userPosition.lat,
-    userPosition.lon,
-  ];
-
-  // só move se a posição realmente mudou
-  if (
-    !lastUserPosRef.current ||
-    lastUserPosRef.current[0] !== newCenter[0] ||
-    lastUserPosRef.current[1] !== newCenter[1]
-  ) {
-    mapRef.current.flyTo(newCenter, mapRef.current.getZoom(), {
-      animate: true,
-    });
-
-    lastUserPosRef.current = newCenter;
-  }
-}, [userPosition.lat, userPosition.lon]);
+      lastUserPosRef.current = newCenter;
+    }
+  }, [userPosition.lat, userPosition.lon]);
 
   const guinchoIcon = new L.Icon({
     iconUrl: iconGuincho,
@@ -69,7 +61,7 @@ useEffect(() => {
   const guinchoHoverIcon = new L.Icon({
     iconUrl: iconGuinchoHover,
     iconSize: [45, 45],
-    iconAnchor: [22.5, 45], 
+    iconAnchor: [22.5, 45],
     popupAnchor: [0, -45],
   });
 
@@ -82,17 +74,13 @@ useEffect(() => {
 
   return (
     <div style={{ height: "100vh", width: "100%" }}>
-<MapContainer
-  center={[userPosition.lat, userPosition.lon]} // só inicial
-  zoom={13}
-  style={{ height: "100%", width: "100%" }}
->
+      <MapContainer
+        center={[userPosition.lat, userPosition.lon]} // só inicial
+        zoom={13}
+        style={{ height: "100%", width: "100%" }}
+      >
         <MapController mapRef={mapRef} />
         <TileLayer url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png" />
-        <Marker
-          position={[userPosition.lat, userPosition.lon]}
-          icon={userIcon}
-        ></Marker>
         {motoristasPosition.map((m) => {
           const motorista = m.motorista;
 
@@ -117,6 +105,20 @@ useEffect(() => {
           );
         })}
         ;
+        <Marker
+          position={[userPosition.lat, userPosition.lon]}
+          icon={userIcon}
+        ></Marker>
+        {route && (
+          <Polyline
+            positions={route}
+            pathOptions={{
+              color: "darkorange",
+              weight: 5,
+              opacity: 0.8,
+            }}
+          />
+        )}
       </MapContainer>
     </div>
   );
