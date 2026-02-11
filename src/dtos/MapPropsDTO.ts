@@ -8,6 +8,10 @@ export type MotoristaDto = {
 
 export type GuinchosDto = {
     "motorista": MotoristaDto;
+    "stars": number;
+    "available": boolean;
+    "color": string;
+    "model": string;
     "distanceKm": number;
   }
 
@@ -26,4 +30,6 @@ export type UserDto = {
 export type MapProps = {
     motoristasPosition: GuinchosDto[];
     userPosition: Position;
+    hoveredGuinchoId: number | null;
+    mapRef: React.RefObject<L.Map | null>;
 }

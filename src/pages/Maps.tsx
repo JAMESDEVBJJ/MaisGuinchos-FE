@@ -6,30 +6,71 @@ import {
   Polyline,
   useMap,
 } from "react-leaflet";
-import { useEffect } from "react";
+import { useEffect, useState, type MutableRefObject, useRef } from "react";
 import type { MapProps } from "../dtos/MapPropsDTO";
 import iconUser from "../assets/icons/iconUser.png";
 import iconGuincho from "../assets/icons/guinchoMarkup.png";
+import iconGuinchoHover from "../assets/icons/guinchomarkupHoverr.png";
 import L from "leaflet";
 
-type ChangeViewProps = {
-  center: [number, number];
-};
+function MapController({ mapRef }: { mapRef: React.RefObject<L.Map | null> }) {
+  const map = useMap();
 
-export function Maps({ motoristasPosition, userPosition }: MapProps) {
+  useEffect(() => {
+    mapRef.current = map;
+  }, [map]);
+
+  return null;
+}
+
+export function Maps({
+  motoristasPosition,
+  userPosition,
+  hoveredGuinchoId,
+  mapRef
+}: MapProps) {
   console.dir(motoristasPosition);
   //const route: Position[] = [motoristasPosition[1], userPosition];
 
-  const center: [number, number] = [
+  const center: [number, number] = [userPosition.lat, userPosition.lon];
+
+  
+const lastUserPosRef = useRef<[number, number] | null>(null);
+
+useEffect(() => {
+  if (!mapRef.current) return;
+
+  const newCenter: [number, number] = [
     userPosition.lat,
     userPosition.lon,
   ];
+
+  // só move se a posição realmente mudou
+  if (
+    !lastUserPosRef.current ||
+    lastUserPosRef.current[0] !== newCenter[0] ||
+    lastUserPosRef.current[1] !== newCenter[1]
+  ) {
+    mapRef.current.flyTo(newCenter, mapRef.current.getZoom(), {
+      animate: true,
+    });
+
+    lastUserPosRef.current = newCenter;
+  }
+}, [userPosition.lat, userPosition.lon]);
 
   const guinchoIcon = new L.Icon({
     iconUrl: iconGuincho,
     iconSize: [40, 40],
     iconAnchor: [20, 40],
     popupAnchor: [0, -40],
+  });
+
+  const guinchoHoverIcon = new L.Icon({
+    iconUrl: iconGuinchoHover,
+    iconSize: [45, 45],
+    iconAnchor: [22.5, 45], 
+    popupAnchor: [0, -45],
   });
 
   const userIcon = new L.Icon({
@@ -39,32 +80,19 @@ export function Maps({ motoristasPosition, userPosition }: MapProps) {
     popupAnchor: [0, -36],
   });
 
-  function ChangeView({center}: ChangeViewProps) {
-    const map = useMap();
-
-    useEffect(() => {
-      map.setView(center);
-    }, [center, map]);
-    
-    return null;
-  }
-
   return (
     <div style={{ height: "100vh", width: "100%" }}>
-      <MapContainer
-        center={center}
-        zoom={13}
-        style={{ height: "100%", width: "100%" }}
-      >
-        <ChangeView center={center}></ChangeView>
-        
+<MapContainer
+  center={[userPosition.lat, userPosition.lon]} // só inicial
+  zoom={13}
+  style={{ height: "100%", width: "100%" }}
+>
+        <MapController mapRef={mapRef} />
         <TileLayer url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png" />
-        
         <Marker
           position={[userPosition.lat, userPosition.lon]}
           icon={userIcon}
         ></Marker>
-
         {motoristasPosition.map((m) => {
           const motorista = m.motorista;
 
@@ -76,11 +104,13 @@ export function Maps({ motoristasPosition, userPosition }: MapProps) {
             return null;
           }
 
+          const isHovered = hoveredGuinchoId === m.motorista.userId;
+
           return (
             <Marker
               key={motorista.userId}
               position={[motorista.lat, motorista.lon]}
-              icon={guinchoIcon}
+              icon={isHovered ? guinchoHoverIcon : guinchoIcon}
             >
               <Popup>{motorista.name}</Popup>
             </Marker>
