@@ -11,27 +11,36 @@ import GuinchosResults from "./GuinchosResults";
 import { useRef } from "react";
 import L from "leaflet";
 
-
 interface CoordinateDto {
   lat: number;
   lon: number;
 }
 
 const HomePage = () => {
+
   const [guinchos, setGuinchos] = useState<GuinchosDto[]>([]);
+
   const [loading, setLoading] = useState(false);
+
   const [userLocation, setUserLocation] = useState<Position>({
     lat: -10.3,
     lon: -53.2,
-  });
-  //const [userData, setUserData] = useState<UserDto>({userPosition: });
+  }); // brasil ne pae
   const [locationText, setLocationText] = useState<string>("");
   const [destinationText, setDestinationText] = useState<string>("");
   const [route, setRoute] = useState<[number, number][] | null>(null);
   const [destinationPosition, setDestinationPosition] =
     useState<Position | null>(null);
 
+  const [priceEstimate, setPrice] = useState<number>(0);
+  const [distanceKm, setDistanceKm] = useState<number>(0);
+  const [durationMin, setDurationMin] = useState<number>(0);
+
   const [hoveredGuinchoId, setHoveredGuinchoId] = useState<number | null>(null);
+
+  const COMPACT_WIDTH = 350;
+
+  const [isCompact, setIsCompact] = useState<boolean>(false);
 
   const mapRef = useRef<L.Map | null>(null);
 
@@ -41,10 +50,19 @@ const HomePage = () => {
     hoveredGuinchoId: hoveredGuinchoId,
     mapRef: mapRef,
     route: route,
+    priceEstimate: priceEstimate,
+    distanceKm: distanceKm,
+    duration: durationMin
   };
 
   const [sidebarW, setSideBarW] = useState(360);
   const [isResizing, setIsResizing] = useState(false);
+
+  useEffect(() => {
+    if (userLocation && destinationPosition) {
+      handleUpdateDestination();
+    }
+  }, [userLocation]);
 
   useEffect(() => {
     window.addEventListener("mousemove", mouseMove);
@@ -81,10 +99,6 @@ const HomePage = () => {
     updateRoute();
   }, [userLocation, destinationPosition]);
 
-  const COMPACT_WIDTH = 350;
-
-  const [isCompact, setIsCompact] = useState<boolean>(false);
-
   function mouseMove(e: MouseEvent) {
     if (!isResizing) return;
 
@@ -120,9 +134,7 @@ const HomePage = () => {
     if (response?.data) {
       setGuinchos(response.data);
     }
-    console.dir(guinchos);
     setLoading(false);
-    console.log(loading);
   }
 
   async function handleUpdateLocation() {
@@ -144,7 +156,6 @@ const HomePage = () => {
 
     const { lat, lon } = response.data;
 
-    console.dir(response.data);
     const latN = Number(lat);
     const lonN = Number(lon);
 
@@ -154,9 +165,6 @@ const HomePage = () => {
     }
 
     setUserLocation({ lat: latN, lon: lonN });
-    if (destinationPosition) {
-      handleUpdateDestination();
-    }
   }
 
   async function handleUpdateDestination() {
@@ -177,14 +185,11 @@ const HomePage = () => {
         },
       }
     );
-    console.dir(response.data);
     const route = response.data;
 
     const routePositions: [number, number][] = (
       route.polyline as CoordinateDto[]
     ).map((p) => [p.lat, p.lon]);
-
-    console.dir(routePositions);
 
     const lastPoint = routePositions[routePositions.length - 1];
 
@@ -192,10 +197,14 @@ const HomePage = () => {
       lat: lastPoint[0],
       lon: lastPoint[1],
     };
-    console.dir( destinationPosition);
+    console.dir(destinationPosition);
 
     setDestinationPosition(destinationPosition);
     setRoute(routePositions);
+    setPrice(route.priceEstimate);
+    setDistanceKm(route.distanceKm);
+    setDurationMin(route.durationMinutes)
+    console.dir(route)
   }
 
   return (
@@ -259,6 +268,9 @@ const HomePage = () => {
               hoveredGuinchoId={locations.hoveredGuinchoId}
               mapRef={mapRef}
               route={route}
+              priceEstimate={priceEstimate}
+              distanceKm={distanceKm}
+              duration={durationMin}
             ></Maps>
           </div>
         </main>

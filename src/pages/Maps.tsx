@@ -6,7 +6,7 @@ import {
   Polyline,
   useMap,
 } from "react-leaflet";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { MapProps } from "../dtos/MapPropsDTO";
 import iconUser from "../assets/icons/iconUser.png";
 import iconGuincho from "../assets/icons/guinchoMarkup.png";
@@ -29,8 +29,13 @@ export function Maps({
   hoveredGuinchoId,
   mapRef,
   route,
+  priceEstimate,
+  distanceKm,
+  duration
 }: MapProps) {
   const lastUserPosRef = useRef<[number, number] | null>(null);
+
+  const [isRoutePanelOpen, setIsRoutePanelOpen] = useState(false);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -118,6 +123,30 @@ export function Maps({
               opacity: 0.8,
             }}
           />
+        )}
+        {priceEstimate && !isRoutePanelOpen && (
+          <div className="price-hud" onClick={() => setIsRoutePanelOpen(true)}>
+            R$ {priceEstimate.toFixed(2)}
+          </div>
+        )}
+        {isRoutePanelOpen && (
+          <div
+            className="route-overlay"
+            onClick={() => setIsRoutePanelOpen(false)}
+          >
+            <div className="route-panel" onClick={(e) => e.stopPropagation()}>
+              <h3>Detalhes da viagem</h3>
+              <p>Distância: {distanceKm} km</p>
+              <p>Duração: {duration} min</p>
+              <p>Preço estimado: R$ {priceEstimate.toFixed(2)}</p>
+
+              {false && (
+                <p>
+                  Preço com {}: R$ {}
+                </p>
+              )}
+            </div>
+          </div>
         )}
       </MapContainer>
     </div>

@@ -34,4 +34,7 @@ export type MapProps = {
     hoveredGuinchoId: number | null;
     mapRef: React.RefObject<L.Map | null>;
     route: [number, number][] | null;
+    priceEstimate: number;
+    distanceKm: number;
+    duration: number;
   };
