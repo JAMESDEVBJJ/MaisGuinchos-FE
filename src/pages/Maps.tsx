@@ -6,7 +6,7 @@ import {
   Polyline,
   useMap,
 } from "react-leaflet";
-import { useEffect, useState, type MutableRefObject, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { MapProps } from "../dtos/MapPropsDTO";
 import iconUser from "../assets/icons/iconUser.png";
 import iconGuincho from "../assets/icons/guinchoMarkup.png";
@@ -27,37 +27,34 @@ export function Maps({
   motoristasPosition,
   userPosition,
   hoveredGuinchoId,
-  mapRef
+  mapRef,
+  route,
+  priceEstimate,
+  distanceKm,
+  duration
 }: MapProps) {
-  console.dir(motoristasPosition);
-  //const route: Position[] = [motoristasPosition[1], userPosition];
+  const lastUserPosRef = useRef<[number, number] | null>(null);
 
-  const center: [number, number] = [userPosition.lat, userPosition.lon];
+  const [isRoutePanelOpen, setIsRoutePanelOpen] = useState(false);
 
-  
-const lastUserPosRef = useRef<[number, number] | null>(null);
+  useEffect(() => {
+    if (!mapRef.current) return;
 
-useEffect(() => {
-  if (!mapRef.current) return;
+    const newCenter: [number, number] = [userPosition.lat, userPosition.lon];
 
-  const newCenter: [number, number] = [
-    userPosition.lat,
-    userPosition.lon,
-  ];
+    // só move se a posição realmente mudou
+    if (
+      !lastUserPosRef.current ||
+      lastUserPosRef.current[0] !== newCenter[0] ||
+      lastUserPosRef.current[1] !== newCenter[1]
+    ) {
+      mapRef.current.flyTo(newCenter, mapRef.current.getZoom(), {
+        animate: true,
+      });
 
-  // só move se a posição realmente mudou
-  if (
-    !lastUserPosRef.current ||
-    lastUserPosRef.current[0] !== newCenter[0] ||
-    lastUserPosRef.current[1] !== newCenter[1]
-  ) {
-    mapRef.current.flyTo(newCenter, mapRef.current.getZoom(), {
-      animate: true,
-    });
-
-    lastUserPosRef.current = newCenter;
-  }
-}, [userPosition.lat, userPosition.lon]);
+      lastUserPosRef.current = newCenter;
+    }
+  }, [userPosition.lat, userPosition.lon]);
 
   const guinchoIcon = new L.Icon({
     iconUrl: iconGuincho,
@@ -69,7 +66,7 @@ useEffect(() => {
   const guinchoHoverIcon = new L.Icon({
     iconUrl: iconGuinchoHover,
     iconSize: [45, 45],
-    iconAnchor: [22.5, 45], 
+    iconAnchor: [22.5, 45],
     popupAnchor: [0, -45],
   });
 
@@ -82,17 +79,13 @@ useEffect(() => {
 
   return (
     <div style={{ height: "100vh", width: "100%" }}>
-<MapContainer
-  center={[userPosition.lat, userPosition.lon]} // só inicial
-  zoom={13}
-  style={{ height: "100%", width: "100%" }}
->
+      <MapContainer
+        center={[userPosition.lat, userPosition.lon]} // só inicial
+        zoom={13}
+        style={{ height: "100%", width: "100%" }}
+      >
         <MapController mapRef={mapRef} />
         <TileLayer url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png" />
-        <Marker
-          position={[userPosition.lat, userPosition.lon]}
-          icon={userIcon}
-        ></Marker>
         {motoristasPosition.map((m) => {
           const motorista = m.motorista;
 
@@ -117,6 +110,44 @@ useEffect(() => {
           );
         })}
         ;
+        <Marker
+          position={[userPosition.lat, userPosition.lon]}
+          icon={userIcon}
+        ></Marker>
+        {route && (
+          <Polyline
+            positions={route}
+            pathOptions={{
+              color: "darkorange",
+              weight: 5,
+              opacity: 0.8,
+            }}
+          />
+        )}
+        {priceEstimate && !isRoutePanelOpen && (
+          <div className="price-hud" onClick={() => setIsRoutePanelOpen(true)}>
+            R$ {priceEstimate.toFixed(2)}
+          </div>
+        )}
+        {isRoutePanelOpen && (
+          <div
+            className="route-overlay"
+            onClick={() => setIsRoutePanelOpen(false)}
+          >
+            <div className="route-panel" onClick={(e) => e.stopPropagation()}>
+              <h3>Detalhes da viagem</h3>
+              <p>Distância: {distanceKm} km</p>
+              <p>Duração: {duration} min</p>
+              <p>Preço estimado: R$ {priceEstimate.toFixed(2)}</p>
+
+              {false && (
+                <p>
+                  Preço com {}: R$ {}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
       </MapContainer>
     </div>
   );
