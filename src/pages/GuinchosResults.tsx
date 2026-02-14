@@ -5,6 +5,7 @@ type GuinchosResultsProps = {
   isCompact: boolean;
   setHovered: (userid: number | null) => void;
   mapRef: React.RefObject<L.Map | null>;
+  setSelectedGuincho: (g: GuinchosDto | null) => void;
 };
 
 export default function GuinchosResults({
@@ -12,6 +13,7 @@ export default function GuinchosResults({
   guinchos,
   setHovered,
   mapRef,
+  setSelectedGuincho
 }: GuinchosResultsProps) {
   if (guinchos.length <= 0) {
     return null;
@@ -36,6 +38,7 @@ export default function GuinchosResults({
                 { animate: true }
               );
             }
+            setSelectedGuincho(g);
           }}
         >
           <div className="card-main">
