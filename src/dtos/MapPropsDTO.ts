@@ -4,9 +4,9 @@ export type MotoristaDto = {
     "arrivalTime"?: number;
     "lat": number;
     "lon": number;
-    fotoUrl?: string;
-    telefone?: string;
-    phone: number;
+    foto?: string;
+    "placa": string;
+    number?: string;
 }
 
 export type GuinchosDto = {
