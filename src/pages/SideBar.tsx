@@ -224,7 +224,10 @@ export function Sidebar(props: SidebarProps) {
             <div className="detail-top">
               <img
                 className="detail-photo"
-                src={`https://localhost:7120${props.selectedGuincho?.motorista.foto}` || "/icons/default-driver.png"}
+                src={
+                  `https://localhost:7120${props.selectedGuincho?.motorista.foto}` ||
+                  "/icons/default-driver.png"
+                }
                 alt={props.selectedGuincho?.motorista.name}
               />
               <div className="detail-info">
@@ -236,7 +239,9 @@ export function Sidebar(props: SidebarProps) {
                   </span>
                 </div>
                 <div className="driver-data">
-                  <div>{props.selectedGuincho?.motorista.number}</div>
+                  <span className="phone">
+                    {props.selectedGuincho?.motorista.number}
+                  </span>
                   <div>Modelo: {props.selectedGuincho?.model}</div>
                   <div>Placa: {props.selectedGuincho?.motorista.placa}</div>
                   <div>Cor: {props.selectedGuincho?.color}</div>

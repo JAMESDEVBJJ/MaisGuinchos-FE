@@ -395,69 +395,141 @@ input {
 }
 
 .detail {
-  padding-top: 6px;
+  padding-top: 8px;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  font-weight: 400;
 }
+
 .back {
   background: transparent;
   border: none;
-  color: #fff;
-  margin-bottom: 8px;
+  color: #aabbe1;
+  margin-bottom: 17px;
+  margin-top: -12px;
   cursor: pointer;
+  font-weight: 600;
+  font-size: 30px;
+  transition: opacity 0.2s;
 }
+
+.back:hover {
+  opacity: 0.7;
+}
+
 .detail-top {
   display: flex;
-  gap: 12px;
+  gap: 18px;
   align-items: center;
 }
+
 .detail-photo {
-  width: 88px;
-  height: 88px;
-  border-radius: 10px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%; 
   object-fit: cover;
+  border: 3px solid #ff7a2d;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  margin-left: 4%;
 }
+
+.detail-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 .detail-info h3 {
-  margin: 0 0 6px 0;
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+  text-align: start;
 }
+
+.detail-info .phone {
+  font-size: 16px;
+  font-weight: 600;
+  color: #84a2d9;
+  border-radius: 6px;
+  padding-left: 5px;
+  width: fit-content;
+}
+
+.driver-data {
+  padding-left: 5px;
+}
+
+/* rating */
 .rating-row {
   display: flex;
   gap: 8px;
   align-items: center;
-  margin-bottom: 6px;
-}
-.stars {
-  color: #ffcc00;
-  font-size: 14px;
-}
-.rating-number {
-  color: #cbd5e1;
-  font-size: 13px;
 }
 
+.stars {
+  color: #ffb703;
+  font-size: 16px;
+  letter-spacing: 2px;
+}
+
+/* número da nota estilizado */
+.rating-number {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 3px 8px;
+  border-radius: 20px;
+}
+
+/* ações */
 .detail-actions {
-  margin-top: 18px;
+  margin-top: 22px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
+
 button.primary {
-  background: #ff7a2d;
+  background: linear-gradient(135deg, #ff7a2d, #ff5e00);
   color: #fff;
-  padding: 10px;
-  border-radius: 8px;
+  padding: 12px;
+  border-radius: 10px;
   border: none;
   cursor: pointer;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  transition: transform 0.1s ease, filter 0.2s ease;
 }
+
+button.primary:hover {
+  filter: brightness(1.1);
+}
+
+button.primary:active {
+  transform: scale(0.97);
+}
+
 button.secondary {
   background: transparent;
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  padding: 10px;
-  border-radius: 8px;
+  color: #cbd5e1;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 11px;
+  border-radius: 10px;
   cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
 }
+
+button.secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
 .fullwidth {
   width: 100%;
 }
+
 
 .route-overlay {
   position: absolute;
