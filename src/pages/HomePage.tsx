@@ -10,6 +10,7 @@ import {
 import GuinchosResults from "./GuinchosResults";
 import { useRef } from "react";
 import L from "leaflet";
+import { Sidebar } from "./SideBar";
 
 interface CoordinateDto {
   lat: number;
@@ -17,8 +18,9 @@ interface CoordinateDto {
 }
 
 const HomePage = () => {
-
   const [guinchos, setGuinchos] = useState<GuinchosDto[]>([]);
+
+  const [selectedGuincho, setSelectedGuincho] = useState<GuinchosDto | null>(null);
 
   const [loading, setLoading] = useState(false);
 
@@ -38,10 +40,6 @@ const HomePage = () => {
 
   const [hoveredGuinchoId, setHoveredGuinchoId] = useState<number | null>(null);
 
-  const COMPACT_WIDTH = 350;
-
-  const [isCompact, setIsCompact] = useState<boolean>(false);
-
   const mapRef = useRef<L.Map | null>(null);
 
   const locations: MapProps = {
@@ -52,64 +50,14 @@ const HomePage = () => {
     route: route,
     priceEstimate: priceEstimate,
     distanceKm: distanceKm,
-    duration: durationMin
+    duration: durationMin,
   };
-
-  const [sidebarW, setSideBarW] = useState(360);
-  const [isResizing, setIsResizing] = useState(false);
 
   useEffect(() => {
     if (userLocation && destinationPosition) {
       handleUpdateDestination();
     }
   }, [userLocation]);
-
-  useEffect(() => {
-    window.addEventListener("mousemove", mouseMove);
-    window.addEventListener("mouseup", handleMouseUp);
-
-    return () => {
-      window.removeEventListener("mousemove", mouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-    };
-  }, [isResizing]);
-
-  function handleMouseDown() {
-    setIsResizing(true);
-  }
-
-  function handleMouseUp() {
-    setIsResizing(false);
-  }
-
-  useEffect(() => {
-    async function updateRoute() {
-      if (!userLocation || !destinationPosition) return;
-
-      const response = await api.post("/route", {
-        originLat: userLocation.lat,
-        originLon: userLocation.lon,
-        destLat: destinationPosition.lat,
-        destLon: destinationPosition.lon,
-      });
-
-      setRoute(response.data.polyline);
-    }
-
-    updateRoute();
-  }, [userLocation, destinationPosition]);
-
-  function mouseMove(e: MouseEvent) {
-    if (!isResizing) return;
-
-    const newWidth = e.clientX;
-
-    if (newWidth <= 280) return;
-    if (newWidth >= 580) return;
-
-    setSideBarW(newWidth);
-    setIsCompact(newWidth <= COMPACT_WIDTH);
-  }
 
   async function buscarGuinchos() {
     setLoading(true);
@@ -137,128 +85,63 @@ const HomePage = () => {
     setLoading(false);
   }
 
-  async function handleUpdateLocation() {
-    if (!locationText.trim()) {
-      return;
-    }
-
-    const response = await api.post(
-      "/user/location",
-      {
-        address: locationText,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
-
-    const { lat, lon } = response.data;
-
-    const latN = Number(lat);
-    const lonN = Number(lon);
-
-    if (isNaN(latN) || isNaN(lonN)) {
-      console.error("Latitude ou longitude inválidas", lat, lon);
-      return;
-    }
-
-    setUserLocation({ lat: latN, lon: lonN });
-  }
-
-  async function handleUpdateDestination() {
-    if (!destinationText.trim()) {
-      return;
-    }
-
-    const response = await api.post(
-      "/maps/route/calculate",
-      {
-        originLat: userLocation.lat,
-        originLon: userLocation.lon,
-        destination: destinationText,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
+  async function calculateRoute(origin: Position, destination: string) {
+    const response = await api.post("/maps/route/calculate", {
+      originLat: origin.lat,
+      originLon: origin.lon,
+      destination,
+    });
+  
     const route = response.data;
-
-    const routePositions: [number, number][] = (
-      route.polyline as CoordinateDto[]
-    ).map((p) => [p.lat, p.lon]);
-
+  
+    const routePositions = route.polyline.map((p: CoordinateDto) => [
+      p.lat,
+      p.lon,
+    ]);
+  
     const lastPoint = routePositions[routePositions.length - 1];
-
-    const destinationPosition: Position = {
+  
+    setDestinationPosition({
       lat: lastPoint[0],
       lon: lastPoint[1],
-    };
-    console.dir(destinationPosition);
-
-    setDestinationPosition(destinationPosition);
+    });
+  
     setRoute(routePositions);
     setPrice(route.priceEstimate);
     setDistanceKm(route.distanceKm);
-    setDurationMin(route.durationMinutes)
-    console.dir(route)
+    setDurationMin(route.durationMinutes);
+  }
+
+  async function handleUpdateDestination() {
+
+    if (!destinationText.trim()) {
+      return;
+    }
+    calculateRoute(userLocation, destinationText);
   }
 
   return (
     <>
       <div className="page">
-        <aside className="sidebar" style={{ width: sidebarW }}>
-          <div className="search">
-            <input
-              type="text"
-              placeholder="Setar localização"
-              value={locationText}
-              onChange={(e) => setLocationText(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleUpdateLocation();
-                }
-              }}
-            />
-            <input
-              type="text"
-              placeholder="Setar destino"
-              value={destinationText}
-              onChange={(e) => setDestinationText(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleUpdateDestination();
-                }
-              }}
-            />
-            <button onClick={buscarGuinchos}>Buscar guinchos</button>
-          </div>
-          {loading && (
-            <>
-              <h1>LOADING...</h1>
-            </>
-          )}
-
-          {!loading && guinchos.length === 0 && (
-            <div className="empty-state">
-              <p>Digite sua localização e procure por guinchos.</p>
-            </div>
-          )}
-
-          {!loading && guinchos.length >= 1 && (
-            <GuinchosResults
-              isCompact={isCompact}
-              guinchos={guinchos}
-              setHovered={setHoveredGuinchoId}
-              mapRef={mapRef}
-            ></GuinchosResults>
-          )}
-
-          <div className="resize-handle" onMouseDown={handleMouseDown} />
-        </aside>
+        <Sidebar
+          locationText={locationText}
+          setLocationText={setLocationText}
+          destinationText={destinationText}
+          setDestinationText={setDestinationText}
+          buscarGuinchos={buscarGuinchos}
+          guinchos={guinchos}
+          selectedGuincho={selectedGuincho}
+          setSelectedGuincho={setSelectedGuincho}
+          setHoveredGuinchoId={setHoveredGuinchoId}
+          setUserLocation={setUserLocation}
+          handleUpdateDestination={handleUpdateDestination}
+          loading={loading}
+          priceEstimate={priceEstimate}
+          distanceKm={distanceKm}
+          duration={durationMin}
+          mapRef={mapRef}
+         //calcularRotaComGuincho={calcularRotaComGuincho}
+        ></Sidebar>
 
         <main className="map-container">
           <div id="map">

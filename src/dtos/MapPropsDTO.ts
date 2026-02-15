@@ -1,10 +1,12 @@
-import { useState } from 'react';
 export type MotoristaDto = {
     "userId": number;
     "name": string;
     "arrivalTime"?: number;
     "lat": number;
     "lon": number;
+    foto?: string;
+    "placa": string;
+    number?: string;
 }
 
 export type GuinchosDto = {

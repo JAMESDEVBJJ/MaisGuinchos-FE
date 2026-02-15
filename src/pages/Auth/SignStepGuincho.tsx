@@ -1,3 +1,4 @@
+import { useRef, useState } from "react";
 import type { CreateUserRequest } from "../../dtos/CreateUserRequest";
 import styles from "../../styles/SignupGuincho.module.css";
 
@@ -6,6 +7,7 @@ type Props = {
   setForm: React.Dispatch<React.SetStateAction<CreateUserRequest>>;
   onBack: () => void;
   onSubmit: () => void;
+  setFile: React.Dispatch<React.SetStateAction<File | null>>;
 };
 
 export default function SignStepGuincho({
@@ -13,17 +15,23 @@ export default function SignStepGuincho({
   setForm,
   onBack, //fazer
   onSubmit,
+  setFile
 }: Props) {
+
+  const [preview, setPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const name = e.target.name;
     const value = e.target.value;
 
-    setForm(prev => ({
+    setForm((prev) => ({
       ...prev,
       guincho: {
         ...prev.guincho!,
-        [name]: value
-      }
+        [name]: value,
+      },
     }));
   }
 
@@ -75,9 +83,32 @@ export default function SignStepGuincho({
         </form>
 
         <div className={styles.guinchoSide}>
-          <div className={`${styles.photoBox}`}>
-            <span>Adicionar foto</span>
+          <div
+            className={styles.photoBox}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            {preview ? (
+              <img src={preview} className={styles.previewImage} />
+            ) : (
+              <span>Adicionar foto</span>
+            )}
           </div>
+
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            onChange={(e) => {
+              if (e.target.files && e.target.files[0]) {
+                const selectedFile = e.target.files[0];
+                setFile(selectedFile);
+
+                const imageUrl = URL.createObjectURL(selectedFile);
+                setPreview(imageUrl);
+              }
+            }}
+          />
 
           <button className={`${styles.loginBtn}`} onClick={onSubmit}>
             Avançar

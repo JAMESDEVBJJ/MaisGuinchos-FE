@@ -11,6 +11,7 @@ import type { MapProps } from "../dtos/MapPropsDTO";
 import iconUser from "../assets/icons/iconUser.png";
 import iconGuincho from "../assets/icons/guinchoMarkup.png";
 import iconGuinchoHover from "../assets/icons/guinchomarkupHoverr.png";
+import destinationIcon from "../assets/icons/destinationMarkup.png"
 import L from "leaflet";
 
 function MapController({ mapRef }: { mapRef: React.RefObject<L.Map | null> }) {
@@ -56,25 +57,32 @@ export function Maps({
     }
   }, [userPosition.lat, userPosition.lon]);
 
-  const guinchoIcon = new L.Icon({
+  const guinchoIcon = new L.Icon({ 
     iconUrl: iconGuincho,
-    iconSize: [40, 40],
-    iconAnchor: [20, 40],
-    popupAnchor: [0, -40],
+    iconSize: [36, 36],
+    iconAnchor: [18, 36],  
+    popupAnchor: [0, -36],  
   });
-
+  
   const guinchoHoverIcon = new L.Icon({
     iconUrl: iconGuinchoHover,
-    iconSize: [45, 45],
-    iconAnchor: [22.5, 45],
-    popupAnchor: [0, -45],
+    iconSize: [40.5, 40.5],
+    iconAnchor: [20.25, 40.5], 
+    popupAnchor: [0, -40.5],   
   });
 
   const userIcon = new L.Icon({
     iconUrl: iconUser,
-    iconSize: [36, 36],
-    iconAnchor: [18, 36],
-    popupAnchor: [0, -36],
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -32],
+  });
+
+  const destinationIconMarkup = new L.Icon({
+    iconUrl: destinationIcon,
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -32],
   });
 
   return (
@@ -114,15 +122,18 @@ export function Maps({
           position={[userPosition.lat, userPosition.lon]}
           icon={userIcon}
         ></Marker>
-        {route && (
-          <Polyline
+        {route && (<><Polyline
             positions={route}
             pathOptions={{
               color: "darkorange",
-              weight: 5,
+              weight: 4,
               opacity: 0.8,
             }}
           />
+          <Marker
+            position={route[route.length - 1]}
+            icon={destinationIconMarkup}
+          ></Marker></> 
         )}
         {priceEstimate && !isRoutePanelOpen && (
           <div className="price-hud" onClick={() => setIsRoutePanelOpen(true)}>
