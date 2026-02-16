@@ -7,7 +7,6 @@ import {
   type Position,
   type GuinchosDto,
 } from "../dtos/MapPropsDTO";
-import GuinchosResults from "./GuinchosResults";
 import { useRef } from "react";
 import L from "leaflet";
 import { Sidebar } from "./SideBar";
@@ -18,6 +17,11 @@ interface CoordinateDto {
 }
 
 const HomePage = () => {
+
+  const [priceEstimateG, setPriceG] = useState<number | null>(0);
+  const [distanceKmG, setDistanceKmG] = useState<number | null>(0);
+  const [durationMinG, setDurationMinG] = useState<number | null>(0);
+
   const [guinchos, setGuinchos] = useState<GuinchosDto[]>([]);
 
   const [selectedGuincho, setSelectedGuincho] = useState<GuinchosDto | null>(null);
@@ -31,6 +35,7 @@ const HomePage = () => {
   const [locationText, setLocationText] = useState<string>("");
   const [destinationText, setDestinationText] = useState<string>("");
   const [route, setRoute] = useState<[number, number][] | null>(null);
+  const [routeG, setRouteG] = useState<[number, number][] | null>(null);
   const [destinationPosition, setDestinationPosition] =
     useState<Position | null>(null);
 
@@ -48,9 +53,13 @@ const HomePage = () => {
     hoveredGuinchoId: hoveredGuinchoId,
     mapRef: mapRef,
     route: route,
+    routeG: routeG,
     priceEstimate: priceEstimate,
     distanceKm: distanceKm,
     duration: durationMin,
+    priceEstimateG: priceEstimateG,
+    distanceKmG: distanceKmG,
+    durationMinG: durationMinG
   };
 
   useEffect(() => {
@@ -134,12 +143,21 @@ const HomePage = () => {
           setSelectedGuincho={setSelectedGuincho}
           setHoveredGuinchoId={setHoveredGuinchoId}
           setUserLocation={setUserLocation}
+          userLocation={userLocation}
           handleUpdateDestination={handleUpdateDestination}
+          setRouteG={setRouteG}
+          routeG={routeG}
           loading={loading}
           priceEstimate={priceEstimate}
           distanceKm={distanceKm}
           duration={durationMin}
           mapRef={mapRef}
+          priceEstimateG={priceEstimateG}
+          setPriceG={setPriceG}
+          distanceKmG={distanceKmG}
+          setDistanceKmG={setDistanceKmG}
+          durationMinG={durationMinG}
+          setDurationMinG={setDurationMinG}
          //calcularRotaComGuincho={calcularRotaComGuincho}
         ></Sidebar>
 
@@ -151,9 +169,13 @@ const HomePage = () => {
               hoveredGuinchoId={locations.hoveredGuinchoId}
               mapRef={mapRef}
               route={route}
+              routeG={routeG}
               priceEstimate={priceEstimate}
               distanceKm={distanceKm}
               duration={durationMin}
+              priceEstimateG={priceEstimateG}
+              distanceKmG={distanceKmG}
+              durationMinG={durationMinG}
             ></Maps>
           </div>
         </main>

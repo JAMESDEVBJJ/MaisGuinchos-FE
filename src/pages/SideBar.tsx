@@ -5,7 +5,13 @@ import type { GuinchosDto, Position } from "../dtos/MapPropsDTO";
 import { api } from "../services/api";
 import iconLocation from "../assets/icons/location.png";
 import iconDestination from "../assets/icons/detinIcon.png";
+import defaultUserPng from "../assets/defaultUser.png";
 import GuinchosResults from "./GuinchosResults";
+
+interface CoordinateDto {
+  lat: number;
+  lon: number;
+}
 
 type SidebarProps = {
   locationText: string;
@@ -18,28 +24,41 @@ type SidebarProps = {
   setSelectedGuincho: (g: GuinchosDto | null) => void;
   setHoveredGuinchoId: React.Dispatch<React.SetStateAction<number | null>>;
   setUserLocation: React.Dispatch<React.SetStateAction<Position>>;
+  userLocation: Position;
   handleUpdateDestination: () => Promise<void>;
-  //calcularRotaComGuincho: () => void;
+  setRouteG: React.Dispatch<React.SetStateAction<[number, number][] | null>>;
+  routeG: [number, number][] | null;
   mapRef: React.RefObject<L.Map | null>;
   loading: boolean;
   priceEstimate: number;
   distanceKm: number;
   duration: number;
+  priceEstimateG: number | null;
+  setPriceG: React.Dispatch<React.SetStateAction<number | null>>;
+  distanceKmG: number | null;
+  setDistanceKmG: React.Dispatch<React.SetStateAction<number | null>>;
+  durationMinG: number | null;
+  setDurationMinG: React.Dispatch<React.SetStateAction<number | null>>;
 };
 
 export function Sidebar(props: SidebarProps) {
   const [locationText, setLocationText] = useState("");
 
-  // ref pra guardar camada da rota pra poder remover depois
   const routeLayerRef = useRef<L.Layer | null>(null);
 
-  console.dir(props.selectedGuincho?.motorista.foto);
+  const [showDetails, setShowDetails] = useState(false);
+
+  const foto = props.selectedGuincho?.motorista?.foto;
+  const isDefault = !foto || foto.trim() === "";
 
   const COMPACT_WIDTH = 350;
 
   const [isCompact, setIsCompact] = useState<boolean>(false);
   const [sidebarW, setSideBarW] = useState(360);
   const [isResizing, setIsResizing] = useState(false);
+
+  const rotaCalculada = !!props.routeG;
+
   useEffect(() => {
     window.addEventListener("mousemove", mouseMove);
     window.addEventListener("mouseup", handleMouseUp);
@@ -111,23 +130,36 @@ export function Sidebar(props: SidebarProps) {
 
     props.setHoveredGuinchoId(null);
     props.setSelectedGuincho(null);
+    props.setDistanceKmG(null);
+    props.setDurationMinG(null);
   }
 
   async function calcularRotaComGuincho() {
     if (!props.selectedGuincho) return;
-    // aqui você chama seu serviço de rotas (os exemplos usam formato [lng,lat] ou [lat,lng] conforme seu provider)
-    // vou usar um stub que retorna um array de coords [lat, lng].
-    const origem = parseLocationToLatLng(locationText) ?? {
-      lat: -27.6,
-      lng: -48.5,
-    }; // fallback
-    //const destino = parseLocationToLatLng(destinationText) ?? {
-    //  lat: selectedGuincho.motorista.lat,
-    //  lng: selectedGuincho.motorista.lon,
-    //};
 
-    // substitua por fetch real para API de routing (OSRM/GraphHopper/Mapbox Directions)
-    //const routeCoords: [number, number][] = await fakeRouteApi(origem, destino);
+    const origemLat = props.selectedGuincho.motorista.lat;
+    const origemLon = props.selectedGuincho.motorista.lon;
+
+    const destino = props.userLocation;
+
+    const response = await api.post("/maps/route/calculate/driver", {
+      originLat: origemLat,
+      originLon: origemLon,
+      driverLat: destino.lat,
+      driverLon: destino.lon,
+    });
+
+    const route = response.data;
+
+    const routePositions = route.polyline.map((p: CoordinateDto) => [
+      p.lat,
+      p.lon,
+    ]);
+
+    props.setRouteG(routePositions);
+    props.setDistanceKmG(route.distanceKm);
+    props.setDurationMinG(route.durationMinutes);
+    props.setPriceG(route.priceEstimate);
 
     // desenha no mapa
     const map = props.mapRef.current;
@@ -139,22 +171,10 @@ export function Sidebar(props: SidebarProps) {
       routeLayerRef.current = null;
     }
 
-    // const poly = L.polyline(routeCoords, { weight: 6, opacity: 0.9 });
-    //const destMarker = L.marker([destino.lat, destino.lng]);
-
-    // agrupa os layers para facilitar remoção
-    //const group = L.layerGroup([poly, destMarker]);
-    //group.addTo(map);
-    //routeLayerRef.current = group;
+    const poly = L.polyline(routePositions, { weight: 4, opacity: 0.6 });
 
     // ajustar bounds
-    //map.fitBounds(poly.getBounds(), { padding: [60, 60] });
-
-    // opcional: obter e mostrar infos da rota (distância / tempo)
-    // você vai receber isso da sua API; aqui é só um exemplo:
-    const fakeInfo = { distanciaKm: 12.4, duracaoMin: 21 };
-    // mostre em UI (exibir em sidebar ou toast)
-    console.log("rota calculada", fakeInfo);
+    map.fitBounds(poly.getBounds(), { padding: [60, 60] });
   }
 
   return (
@@ -223,12 +243,11 @@ export function Sidebar(props: SidebarProps) {
             </button>
             <div className="detail-top">
               <img
-                className="detail-photo"
+                className={`detail-photo ${isDefault ? "default-photo" : ""}`}
                 src={
-                  `https://localhost:7120${props.selectedGuincho?.motorista.foto}` ||
-                  "/icons/default-driver.png"
+                  isDefault ? defaultUserPng : `https://localhost:7120${foto}`
                 }
-                alt={props.selectedGuincho?.motorista.name}
+                alt={props.selectedGuincho?.motorista?.name}
               />
               <div className="detail-info">
                 <h3>{props.selectedGuincho?.motorista.name}</h3>
@@ -256,54 +275,91 @@ export function Sidebar(props: SidebarProps) {
               >
                 Calcular rota com guincho
               </button>
-              <button
-                className="secondary fullwidth"
-                onClick={() => {
-                  /* talvez iniciar chat, ligar */
-                }}
-              >
-                Ligar / Contatar
-              </button>
             </div>
+            {props.distanceKmG &&
+              props.durationMinG &&
+              props.priceEstimateG &&
+              rotaCalculada && (
+                <div className="route-summary">
+                  <ul>
+                    <li>
+                      <strong>Distância total:</strong>{" "}
+                      {(props.distanceKm + props.distanceKmG).toFixed(1)} Km
+                    </li>
+
+                    <li>
+                      <strong>Tempo médio:</strong>{" "}
+                      {((props.duration + props.durationMinG) / 60).toFixed(1)}{" "}
+                      h
+                    </li>
+
+                    {!showDetails && (
+                      <li>
+                        <strong>Preço estimado:</strong> $
+                        {(props.priceEstimate + props.priceEstimateG).toFixed(
+                          0
+                        )}
+                      </li>
+                    )}
+                  </ul>
+                  {showDetails && (
+                    <div className="route-breakdown">
+                      <p>
+                        <strong>
+                          Guincho <span className="arrow yellow">→</span> Você:
+                        </strong>{" "}
+                        {props.priceEstimateG.toFixed(0)}R${" "}
+                        {props.distanceKmG.toFixed(0)}km
+                      </p>
+                      <p>
+                        <strong>
+                          Você <span className="arrow orange">→</span> Destino:
+                        </strong>{" "}
+                        {props.priceEstimate.toFixed(0)}R${" "}
+                        {props.distanceKm.toFixed(0)}km
+                      </p>
+                    </div>
+                  )}
+                  <span
+                    className="more-details"
+                    onClick={() => setShowDetails(!showDetails)}
+                  >
+                    {showDetails ? "Menos detalhes" : "Mais detalhes"}
+                  </span>
+                </div>
+              )}
+            <button
+              className={`secondary fullwidth ${
+                rotaCalculada ? "contact-enabled" : ""
+              }`}
+              disabled={!rotaCalculada}
+              onClick={() => {}}
+            >
+              Ligar / Contatar
+            </button>
           </div>
         )}
-
         <div className="resize-handle" onMouseDown={handleMouseDown} />
       </aside>
     </>
   );
 }
 
-/* helpers simples */
 function renderStars(n?: number) {
-  const stars = Math.round((n ?? 0) * 2) / 2; // meia estrela opcional
+  const stars = Math.round((n ?? 0) * 2) / 2;
   const full = Math.floor(stars);
   const half = stars - full >= 0.5;
   const arr = [];
   for (let i = 0; i < full; i++) arr.push("★");
-  if (half) arr.push("☆"); // você pode trocar por ícone de meia
+  if (half) arr.push("☆");
   while (arr.length < 5) arr.push("✩");
   return <span className="stars">{arr.join(" ")}</span>;
 }
 
-/* parse simples: caso você salve lat,lng no input. Troque conforme necessário */
-function parseLocationToLatLng(text: string) {
-  if (!text) return null;
-  const parts = text.split(",").map((s) => s.trim());
-  if (parts.length === 2) {
-    const lat = Number(parts[0]);
-    const lng = Number(parts[1]);
-    if (!isNaN(lat) && !isNaN(lng)) return { lat, lng };
-  }
-  return null;
-}
-
-/* fake route API — substitua pela real */
 async function fakeRouteApi(
   orig: { lat: number; lng: number },
   dest: { lat: number; lng: number }
 ) {
-  // cria linha reta com 5 pontos entre origem -> destino
   const steps: [number, number][] = [];
   for (let i = 0; i <= 6; i++) {
     const t = i / 6;
@@ -311,7 +367,6 @@ async function fakeRouteApi(
     const lng = orig.lng + (dest.lng - orig.lng) * t;
     steps.push([lat, lng]);
   }
-  // simula delay
   await new Promise((res) => setTimeout(res, 500));
   return steps;
 }

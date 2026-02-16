@@ -51,11 +51,6 @@ export default function GuinchosResults({
               className={`status ${g.available ? "available" : "unavailable"}`}
             >
               <span className="dot" />
-              {!isCompact && (
-                <span className="status-text">
-                  {g.available ? "Disponível" : "Indisponível"}
-                </span>
-              )}
             </div>
           </div>
 
