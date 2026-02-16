@@ -75,7 +75,7 @@ input {
 
 .input-wrapper input {
   width: 100%;
-  padding: 10px 40px 10px 10px; /* espaço para o ícone */
+  padding: 10px 40px 10px 10px; 
   border-radius: 8px;
   font-size: 14px;
 }
@@ -174,11 +174,7 @@ input {
   border-radius: 8px;
   background-color: #0f1a21;
   cursor: pointer;
-
   padding: 12px 14px;
-
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
-
   display: flex;
   flex-direction: column;
 
@@ -187,7 +183,7 @@ input {
 .result-card:hover {
   transform: scale(1.02);
   filter: brightness(1.08);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .result-card:active {
@@ -432,6 +428,16 @@ input {
   margin-left: 4%;
 }
 
+.detail-photo.default-photo {
+  object-fit: contain;    
+  padding: 0px;         
+  border: none;
+  box-shadow: none;
+  width: 150px;
+  height: 150px;
+  margin-left: -5px;
+}
+
 .detail-info {
   display: flex;
   flex-direction: column;
@@ -460,7 +466,6 @@ input {
   padding-left: 5px;
 }
 
-/* rating */
 .rating-row {
   display: flex;
   gap: 8px;
@@ -473,17 +478,14 @@ input {
   letter-spacing: 2px;
 }
 
-/* número da nota estilizado */
 .rating-number {
   font-size: 14px;
   font-weight: 700;
   color: #ffffff;
-  background: rgba(255, 255, 255, 0.08);
   padding: 3px 8px;
   border-radius: 20px;
 }
 
-/* ações */
 .detail-actions {
   margin-top: 22px;
   display: flex;
@@ -525,6 +527,74 @@ button.secondary {
 button.secondary:hover {
   background: rgba(255, 255, 255, 0.05);
 }
+button.contact-enabled {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  border: none;
+  color: white;
+  font-weight: 700;
+}
+
+button.contact-enabled:hover {
+  filter: brightness(1.1);
+}
+
+.route-summary {
+  margin-top: 18px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 16px;
+  color: #e2e8f0;
+}
+
+.route-summary ul {
+  list-style: disc;
+  padding-left: 18px;
+  margin: 0;
+}
+
+.route-summary li {
+  margin-bottom: 8px;
+}
+
+.route-summary strong {
+  color: #ffffff;
+}
+
+.arrow {
+  font-size: 30px;
+  font-weight: bold;
+  display: inline-block;
+  transform: translateY(1px);
+}
+.yellow {
+  color: yellow;
+}
+
+.orange {
+  color: darkorange;
+}
+
+.more-details {
+  display: block;
+  margin-top: 6px;
+  font-size: 16px;
+  color: #94a3b8;
+  cursor: pointer;
+}
+
+.more-details:hover {
+  text-decoration: underline;
+}
+
+.route-breakdown {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 14px;
+  color: #cbd5e1;
+}
+
 
 .fullwidth {
   width: 100%;
@@ -534,7 +604,7 @@ button.secondary:hover {
 .route-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.35); /* fundo um pouco mais escuro */
+  background: rgba(0, 0, 0, 0.35); 
   display: flex;
   align-items: center;
   justify-content: center;

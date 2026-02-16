@@ -11,7 +11,7 @@ import type { MapProps } from "../dtos/MapPropsDTO";
 import iconUser from "../assets/icons/iconUser.png";
 import iconGuincho from "../assets/icons/guinchoMarkup.png";
 import iconGuinchoHover from "../assets/icons/guinchomarkupHoverr.png";
-import destinationIcon from "../assets/icons/destinationMarkup.png"
+import destinationIcon from "../assets/icons/destinationMarkup.png";
 import L from "leaflet";
 
 function MapController({ mapRef }: { mapRef: React.RefObject<L.Map | null> }) {
@@ -30,9 +30,13 @@ export function Maps({
   hoveredGuinchoId,
   mapRef,
   route,
+  routeG,
   priceEstimate,
   distanceKm,
-  duration
+  duration,
+  priceEstimateG,
+  distanceKmG,
+  durationMinG
 }: MapProps) {
   const lastUserPosRef = useRef<[number, number] | null>(null);
 
@@ -57,18 +61,18 @@ export function Maps({
     }
   }, [userPosition.lat, userPosition.lon]);
 
-  const guinchoIcon = new L.Icon({ 
+  const guinchoIcon = new L.Icon({
     iconUrl: iconGuincho,
     iconSize: [36, 36],
-    iconAnchor: [18, 36],  
-    popupAnchor: [0, -36],  
+    iconAnchor: [18, 36],
+    popupAnchor: [0, -36],
   });
-  
+
   const guinchoHoverIcon = new L.Icon({
     iconUrl: iconGuinchoHover,
     iconSize: [40.5, 40.5],
-    iconAnchor: [20.25, 40.5], 
-    popupAnchor: [0, -40.5],   
+    iconAnchor: [20.25, 40.5],
+    popupAnchor: [0, -40.5],
   });
 
   const userIcon = new L.Icon({
@@ -122,22 +126,35 @@ export function Maps({
           position={[userPosition.lat, userPosition.lon]}
           icon={userIcon}
         ></Marker>
-        {route && (<><Polyline
-            positions={route}
+        {route && (
+          <>
+            <Polyline
+              positions={route}
+              pathOptions={{
+                color: "darkorange",
+                weight: 4,
+                opacity: 0.8,
+              }}
+            />
+            <Marker
+              position={route[route.length - 1]}
+              icon={destinationIconMarkup}
+            ></Marker>
+          </>
+        )}
+        {routeG && (
+          <Polyline
+            positions={routeG}
             pathOptions={{
-              color: "darkorange",
+              color: "yellow",
               weight: 4,
               opacity: 0.8,
             }}
           />
-          <Marker
-            position={route[route.length - 1]}
-            icon={destinationIconMarkup}
-          ></Marker></> 
         )}
         {priceEstimate && !isRoutePanelOpen && (
           <div className="price-hud" onClick={() => setIsRoutePanelOpen(true)}>
-            R$ {priceEstimate.toFixed(2)}
+            R$ {priceEstimateG ? (priceEstimate + priceEstimateG).toFixed(2) : priceEstimate.toFixed(2)}
           </div>
         )}
         {isRoutePanelOpen && (
@@ -147,9 +164,9 @@ export function Maps({
           >
             <div className="route-panel" onClick={(e) => e.stopPropagation()}>
               <h3>Detalhes da viagem</h3>
-              <p>Distância: {distanceKm} km</p>
-              <p>Duração: {duration} min</p>
-              <p>Preço estimado: R$ {priceEstimate.toFixed(2)}</p>
+              <p>Distância: {distanceKmG ? (distanceKm + distanceKmG).toFixed(1) : distanceKm.toFixed(1)} km</p>
+              <p>Duração: {durationMinG ? duration + durationMinG : duration} min</p>
+              <p>Preço estimado: R$ {priceEstimateG ? (priceEstimate + priceEstimateG).toFixed(2) : priceEstimate.toFixed(2)}</p>
 
               {false && (
                 <p>
