@@ -275,65 +275,70 @@ export function Sidebar(props: SidebarProps) {
               >
                 Calcular rota com guincho
               </button>
-
-              <button
-                className={`secondary fullwidth ${
-                  rotaCalculada ? "contact-enabled" : ""
-                }`}
-                disabled={!rotaCalculada}
-                onClick={() => {}}
-              >
-                Ligar / Contatar
-              </button>
             </div>
-            {props.distanceKmG && props.durationMinG && props.priceEstimateG && rotaCalculada && (
-              <div className="route-summary">
-                <ul>
-                  <li>
-                    <strong>Distância total:</strong>{" "}
-                    {(props.distanceKm + props.distanceKmG).toFixed(1)} Km
-                  </li>
-
-                  <li>
-                    <strong>Tempo médio:</strong>{" "}
-                    {((props.duration + props.durationMinG) / 60).toFixed(1)} h
-                  </li>
-
-                  {!showDetails && (
+            {props.distanceKmG &&
+              props.durationMinG &&
+              props.priceEstimateG &&
+              rotaCalculada && (
+                <div className="route-summary">
+                  <ul>
                     <li>
-                      <strong>Preço estimado:</strong> $
-                      {(props.priceEstimate + props.priceEstimateG).toFixed(0)}
+                      <strong>Distância total:</strong>{" "}
+                      {(props.distanceKm + props.distanceKmG).toFixed(1)} Km
                     </li>
+
+                    <li>
+                      <strong>Tempo médio:</strong>{" "}
+                      {((props.duration + props.durationMinG) / 60).toFixed(1)}{" "}
+                      h
+                    </li>
+
+                    {!showDetails && (
+                      <li>
+                        <strong>Preço estimado:</strong> $
+                        {(props.priceEstimate + props.priceEstimateG).toFixed(
+                          0
+                        )}
+                      </li>
+                    )}
+                  </ul>
+                  {showDetails && (
+                    <div className="route-breakdown">
+                      <p>
+                        <strong>
+                          Guincho <span className="arrow yellow">→</span> Você:
+                        </strong>{" "}
+                        {props.priceEstimateG.toFixed(0)}R${" "}
+                        {props.distanceKmG.toFixed(0)}km
+                      </p>
+                      <p>
+                        <strong>
+                          Você <span className="arrow orange">→</span> Destino:
+                        </strong>{" "}
+                        {props.priceEstimate.toFixed(0)}R${" "}
+                        {props.distanceKm.toFixed(0)}km
+                      </p>
+                    </div>
                   )}
-                </ul>
-                {showDetails && (
-                  <div className="route-breakdown">
-                    <p>
-                      <strong>
-                        Guincho <span className="arrow yellow">→</span> Você:
-                      </strong>{" "}
-                      {props.priceEstimateG.toFixed(0)}R$ {props.distanceKmG.toFixed(0)}km
-                    </p>
-                    <p>
-                      <strong>
-                        Você <span className="arrow orange">→</span> Destino:
-                      </strong>{" "}
-                      {props.priceEstimate.toFixed(0)}R${" "}
-                      {props.distanceKm.toFixed(0)}km
-                    </p>
-                  </div>
-                )}
-                <span
-                  className="more-details"
-                  onClick={() => setShowDetails(!showDetails)}
-                >
-                  {showDetails ? "Menos detalhes" : "Mais detalhes"}
-                </span>
-              </div>
-            )}
+                  <span
+                    className="more-details"
+                    onClick={() => setShowDetails(!showDetails)}
+                  >
+                    {showDetails ? "Menos detalhes" : "Mais detalhes"}
+                  </span>
+                </div>
+              )}
+            <button
+              className={`secondary fullwidth ${
+                rotaCalculada ? "contact-enabled" : ""
+              }`}
+              disabled={!rotaCalculada}
+              onClick={() => {}}
+            >
+              Ligar / Contatar
+            </button>
           </div>
         )}
-
         <div className="resize-handle" onMouseDown={handleMouseDown} />
       </aside>
     </>
