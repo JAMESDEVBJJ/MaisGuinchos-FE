@@ -13,6 +13,7 @@ import iconGuincho from "../assets/icons/guinchoMarkup.png";
 import iconGuinchoHover from "../assets/icons/guinchomarkupHoverr.png";
 import destinationIcon from "../assets/icons/destinationMarkup.png";
 import L from "leaflet";
+import { Sun, Moon } from "lucide-react";
 
 function MapController({ mapRef }: { mapRef: React.RefObject<L.Map | null> }) {
   const map = useMap();
@@ -36,11 +37,13 @@ export function Maps({
   duration,
   priceEstimateG,
   distanceKmG,
-  durationMinG
+  durationMinG,
 }: MapProps) {
   const lastUserPosRef = useRef<[number, number] | null>(null);
 
   const [isRoutePanelOpen, setIsRoutePanelOpen] = useState(false);
+
+  const [isDarkTheme, setIsDark] = useState(true);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -97,7 +100,17 @@ export function Maps({
         style={{ height: "100%", width: "100%" }}
       >
         <MapController mapRef={mapRef} />
-        <TileLayer url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png" />
+        {isDarkTheme ? (
+          <TileLayer url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png" />
+        ) : (
+          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        )}
+        <button
+          onClick={() => setIsDark(!isDarkTheme)}
+          className="map-theme-toggle"
+        >
+          {isDarkTheme ? <Sun size={30} fill="white" color="white"/> : <Moon size={27} fill="black"/>}
+        </button>
         {motoristasPosition.map((m) => {
           const motorista = m.motorista;
 
@@ -154,7 +167,10 @@ export function Maps({
         )}
         {priceEstimate && !isRoutePanelOpen && (
           <div className="price-hud" onClick={() => setIsRoutePanelOpen(true)}>
-            R$ {priceEstimateG ? (priceEstimate + priceEstimateG).toFixed(2) : priceEstimate.toFixed(2)}
+            R${" "}
+            {priceEstimateG
+              ? (priceEstimate + priceEstimateG).toFixed(2)
+              : priceEstimate.toFixed(2)}
           </div>
         )}
         {isRoutePanelOpen && (
@@ -164,9 +180,22 @@ export function Maps({
           >
             <div className="route-panel" onClick={(e) => e.stopPropagation()}>
               <h3>Detalhes da viagem</h3>
-              <p>Distância: {distanceKmG ? (distanceKm + distanceKmG).toFixed(1) : distanceKm.toFixed(1)} km</p>
-              <p>Duração: {durationMinG ? duration + durationMinG : duration} min</p>
-              <p>Preço estimado: R$ {priceEstimateG ? (priceEstimate + priceEstimateG).toFixed(2) : priceEstimate.toFixed(2)}</p>
+              <p>
+                Distância:{" "}
+                {distanceKmG
+                  ? (distanceKm + distanceKmG).toFixed(1)
+                  : distanceKm.toFixed(1)}{" "}
+                km
+              </p>
+              <p>
+                Duração: {durationMinG ? duration + durationMinG : duration} min
+              </p>
+              <p>
+                Preço estimado: R${" "}
+                {priceEstimateG
+                  ? (priceEstimate + priceEstimateG).toFixed(2)
+                  : priceEstimate.toFixed(2)}
+              </p>
 
               {false && (
                 <p>
