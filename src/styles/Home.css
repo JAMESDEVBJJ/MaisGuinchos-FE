@@ -237,7 +237,6 @@ input {
   transform: translateY(-4px);
 
   display: flex;
-  justify-content: space-between;
 
   margin-top: 0;
 
@@ -649,4 +648,27 @@ button.contact-enabled:hover {
 #map {
   width: 100%;
   height: 100%;
+}
+
+.map-theme-toggle {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 1100;
+
+  width: 45px;
+  height: 45px;
+
+  cursor: pointer;
+
+  background: none;
+  border: none;
+
+  font-size: 25px;
+  font-weight: bold;
+  transition: 0.25s;
+}
+
+.map-theme-toggle:hover {
+  transform: scale(1.1);
 }
