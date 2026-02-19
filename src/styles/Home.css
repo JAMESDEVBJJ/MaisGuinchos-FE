@@ -311,12 +311,12 @@ input {
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.765);
   backdrop-filter: blur(2px);
   padding: 10px 20px;
   border-radius: 30px;
   font-weight: bold;
-  font-size: 17px; /* maior */
+  font-size: 14.5px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   cursor: pointer;
   z-index: 1000;
@@ -616,7 +616,7 @@ button.contact-enabled:hover {
 }
 
 .route-panel {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.80);
   backdrop-filter: blur(2px);
   padding: 40px 30px;
   border-radius: 24px;
@@ -625,7 +625,6 @@ button.contact-enabled:hover {
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
 }
 
-/* título */
 .route-panel h3 {
   font-size: 19px;
   font-weight: 900;

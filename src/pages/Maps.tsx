@@ -47,6 +47,7 @@ export function Maps({
 
   useEffect(() => {
     if (!mapRef.current) return;
+    if (!userPosition) return;
 
     const newCenter: [number, number] = [userPosition.lat, userPosition.lon];
 
@@ -62,7 +63,7 @@ export function Maps({
 
       lastUserPosRef.current = newCenter;
     }
-  }, [userPosition.lat, userPosition.lon]);
+  }, [userPosition?.lat, userPosition?.lon]);
 
   const guinchoIcon = new L.Icon({
     iconUrl: iconGuincho,
@@ -94,118 +95,128 @@ export function Maps({
 
   return (
     <div style={{ height: "100vh", width: "100%" }}>
-      <MapContainer
-        center={[userPosition.lat, userPosition.lon]} // só inicial
-        zoom={13}
-        style={{ height: "100%", width: "100%" }}
-      >
-        <MapController mapRef={mapRef} />
-        {isDarkTheme ? (
-          <TileLayer url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png" />
-        ) : (
-          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        )}
-        <button
-          onClick={() => setIsDark(!isDarkTheme)}
-          className="map-theme-toggle"
+      {userPosition && (
+        <MapContainer
+          center={[userPosition.lat, userPosition.lon]}
+          zoom={13}
+          style={{ height: "100%", width: "100%" }}
         >
-          {isDarkTheme ? <Sun size={30} fill="white" color="white"/> : <Moon size={27} fill="black"/>}
-        </button>
-        {motoristasPosition.map((m) => {
-          const motorista = m.motorista;
+          <MapController mapRef={mapRef} />
+          {isDarkTheme ? (
+            <TileLayer url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png" />
+          ) : (
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+          )}
+          <button
+            onClick={() => setIsDark(!isDarkTheme)}
+            className="map-theme-toggle"
+          >
+            {isDarkTheme ? (
+              <Sun size={30} fill="white" color="white" />
+            ) : (
+              <Moon size={27} fill="black" />
+            )}
+          </button>
+          {motoristasPosition.map((m) => {
+            const motorista = m.motorista;
 
-          if (
-            (motorista.lat === 0 && motorista.lon === 0) ||
-            motorista.lon == undefined ||
-            motorista.lat == undefined
-          ) {
-            return null;
-          }
+            if (
+              (motorista.lat === 0 && motorista.lon === 0) ||
+              motorista.lon == undefined ||
+              motorista.lat == undefined
+            ) {
+              return null;
+            }
 
-          const isHovered = hoveredGuinchoId === m.motorista.userId;
+            const isHovered = hoveredGuinchoId === m.motorista.userId;
 
-          return (
-            <Marker
-              key={motorista.userId}
-              position={[motorista.lat, motorista.lon]}
-              icon={isHovered ? guinchoHoverIcon : guinchoIcon}
-            >
-              <Popup>{motorista.name}</Popup>
-            </Marker>
-          );
-        })}
-        ;
-        <Marker
-          position={[userPosition.lat, userPosition.lon]}
-          icon={userIcon}
-        ></Marker>
-        {route && (
-          <>
+            return (
+              <Marker
+                key={motorista.userId}
+                position={[motorista.lat, motorista.lon]}
+                icon={isHovered ? guinchoHoverIcon : guinchoIcon}
+              >
+                <Popup>{motorista.name}</Popup>
+              </Marker>
+            );
+          })}
+          ;
+          <Marker
+            position={[userPosition.lat, userPosition.lon]}
+            icon={userIcon}
+          ></Marker>
+          {route && (
+            <>
+              <Polyline
+                positions={route}
+                pathOptions={{
+                  color: "darkorange",
+                  weight: 4,
+                  opacity: 0.8,
+                }}
+              />
+              <Marker
+                position={route[route.length - 1]}
+                icon={destinationIconMarkup}
+              ></Marker>
+            </>
+          )}
+          {routeG && (
             <Polyline
-              positions={route}
+              positions={routeG}
               pathOptions={{
-                color: "darkorange",
+                color: "yellow",
                 weight: 4,
                 opacity: 0.8,
               }}
             />
-            <Marker
-              position={route[route.length - 1]}
-              icon={destinationIconMarkup}
-            ></Marker>
-          </>
-        )}
-        {routeG && (
-          <Polyline
-            positions={routeG}
-            pathOptions={{
-              color: "yellow",
-              weight: 4,
-              opacity: 0.8,
-            }}
-          />
-        )}
-        {priceEstimate && !isRoutePanelOpen && (
-          <div className="price-hud" onClick={() => setIsRoutePanelOpen(true)}>
-            R${" "}
-            {priceEstimateG
-              ? (priceEstimate + priceEstimateG).toFixed(2)
-              : priceEstimate.toFixed(2)}
-          </div>
-        )}
-        {isRoutePanelOpen && (
-          <div
-            className="route-overlay"
-            onClick={() => setIsRoutePanelOpen(false)}
-          >
-            <div className="route-panel" onClick={(e) => e.stopPropagation()}>
-              <h3>Detalhes da viagem</h3>
-              <p>
-                Distância:{" "}
-                {distanceKmG
-                  ? (distanceKm + distanceKmG).toFixed(1)
-                  : distanceKm.toFixed(1)}{" "}
-                km
-              </p>
-              <p>
-                Duração: {durationMinG ? duration + durationMinG : duration} min
-              </p>
-              <p>
-                Preço estimado: R${" "}
-                {priceEstimateG
-                  ? (priceEstimate + priceEstimateG).toFixed(2)
-                  : priceEstimate.toFixed(2)}
-              </p>
-
-              {false && (
-                <p>
-                  Preço com {}: R$ {}
-                </p>
-              )}
+          )}
+          {priceEstimate && !isRoutePanelOpen && (
+            <div
+              className="price-hud"
+              onClick={() => setIsRoutePanelOpen(true)}
+            >
+              R${" "}
+              {priceEstimateG
+                ? (priceEstimate + priceEstimateG).toFixed(2)
+                : priceEstimate.toFixed(2)}
             </div>
-          </div>
-        )}
-      </MapContainer>
+          )}
+          {isRoutePanelOpen && (
+            <div
+              className="route-overlay"
+              onClick={() => setIsRoutePanelOpen(false)}
+            >
+              <div className="route-panel" onClick={(e) => e.stopPropagation()}>
+                <h3>Detalhes da viagem</h3>
+                <p>
+                  Distância:{" "}
+                  {distanceKmG
+                    ? (distanceKm + distanceKmG).toFixed(1)
+                    : distanceKm.toFixed(1)}{" "}
+                  km
+                </p>
+                <p>
+                  Duração: {durationMinG ? duration + durationMinG : duration}{" "}
+                  min
+                </p>
+                <p>
+                  Preço estimado: R${" "}
+                  {priceEstimateG
+                    ? (priceEstimate + priceEstimateG).toFixed(2)
+                    : priceEstimate.toFixed(2)}
+                </p>
+
+                {false && (
+                  <p>
+                    Preço com {}: R$ {}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+        </MapContainer>
+      )}
     </div>
   );
 }
