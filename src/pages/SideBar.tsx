@@ -23,8 +23,8 @@ type SidebarProps = {
   selectedGuincho: GuinchosDto | null;
   setSelectedGuincho: (g: GuinchosDto | null) => void;
   setHoveredGuinchoId: React.Dispatch<React.SetStateAction<number | null>>;
-  setUserLocation: React.Dispatch<React.SetStateAction<Position>>;
-  userLocation: Position;
+  setUserLocation: React.Dispatch<React.SetStateAction<Position | null>>;
+  userLocation: Position | null;
   handleUpdateDestination: () => Promise<void>;
   setRouteG: React.Dispatch<React.SetStateAction<[number, number][] | null>>;
   routeG: [number, number][] | null;
@@ -74,17 +74,9 @@ export function Sidebar(props: SidebarProps) {
       return;
     }
 
-    const response = await api.post(
-      "/user/location",
-      {
-        address: locationText,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
+    const response = await api.post("/user/location", {
+      address: locationText,
+    });
 
     const { lat, lon } = response.data;
 
@@ -96,6 +88,7 @@ export function Sidebar(props: SidebarProps) {
       return;
     }
 
+    props.setRouteG(null);
     props.setUserLocation({ lat: latN, lon: lonN });
   }
 
@@ -128,6 +121,10 @@ export function Sidebar(props: SidebarProps) {
       routeLayerRef.current = null;
     }
 
+    props.setPriceG(null);
+    props.setDistanceKmG(null);
+    props.setDurationMinG(null);
+    props.setRouteG(null);
     props.setHoveredGuinchoId(null);
     props.setSelectedGuincho(null);
     props.setDistanceKmG(null);
@@ -145,8 +142,8 @@ export function Sidebar(props: SidebarProps) {
     const response = await api.post("/maps/route/calculate/driver", {
       originLat: origemLat,
       originLon: origemLon,
-      driverLat: destino.lat,
-      driverLon: destino.lon,
+      driverLat: destino?.lat,
+      driverLon: destino?.lon,
     });
 
     const route = response.data;
@@ -161,11 +158,9 @@ export function Sidebar(props: SidebarProps) {
     props.setDurationMinG(route.durationMinutes);
     props.setPriceG(route.priceEstimate);
 
-    // desenha no mapa
     const map = props.mapRef.current;
     if (!map) return;
 
-    // remove camada anterior
     if (routeLayerRef.current) {
       map.removeLayer(routeLayerRef.current);
       routeLayerRef.current = null;
@@ -173,7 +168,6 @@ export function Sidebar(props: SidebarProps) {
 
     const poly = L.polyline(routePositions, { weight: 4, opacity: 0.6 });
 
-    // ajustar bounds
     map.fitBounds(poly.getBounds(), { padding: [60, 60] });
   }
 

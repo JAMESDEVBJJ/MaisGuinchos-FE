@@ -10,6 +10,7 @@ import {
 import { useRef } from "react";
 import L from "leaflet";
 import { Sidebar } from "./SideBar";
+import { useLocation } from "react-router-dom";
 
 interface CoordinateDto {
   lat: number;
@@ -17,21 +18,19 @@ interface CoordinateDto {
 }
 
 const HomePage = () => {
-
   const [priceEstimateG, setPriceG] = useState<number | null>(0);
   const [distanceKmG, setDistanceKmG] = useState<number | null>(0);
   const [durationMinG, setDurationMinG] = useState<number | null>(0);
 
   const [guinchos, setGuinchos] = useState<GuinchosDto[]>([]);
 
-  const [selectedGuincho, setSelectedGuincho] = useState<GuinchosDto | null>(null);
+  const [selectedGuincho, setSelectedGuincho] = useState<GuinchosDto | null>(
+    null
+  );
 
   const [loading, setLoading] = useState(false);
 
-  const [userLocation, setUserLocation] = useState<Position>({
-    lat: -10.3,
-    lon: -53.2,
-  }); // brasil ne pae
+  const [userLocation, setUserLocation] = useState<Position | null>(null);
   const [locationText, setLocationText] = useState<string>("");
   const [destinationText, setDestinationText] = useState<string>("");
   const [route, setRoute] = useState<[number, number][] | null>(null);
@@ -59,8 +58,24 @@ const HomePage = () => {
     duration: durationMin,
     priceEstimateG: priceEstimateG,
     distanceKmG: distanceKmG,
-    durationMinG: durationMinG
+    durationMinG: durationMinG,
   };
+
+  useEffect(() => {
+    async function loadLastLocation() {
+      const response = await api.get("/maps/last-location");
+      if (response.data) {
+        setUserLocation({
+          lat: response.data.latitude,
+          lon: response.data.longitude,
+        });
+        console.dir(userLocation);
+      } else {
+        setUserLocation({ lat: 0, lon: 0 });
+      }
+    }
+    loadLastLocation();
+  }, []);
 
   useEffect(() => {
     if (userLocation && destinationPosition) {
@@ -74,11 +89,7 @@ const HomePage = () => {
     let response = null;
 
     try {
-      response = await api.get("/user/proximos", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      response = await api.get("/user/proximos");
     } catch (error: any) {
       const message =
         error?.response?.data?.message ||
@@ -94,35 +105,41 @@ const HomePage = () => {
     setLoading(false);
   }
 
-  async function calculateRoute(origin: Position, destination: string) {
+  async function calculateRoute(origin: Position | null, destination: string) {
     const response = await api.post("/maps/route/calculate", {
-      originLat: origin.lat,
-      originLon: origin.lon,
+      originLat: origin?.lat,
+      originLon: origin?.lon,
       destination,
     });
-  
+
     const route = response.data;
-  
+
     const routePositions = route.polyline.map((p: CoordinateDto) => [
       p.lat,
       p.lon,
     ]);
-  
+
     const lastPoint = routePositions[routePositions.length - 1];
-  
+
     setDestinationPosition({
       lat: lastPoint[0],
       lon: lastPoint[1],
     });
-  
+
     setRoute(routePositions);
     setPrice(route.priceEstimate);
     setDistanceKm(route.distanceKm);
     setDurationMin(route.durationMinutes);
+    const maps = mapRef.current;
+
+    if (!maps) return;
+    
+    const poly = L.polyline(routePositions, { weight: 4, opacity: 0.6 });
+
+    maps.fitBounds(poly.getBounds(), { padding: [60, 60] });
   }
 
   async function handleUpdateDestination() {
-
     if (!destinationText.trim()) {
       return;
     }
@@ -158,7 +175,7 @@ const HomePage = () => {
           setDistanceKmG={setDistanceKmG}
           durationMinG={durationMinG}
           setDurationMinG={setDurationMinG}
-         //calcularRotaComGuincho={calcularRotaComGuincho}
+          //calcularRotaComGuincho={calcularRotaComGuincho}
         ></Sidebar>
 
         <main className="map-container">
