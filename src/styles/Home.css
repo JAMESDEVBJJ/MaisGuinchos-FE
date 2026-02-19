@@ -502,7 +502,6 @@ button.primary {
   letter-spacing: 0.5px;
   transition: transform 0.1s ease, filter 0.2s ease;
 }
-
 button.primary:hover {
   filter: brightness(1.1);
 }
@@ -518,13 +517,13 @@ button.secondary {
   padding: 11px;
   margin-top: 20px;
   border-radius: 10px;
-  cursor: pointer;
   font-weight: 600;
   transition: background 0.2s;
 }
 
-button.secondary:hover {
+button.secondary.contact-enabled:hover {
   background: rgba(255, 255, 255, 0.05);
+  cursor:pointer;
 }
 
 button.contact-enabled {

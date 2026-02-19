@@ -28,6 +28,7 @@ type SidebarProps = {
   handleUpdateDestination: () => Promise<void>;
   setRouteG: React.Dispatch<React.SetStateAction<[number, number][] | null>>;
   routeG: [number, number][] | null;
+  route: [number, number][] | null;
   mapRef: React.RefObject<L.Map | null>;
   loading: boolean;
   priceEstimate: number;
@@ -42,6 +43,8 @@ type SidebarProps = {
 };
 
 export function Sidebar(props: SidebarProps) {
+  const serviceIsDisabled = !props.routeG || !props.route;
+
   const [locationText, setLocationText] = useState("");
 
   const routeLayerRef = useRef<L.Layer | null>(null);
@@ -56,8 +59,6 @@ export function Sidebar(props: SidebarProps) {
   const [isCompact, setIsCompact] = useState<boolean>(false);
   const [sidebarW, setSideBarW] = useState(360);
   const [isResizing, setIsResizing] = useState(false);
-
-  const rotaCalculada = !!props.routeG;
 
   useEffect(() => {
     window.addEventListener("mousemove", mouseMove);
@@ -169,6 +170,7 @@ export function Sidebar(props: SidebarProps) {
     const poly = L.polyline(routePositions, { weight: 4, opacity: 0.6 });
 
     map.fitBounds(poly.getBounds(), { padding: [60, 60] });
+    console.dir(props.route)
   }
 
   return (
@@ -273,7 +275,7 @@ export function Sidebar(props: SidebarProps) {
             {props.distanceKmG &&
               props.durationMinG &&
               props.priceEstimateG &&
-              rotaCalculada && (
+              props.routeG && (
                 <div className="route-summary">
                   <ul>
                     <li>
@@ -324,9 +326,9 @@ export function Sidebar(props: SidebarProps) {
               )}
             <button
               className={`secondary fullwidth ${
-                rotaCalculada ? "contact-enabled" : ""
+                props.routeG && props.route ? "contact-enabled" : ""
               }`}
-              disabled={!rotaCalculada}
+              disabled={serviceIsDisabled}
               onClick={() => {}}
             >
               Ligar / Contatar

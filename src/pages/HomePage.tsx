@@ -10,7 +10,6 @@ import {
 import { useRef } from "react";
 import L from "leaflet";
 import { Sidebar } from "./SideBar";
-import { useLocation } from "react-router-dom";
 
 interface CoordinateDto {
   lat: number;
@@ -164,6 +163,7 @@ const HomePage = () => {
           handleUpdateDestination={handleUpdateDestination}
           setRouteG={setRouteG}
           routeG={routeG}
+          route={route}
           loading={loading}
           priceEstimate={priceEstimate}
           distanceKm={distanceKm}
