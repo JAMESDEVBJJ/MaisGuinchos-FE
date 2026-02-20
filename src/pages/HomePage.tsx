@@ -176,6 +176,8 @@ const HomePage = () => {
           durationMinG={durationMinG}
           setDurationMinG={setDurationMinG}
           //calcularRotaComGuincho={calcularRotaComGuincho}
+          destination={destinationPosition}
+          durationMinTotal={durationMin}
         ></Sidebar>
 
         <main className="map-container">

@@ -40,9 +40,15 @@ type SidebarProps = {
   setDistanceKmG: React.Dispatch<React.SetStateAction<number | null>>;
   durationMinG: number | null;
   setDurationMinG: React.Dispatch<React.SetStateAction<number | null>>;
+  destination: Position | null;
+  durationMinTotal: number;
 };
 
 export function Sidebar(props: SidebarProps) {
+  const [requestStatus, setRequestStatus] = useState<
+    "idle" | "sending" | "waitingDriver" | "accepted"
+  >("idle");
+
   const serviceIsDisabled = !props.routeG || !props.route;
 
   const [locationText, setLocationText] = useState("");
@@ -59,6 +65,10 @@ export function Sidebar(props: SidebarProps) {
   const [isCompact, setIsCompact] = useState<boolean>(false);
   const [sidebarW, setSideBarW] = useState(360);
   const [isResizing, setIsResizing] = useState(false);
+
+  const [vehicleType, setVehicleType] = useState("");
+  const [vehicleIssue, setVehicleIssue] = useState("");
+  const [notes, setNotes] = useState("");
 
   useEffect(() => {
     window.addEventListener("mousemove", mouseMove);
@@ -130,6 +140,7 @@ export function Sidebar(props: SidebarProps) {
     props.setSelectedGuincho(null);
     props.setDistanceKmG(null);
     props.setDurationMinG(null);
+    setRequestStatus("idle");
   }
 
   async function calcularRotaComGuincho() {
@@ -170,7 +181,49 @@ export function Sidebar(props: SidebarProps) {
     const poly = L.polyline(routePositions, { weight: 4, opacity: 0.6 });
 
     map.fitBounds(poly.getBounds(), { padding: [60, 60] });
-    console.dir(props.route)
+    console.dir(props.route);
+  }
+
+  async function handleTowRequest() {
+    if (!props.selectedGuincho) {
+      alert("Selecione um motorista primeiro.");
+      return;
+    }
+
+    if (!props.userLocation || !props.destination) {
+      alert("Localização inválida.");
+      return;
+    }
+
+    try {
+      const response = await api.post("/towrequests", {
+        driverId: props.selectedGuincho.motorista.userId,
+
+        pickupLat: props.userLocation.lat,
+        pickupLon: props.userLocation.lon,
+
+        dropoffLat: props.destination.lat,
+        dropoffLon: props.destination.lon,
+
+        totalDistanceKm: props.distanceKm,
+        durationMinutes: props.durationMinTotal,
+
+        suggestedPrice: props.priceEstimate,
+
+        vehicleType: vehicleType,
+        vehicleIssue: vehicleIssue,
+        notes: notes,
+      });
+
+      setRequestStatus("waitingDriver");
+
+      console.log("Pedido criado:", response.data);
+
+      alert("Pedido enviado! Aguardando motorista.");
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao solicitar guincho.");
+    }
   }
 
   return (
@@ -326,12 +379,20 @@ export function Sidebar(props: SidebarProps) {
               )}
             <button
               className={`secondary fullwidth ${
-                props.routeG && props.route ? "contact-enabled" : ""
+                requestStatus === "waitingDriver"
+                  ? "waiting"
+                  : props.routeG && props.route
+                  ? "contact-enabled"
+                  : ""
               }`}
-              disabled={serviceIsDisabled}
-              onClick={() => {}}
+              disabled={serviceIsDisabled || requestStatus === "waitingDriver"}
+              onClick={handleTowRequest}
             >
-              Ligar / Contatar
+              {requestStatus === "waitingDriver"
+                ? "Aguardando motorista..."
+                : requestStatus === "sending"
+                ? "Enviando..."
+                : "Solicitar Guincho"}
             </button>
           </div>
         )}

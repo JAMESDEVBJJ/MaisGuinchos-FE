@@ -541,6 +541,18 @@ button.contact-enabled:hover {
   filter: brightness(1.1);
 }
 
+button.waiting {
+  background: linear-gradient(135deg, #facc15, #eab308);
+  border: none;
+  color: #1f2937;
+  font-weight: 800;
+}
+
+button.waiting:hover {
+  filter: none;
+  cursor: default;
+}
+
 .route-summary {
   margin-top: 18px;
   background: rgba(255, 255, 255, 0.04);
