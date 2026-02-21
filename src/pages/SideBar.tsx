@@ -7,6 +7,8 @@ import iconLocation from "../assets/icons/location.png";
 import iconDestination from "../assets/icons/detinIcon.png";
 import defaultUserPng from "../assets/defaultUser.png";
 import GuinchosResults from "./GuinchosResults";
+import * as signalR from "@microsoft/signalr";
+import type { TowRequestReceiveDto } from "../dtos/TowRequestReceiveDTO";
 
 interface CoordinateDto {
   lat: number;
@@ -49,6 +51,8 @@ export function Sidebar(props: SidebarProps) {
     "idle" | "sending" | "waitingDriver" | "accepted"
   >("idle");
 
+  const token = localStorage.getItem("token");
+
   const serviceIsDisabled = !props.routeG || !props.route;
 
   const [locationText, setLocationText] = useState("");
@@ -69,6 +73,41 @@ export function Sidebar(props: SidebarProps) {
   const [vehicleType, setVehicleType] = useState("");
   const [vehicleIssue, setVehicleIssue] = useState("");
   const [notes, setNotes] = useState("");
+
+  const [towRequestId, setTowRequestId] = useState<string | null>(null);
+  const [towReceive, setTowReceive] = useState<TowRequestReceiveDto | null>(
+    null
+  );
+
+  useEffect(() => {
+    if (!token) return;
+
+    const connection = new signalR.HubConnectionBuilder()
+      .withUrl("https://localhost:7120/towhub", {
+        accessTokenFactory: () => token!,
+      })
+      .withAutomaticReconnect()
+      .build();
+
+    async function startConnection() {
+      try {
+        await connection.start();
+        console.log("Conectado ao TowHub");
+      } catch (err) {
+        console.error("Erro ao conectar:", err);
+      }
+    }
+    startConnection();
+
+    connection.on("ReceiveTowRequest", (data) => {
+      console.dir(data);
+      setTowReceive(data);
+    });
+
+    return () => {
+      connection.stop();
+    };
+  }, [token]);
 
   useEffect(() => {
     window.addEventListener("mousemove", mouseMove);
@@ -123,7 +162,6 @@ export function Sidebar(props: SidebarProps) {
   }
 
   function handleBackToList() {
-    // remove rota da tela ao voltar (opcional)
     if (routeLayerRef.current) {
       const map = props.mapRef.current;
       if (map) {
@@ -216,10 +254,7 @@ export function Sidebar(props: SidebarProps) {
       });
 
       setRequestStatus("waitingDriver");
-
-      console.log("Pedido criado:", response.data);
-
-      alert("Pedido enviado! Aguardando motorista.");
+      setTowRequestId(response.data.id);
     } catch (error) {
       console.error(error);
       alert("Erro ao solicitar guincho.");
@@ -411,19 +446,4 @@ function renderStars(n?: number) {
   if (half) arr.push("☆");
   while (arr.length < 5) arr.push("✩");
   return <span className="stars">{arr.join(" ")}</span>;
-}
-
-async function fakeRouteApi(
-  orig: { lat: number; lng: number },
-  dest: { lat: number; lng: number }
-) {
-  const steps: [number, number][] = [];
-  for (let i = 0; i <= 6; i++) {
-    const t = i / 6;
-    const lat = orig.lat + (dest.lat - orig.lat) * t;
-    const lng = orig.lng + (dest.lng - orig.lng) * t;
-    steps.push([lat, lng]);
-  }
-  await new Promise((res) => setTimeout(res, 500));
-  return steps;
 }

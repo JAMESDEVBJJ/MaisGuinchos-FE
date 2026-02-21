@@ -175,7 +175,6 @@ const HomePage = () => {
           setDistanceKmG={setDistanceKmG}
           durationMinG={durationMinG}
           setDurationMinG={setDurationMinG}
-          //calcularRotaComGuincho={calcularRotaComGuincho}
           destination={destinationPosition}
           durationMinTotal={durationMin}
         ></Sidebar>
