@@ -52,13 +52,16 @@ export function Sidebar(props: SidebarProps) {
   const [sidebarW, setSideBarW] = useState(360);
   const [isResizing, setIsResizing] = useState(false);
 
-  const [towReceive, setTowReceive] = useState<TowRequestReceiveDto | null>(
-    null
-  );
+  const [towsReceive, setTowsReceive] = useState<TowRequestReceiveDto[]>([]);
 
   const [towReceived, setTowReceived] = useState<boolean>(false);
 
   const [isCompact, setIsCompact] = useState<boolean>(false);
+
+  const handleNewTow = (novoTow: TowRequestReceiveDto) => {
+    setTowsReceive((prev) => [...prev, novoTow]);
+    console.dir(towsReceive)
+  };
 
   useEffect(() => {
     if (!token) return;
@@ -82,15 +85,13 @@ export function Sidebar(props: SidebarProps) {
 
     connection.on("ReceiveTowRequest", (data) => {
       console.dir(data);
-      setTowReceive(data);
+      handleNewTow(data);
       setTowReceived(true);
     });
 
     return () => {
       connection.stop();
     };
-
-
   }, [token]);
 
   useEffect(() => {
@@ -144,7 +145,6 @@ export function Sidebar(props: SidebarProps) {
     setSideBarW(newWidth);
     setIsCompact(newWidth <= COMPACT_WIDTH);
     console.dir(user);
-
   }
 
   return user?.isDriver ? (
@@ -168,13 +168,26 @@ export function Sidebar(props: SidebarProps) {
             </div>
           </div>
 
-          {towReceived && <div>{towReceive?.suggestedPrice}</div>}
+          {towReceived && (
+            <div className="results">
+              {towsReceive.map((t) => (
+                <div className="result-card">{t.totalDistanceKm}Kms {t.suggestedPrice}R$</div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
       <div className="resize-handle" onMouseDown={handleMouseDown} />
     </aside>
   ) : user?.isClient ? (
-    <ClientSideBar {...props} sidebarW={sidebarW} isCompact={isCompact} setIsResizing={setIsResizing}/>
-  ) : <></>;
+    <ClientSideBar
+      {...props}
+      sidebarW={sidebarW}
+      isCompact={isCompact}
+      setIsResizing={setIsResizing}
+    />
+  ) : (
+    <></>
+  );
 }
