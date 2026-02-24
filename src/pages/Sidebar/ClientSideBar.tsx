@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import iconDestination from "../assets/icons/detinIcon.png";
-import GuinchosResults from "./GuinchosResults";
-import { api } from "../services/api";
+import iconDestination from "../../assets/icons/detinIcon.png";
+import GuinchosResults from "../GuinchosResults";
+import { api } from "../../services/api";
 import L from "leaflet";
-import defaultUserPng from "../assets/defaultUser.png";
-import type { GuinchosDto, Position } from "../dtos/MapPropsDTO";
-import iconLocation from "../assets/icons/location.png";
+import defaultUserPng from "../../assets/defaultUser.png";
+import type { GuinchosDto, Position } from "../../dtos/MapPropsDTO";
+import { InputLocation } from "./InputLocation";
 
 interface CoordinateDto {
   lat: number;
@@ -187,29 +187,6 @@ export function ClientSideBar(props: ClientBarProps) {
     }
   }
 
-  async function handleUpdateLocation() {
-    if (!props.locationText.trim()) {
-      return;
-    }
-
-    const response = await api.post("/user/location", {
-      address: props.locationText,
-    });
-
-    const { lat, lon } = response.data;
-
-    const latN = Number(lat);
-    const lonN = Number(lon);
-
-    if (isNaN(latN) || isNaN(lonN)) {
-      console.error("Latitude ou longitude inválidas", lat, lon);
-      return;
-    }
-
-    props.setRouteG(null);
-    props.setUserLocation({ lat: latN, lon: lonN });
-  }
-
   return (
     <aside className="sidebar" style={{ width: props.sidebarW }}>
       {props.selectedGuincho == null ? (
@@ -217,20 +194,12 @@ export function ClientSideBar(props: ClientBarProps) {
           {props.selectedGuincho == null && (
             <div className="sidebar-1">
               <div className="search">
-                <div className="input-wrapper">
-                  <input
-                    type="text"
-                    placeholder="Setar localização"
-                    value={props.locationText}
-                    onChange={(e) => props.setLocationText(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        handleUpdateLocation();
-                      }
-                    }}
-                  />
-                  <img src={iconLocation} className="input-icon" />
-                </div>
+                <InputLocation
+                  locationText={props.locationText}
+                  setLocationText={props.setLocationText}
+                  setRouteG={props.setRouteG}
+                  setUserLocation={props.setUserLocation}
+                />
                 <div className="input-wrapper">
                   <input
                     type="text"
