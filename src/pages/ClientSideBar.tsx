@@ -83,7 +83,6 @@ export function ClientSideBar(props: ClientBarProps) {
     return () => clearInterval(interval);
   }, [requestStatus]);
 
-
   function handleMouseDown() {
     props.setIsResizing(true);
   }
@@ -213,7 +212,7 @@ export function ClientSideBar(props: ClientBarProps) {
 
   return (
     <aside className="sidebar" style={{ width: props.sidebarW }}>
-      {!showDetails ? (
+      {props.selectedGuincho == null ? (
         <>
           {props.selectedGuincho == null && (
             <div className="sidebar-1">
@@ -232,25 +231,25 @@ export function ClientSideBar(props: ClientBarProps) {
                   />
                   <img src={iconLocation} className="input-icon" />
                 </div>
+                <div className="input-wrapper">
+                  <input
+                    type="text"
+                    placeholder="Setar destino"
+                    value={props.destinationText}
+                    onChange={(e) => props.setDestinationText(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        props.handleUpdateDestination();
+                      }
+                    }}
+                  />
+                  <img src={iconDestination} className="input-icon" />
+                </div>
+
+                <button onClick={props.buscarGuinchos}>Buscar guinchos</button>
               </div>
             </div>
           )}
-          <div className="input-wrapper">
-            <input
-              type="text"
-              placeholder="Setar destino"
-              value={props.destinationText}
-              onChange={(e) => props.setDestinationText(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  props.handleUpdateDestination();
-                }
-              }}
-            />
-            <img src={iconDestination} className="input-icon" />
-          </div>
-
-          <button onClick={props.buscarGuinchos}>Buscar guinchos</button>
           {props.loading && (
             <>
               <h1>LOADING...</h1>

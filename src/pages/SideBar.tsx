@@ -89,6 +89,8 @@ export function Sidebar(props: SidebarProps) {
     return () => {
       connection.stop();
     };
+
+
   }, [token]);
 
   useEffect(() => {
@@ -141,6 +143,8 @@ export function Sidebar(props: SidebarProps) {
 
     setSideBarW(newWidth);
     setIsCompact(newWidth <= COMPACT_WIDTH);
+    console.dir(user);
+
   }
 
   return user?.isDriver ? (
@@ -170,7 +174,7 @@ export function Sidebar(props: SidebarProps) {
 
       <div className="resize-handle" onMouseDown={handleMouseDown} />
     </aside>
-  ) : (
+  ) : user?.isClient ? (
     <ClientSideBar {...props} sidebarW={sidebarW} isCompact={isCompact} setIsResizing={setIsResizing}/>
-  );
+  ) : <></>;
 }
