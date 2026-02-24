@@ -1,17 +1,13 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import L from "leaflet";
 import { useEffect } from "react";
 import type { GuinchosDto, Position } from "../dtos/MapPropsDTO";
 import { api } from "../services/api";
 import iconLocation from "../assets/icons/location.png";
-import iconDestination from "../assets/icons/detinIcon.png";
-import defaultUserPng from "../assets/defaultUser.png";
-import GuinchosResults from "./GuinchosResults";
-
-interface CoordinateDto {
-  lat: number;
-  lon: number;
-}
+import * as signalR from "@microsoft/signalr";
+import type { TowRequestReceiveDto } from "../dtos/TowRequestReceiveDTO";
+import { useAuth } from "../contexts/AuthContext";
+import { ClientSideBar } from "./ClientSideBar";
 
 type SidebarProps = {
   locationText: string;
@@ -40,25 +36,63 @@ type SidebarProps = {
   setDistanceKmG: React.Dispatch<React.SetStateAction<number | null>>;
   durationMinG: number | null;
   setDurationMinG: React.Dispatch<React.SetStateAction<number | null>>;
+  destination: Position | null;
+  durationMinTotal: number;
 };
 
 export function Sidebar(props: SidebarProps) {
-  const serviceIsDisabled = !props.routeG || !props.route;
+  const { user } = useAuth();
+
+  const token = localStorage.getItem("token");
 
   const [locationText, setLocationText] = useState("");
 
-  const routeLayerRef = useRef<L.Layer | null>(null);
-
-  const [showDetails, setShowDetails] = useState(false);
-
-  const foto = props.selectedGuincho?.motorista?.foto;
-  const isDefault = !foto || foto.trim() === "";
-
   const COMPACT_WIDTH = 350;
 
-  const [isCompact, setIsCompact] = useState<boolean>(false);
   const [sidebarW, setSideBarW] = useState(360);
   const [isResizing, setIsResizing] = useState(false);
+
+  const [towsReceive, setTowsReceive] = useState<TowRequestReceiveDto[]>([]);
+
+  const [towReceived, setTowReceived] = useState<boolean>(false);
+
+  const [isCompact, setIsCompact] = useState<boolean>(false);
+
+  const handleNewTow = (novoTow: TowRequestReceiveDto) => {
+    setTowsReceive((prev) => [...prev, novoTow]);
+    console.dir(towsReceive)
+  };
+
+  useEffect(() => {
+    if (!token) return;
+
+    const connection = new signalR.HubConnectionBuilder()
+      .withUrl("https://localhost:7120/towhub", {
+        accessTokenFactory: () => token!,
+      })
+      .withAutomaticReconnect()
+      .build();
+
+    async function startConnection() {
+      try {
+        await connection.start();
+        console.log("Conectado ao TowHub");
+      } catch (err) {
+        console.error("Erro ao conectar:", err);
+      }
+    }
+    startConnection();
+
+    connection.on("ReceiveTowRequest", (data) => {
+      console.dir(data);
+      handleNewTow(data);
+      setTowReceived(true);
+    });
+
+    return () => {
+      connection.stop();
+    };
+  }, [token]);
 
   useEffect(() => {
     window.addEventListener("mousemove", mouseMove);
@@ -110,259 +144,50 @@ export function Sidebar(props: SidebarProps) {
 
     setSideBarW(newWidth);
     setIsCompact(newWidth <= COMPACT_WIDTH);
+    console.dir(user);
   }
 
-  function handleBackToList() {
-    // remove rota da tela ao voltar (opcional)
-    if (routeLayerRef.current) {
-      const map = props.mapRef.current;
-      if (map) {
-        map.removeLayer(routeLayerRef.current);
-      }
-      routeLayerRef.current = null;
-    }
-
-    props.setPriceG(null);
-    props.setDistanceKmG(null);
-    props.setDurationMinG(null);
-    props.setRouteG(null);
-    props.setHoveredGuinchoId(null);
-    props.setSelectedGuincho(null);
-    props.setDistanceKmG(null);
-    props.setDurationMinG(null);
-  }
-
-  async function calcularRotaComGuincho() {
-    if (!props.selectedGuincho) return;
-
-    const origemLat = props.selectedGuincho.motorista.lat;
-    const origemLon = props.selectedGuincho.motorista.lon;
-
-    const destino = props.userLocation;
-
-    const response = await api.post("/maps/route/calculate/driver", {
-      originLat: origemLat,
-      originLon: origemLon,
-      driverLat: destino?.lat,
-      driverLon: destino?.lon,
-    });
-
-    const route = response.data;
-
-    const routePositions = route.polyline.map((p: CoordinateDto) => [
-      p.lat,
-      p.lon,
-    ]);
-
-    props.setRouteG(routePositions);
-    props.setDistanceKmG(route.distanceKm);
-    props.setDurationMinG(route.durationMinutes);
-    props.setPriceG(route.priceEstimate);
-
-    const map = props.mapRef.current;
-    if (!map) return;
-
-    if (routeLayerRef.current) {
-      map.removeLayer(routeLayerRef.current);
-      routeLayerRef.current = null;
-    }
-
-    const poly = L.polyline(routePositions, { weight: 4, opacity: 0.6 });
-
-    map.fitBounds(poly.getBounds(), { padding: [60, 60] });
-    console.dir(props.route)
-  }
-
-  return (
-    <>
-      <aside className="sidebar" style={{ width: sidebarW }}>
-        {(props.selectedGuincho == null && (
-          <div className="sidebar-1">
-            {" "}
-            <div className="search">
-              <div className="input-wrapper">
-                <input
-                  type="text"
-                  placeholder="Setar localização"
-                  value={locationText}
-                  onChange={(e) => setLocationText(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleUpdateLocation();
-                    }
-                  }}
-                />
-                <img src={iconLocation} className="input-icon" />
-              </div>
-
-              <div className="input-wrapper">
-                <input
-                  type="text"
-                  placeholder="Setar destino"
-                  value={props.destinationText}
-                  onChange={(e) => props.setDestinationText(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      props.handleUpdateDestination();
-                    }
-                  }}
-                />
-                <img src={iconDestination} className="input-icon" />
-              </div>
-
-              <button onClick={props.buscarGuinchos}>Buscar guinchos</button>
-            </div>
-            {props.loading && (
-              <>
-                <h1>LOADING...</h1>
-              </>
-            )}
-            {!props.loading && props.guinchos.length === 0 && (
-              <div className="empty-state">
-                <p>Digite sua localização e procure por guinchos.</p>
-              </div>
-            )}
-            {!props.loading && props.guinchos.length >= 1 && (
-              <GuinchosResults
-                isCompact={isCompact}
-                guinchos={props.guinchos}
-                setHovered={props.setHoveredGuinchoId}
-                mapRef={props.mapRef}
-                setSelectedGuincho={props.setSelectedGuincho}
-              ></GuinchosResults>
-            )}
-          </div>
-        )) || (
-          <div className="detail">
-            <button className="back" onClick={handleBackToList}>
-              ⬅
-            </button>
-            <div className="detail-top">
-              <img
-                className={`detail-photo ${isDefault ? "default-photo" : ""}`}
-                src={
-                  isDefault ? defaultUserPng : `https://localhost:7120${foto}`
-                }
-                alt={props.selectedGuincho?.motorista?.name}
+  return user?.isDriver ? (
+    <aside className="sidebar" style={{ width: sidebarW }}>
+      {props.selectedGuincho == null && (
+        <div className="sidebar-1">
+          <div className="search">
+            <div className="input-wrapper">
+              <input
+                type="text"
+                placeholder="Setar localização"
+                value={locationText}
+                onChange={(e) => setLocationText(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleUpdateLocation();
+                  }
+                }}
               />
-              <div className="detail-info">
-                <h3>{props.selectedGuincho?.motorista.name}</h3>
-                <div className="rating-row">
-                  {renderStars(props.selectedGuincho?.stars)}{" "}
-                  <span className="rating-number">
-                    {props.selectedGuincho?.stars.toFixed(1)}
-                  </span>
-                </div>
-                <div className="driver-data">
-                  <span className="phone">
-                    {props.selectedGuincho?.motorista.number}
-                  </span>
-                  <div>Modelo: {props.selectedGuincho?.model}</div>
-                  <div>Placa: {props.selectedGuincho?.motorista.placa}</div>
-                  <div>Cor: {props.selectedGuincho?.color}</div>
-                </div>
-              </div>
+              <img src={iconLocation} className="input-icon" />
             </div>
-
-            <div className="detail-actions">
-              <button
-                className="primary fullwidth"
-                onClick={calcularRotaComGuincho}
-              >
-                Calcular rota com guincho
-              </button>
-            </div>
-            {props.distanceKmG &&
-              props.durationMinG &&
-              props.priceEstimateG &&
-              props.routeG && (
-                <div className="route-summary">
-                  <ul>
-                    <li>
-                      <strong>Distância total:</strong>{" "}
-                      {(props.distanceKm + props.distanceKmG).toFixed(1)} Km
-                    </li>
-
-                    <li>
-                      <strong>Tempo médio:</strong>{" "}
-                      {((props.duration + props.durationMinG) / 60).toFixed(1)}{" "}
-                      h
-                    </li>
-
-                    {!showDetails && (
-                      <li>
-                        <strong>Preço estimado:</strong> $
-                        {(props.priceEstimate + props.priceEstimateG).toFixed(
-                          0
-                        )}
-                      </li>
-                    )}
-                  </ul>
-                  {showDetails && (
-                    <div className="route-breakdown">
-                      <p>
-                        <strong>
-                          Guincho <span className="arrow yellow">→</span> Você:
-                        </strong>{" "}
-                        {props.priceEstimateG.toFixed(0)}R${" "}
-                        {props.distanceKmG.toFixed(0)}km
-                      </p>
-                      <p>
-                        <strong>
-                          Você <span className="arrow orange">→</span> Destino:
-                        </strong>{" "}
-                        {props.priceEstimate.toFixed(0)}R${" "}
-                        {props.distanceKm.toFixed(0)}km
-                      </p>
-                    </div>
-                  )}
-                  <span
-                    className="more-details"
-                    onClick={() => setShowDetails(!showDetails)}
-                  >
-                    {showDetails ? "Menos detalhes" : "Mais detalhes"}
-                  </span>
-                </div>
-              )}
-            <button
-              className={`secondary fullwidth ${
-                props.routeG && props.route ? "contact-enabled" : ""
-              }`}
-              disabled={serviceIsDisabled}
-              onClick={() => {}}
-            >
-              Ligar / Contatar
-            </button>
           </div>
-        )}
-        <div className="resize-handle" onMouseDown={handleMouseDown} />
-      </aside>
-    </>
+
+          {towReceived && (
+            <div className="results">
+              {towsReceive.map((t) => (
+                <div className="result-card">{t.totalDistanceKm}Kms {t.suggestedPrice}R$</div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="resize-handle" onMouseDown={handleMouseDown} />
+    </aside>
+  ) : user?.isClient ? (
+    <ClientSideBar
+      {...props}
+      sidebarW={sidebarW}
+      isCompact={isCompact}
+      setIsResizing={setIsResizing}
+    />
+  ) : (
+    <></>
   );
-}
-
-function renderStars(n?: number) {
-  const stars = Math.round((n ?? 0) * 2) / 2;
-  const full = Math.floor(stars);
-  const half = stars - full >= 0.5;
-  const arr = [];
-  for (let i = 0; i < full; i++) arr.push("★");
-  if (half) arr.push("☆");
-  while (arr.length < 5) arr.push("✩");
-  return <span className="stars">{arr.join(" ")}</span>;
-}
-
-async function fakeRouteApi(
-  orig: { lat: number; lng: number },
-  dest: { lat: number; lng: number }
-) {
-  const steps: [number, number][] = [];
-  for (let i = 0; i <= 6; i++) {
-    const t = i / 6;
-    const lat = orig.lat + (dest.lat - orig.lat) * t;
-    const lng = orig.lng + (dest.lng - orig.lng) * t;
-    steps.push([lat, lng]);
-  }
-  await new Promise((res) => setTimeout(res, 500));
-  return steps;
 }

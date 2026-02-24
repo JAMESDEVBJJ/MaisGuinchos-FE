@@ -170,7 +170,7 @@ input {
 .result-card {
   margin: 14px auto;
   width: 90%;
-  border-radius: 8px;
+  border-radius: 6px;
   background-color: #0f1a21;
   cursor: pointer;
   padding: 12px 14px;
@@ -539,6 +539,18 @@ button.contact-enabled {
 
 button.contact-enabled:hover {
   filter: brightness(1.1);
+}
+
+button.waiting {
+  background: linear-gradient(135deg,#caa50e, #c29204);
+  border: none;
+  color: #1f2937;
+  font-weight: 800;
+}
+
+button.waiting:hover {
+  filter: none;
+  cursor: default;
 }
 
 .route-summary {
