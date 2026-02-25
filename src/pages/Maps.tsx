@@ -50,8 +50,6 @@ export function Maps({
     if (!userPosition) return;
 
     const newCenter: [number, number] = [userPosition.lat, userPosition.lon];
-
-    // só move se a posição realmente mudou
     if (
       !lastUserPosRef.current ||
       lastUserPosRef.current[0] !== newCenter[0] ||
