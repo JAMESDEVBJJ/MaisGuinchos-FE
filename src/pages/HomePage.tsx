@@ -17,6 +17,7 @@ interface CoordinateDto {
 }
 
 const HomePage = () => {
+
   const [priceEstimateG, setPriceG] = useState<number | null>(0);
   const [distanceKmG, setDistanceKmG] = useState<number | null>(0);
   const [durationMinG, setDurationMinG] = useState<number | null>(0);
@@ -30,6 +31,8 @@ const HomePage = () => {
   const [loading, setLoading] = useState(false);
 
   const [userLocation, setUserLocation] = useState<Position | null>(null);
+  console.log("Render", userLocation);
+
   const [locationText, setLocationText] = useState<string>("");
   const [destinationText, setDestinationText] = useState<string>("");
   const [route, setRoute] = useState<[number, number][] | null>(null);
@@ -45,7 +48,7 @@ const HomePage = () => {
 
   const mapRef = useRef<L.Map | null>(null);
 
-  const locations: MapProps = {
+  const mapsProps: MapProps = {
     motoristasPosition: guinchos,
     userPosition: userLocation,
     hoveredGuinchoId: hoveredGuinchoId,
@@ -59,20 +62,27 @@ const HomePage = () => {
     distanceKmG: distanceKmG,
     durationMinG: durationMinG,
   };
-
+  
   useEffect(() => {
     async function loadLastLocation() {
-      const response = await api.get("/maps/last-location");
-      if (response.data) {
-        setUserLocation({
-          lat: response.data.latitude,
-          lon: response.data.longitude,
-        });
-        console.dir(userLocation);
-      } else {
-        setUserLocation({ lat: 0, lon: 0 });
+      try {
+        const response = await api.get("/maps/last-location");
+
+        if (response.data) {
+          setUserLocation({
+            lat: response.data.latitude,
+            lon: response.data.longitude,
+          });
+        } else {
+          setUserLocation({ lat: -9.854179, lon: -51.648332 });
+        }
+      } catch (error) {
+        console.error("Erro ao buscar última localização", error);
+
+        setUserLocation({ lat: -9.854179, lon: -51.648332 });
       }
     }
+
     loadLastLocation();
   }, []);
 
@@ -132,7 +142,7 @@ const HomePage = () => {
     const maps = mapRef.current;
 
     if (!maps) return;
-    
+
     const poly = L.polyline(routePositions, { weight: 4, opacity: 0.6 });
 
     maps.fitBounds(poly.getBounds(), { padding: [60, 60] });
@@ -146,7 +156,6 @@ const HomePage = () => {
   }
 
   return (
-    <>
       <div className="page">
         <Sidebar
           locationText={locationText}
@@ -182,9 +191,9 @@ const HomePage = () => {
         <main className="map-container">
           <div id="map">
             <Maps
-              motoristasPosition={locations.motoristasPosition}
-              userPosition={locations.userPosition}
-              hoveredGuinchoId={locations.hoveredGuinchoId}
+              motoristasPosition={mapsProps.motoristasPosition}
+              userPosition={mapsProps.userPosition}
+              hoveredGuinchoId={mapsProps.hoveredGuinchoId}
               mapRef={mapRef}
               route={route}
               routeG={routeG}
@@ -198,7 +207,6 @@ const HomePage = () => {
           </div>
         </main>
       </div>
-    </>
   );
 };
 

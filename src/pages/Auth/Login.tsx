@@ -2,8 +2,11 @@ import { useState } from "react";
 import { api } from "../../services/api";
 import guinchoIcon from "../../assets/icons/car-breakdown-tow-svgrepo-com.svg";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 const Login = () => {
+  const {login} = useAuth();
+
   const [email, setEmail] = useState("");
 
   const [password, setPassword] = useState("");
@@ -17,7 +20,9 @@ const Login = () => {
 
     const token = response.data?.token;
 
-    localStorage.setItem("token", token);
+    if (token) {
+      login(token)
+    }
 
     navigate("/homepage");
   }
