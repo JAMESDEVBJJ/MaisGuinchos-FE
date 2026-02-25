@@ -9,7 +9,7 @@ import {
 } from "../dtos/MapPropsDTO";
 import { useRef } from "react";
 import L from "leaflet";
-import { Sidebar } from "./SideBar";
+import { Sidebar } from "./Sidebar/SideBar";
 
 interface CoordinateDto {
   lat: number;
