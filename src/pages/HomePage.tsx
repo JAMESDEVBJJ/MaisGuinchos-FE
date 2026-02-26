@@ -9,7 +9,7 @@ import {
 } from "../dtos/MapPropsDTO";
 import { useRef } from "react";
 import L from "leaflet";
-import { Sidebar } from "./Sidebar/SideBar";
+import { Sidebar, type SidebarProps } from "./Sidebar/SideBar";
 
 interface CoordinateDto {
   lat: number;
@@ -17,7 +17,6 @@ interface CoordinateDto {
 }
 
 const HomePage = () => {
-
   const [priceEstimateG, setPriceG] = useState<number | null>(0);
   const [distanceKmG, setDistanceKmG] = useState<number | null>(0);
   const [durationMinG, setDurationMinG] = useState<number | null>(0);
@@ -46,13 +45,59 @@ const HomePage = () => {
 
   const [hoveredGuinchoId, setHoveredGuinchoId] = useState<number | null>(null);
 
+  const [requestStatus, setRequestStatus] = useState<
+    "idle" | "sending" | "waitingDriver" | "accepted"
+  >("idle");
+
   const mapRef = useRef<L.Map | null>(null);
+
+  const sideBarProps: SidebarProps = {
+    locationText: locationText,
+    setLocationText: setLocationText,
+    destinationText: destinationText,
+    setDestinationText: setDestinationText,
+    buscarGuinchos: buscarGuinchos,
+    guinchos: guinchos,
+    selectedGuincho: selectedGuincho,
+    setSelectedGuincho: setSelectedGuincho,
+    setHoveredGuinchoId: setHoveredGuinchoId,
+    setUserLocation: setUserLocation,
+    userLocation: userLocation,
+    handleUpdateDestination: handleUpdateDestination,
+    setRouteG: setRouteG,
+    routeG: routeG,
+    route: route,
+    loading: loading,
+    priceEstimate: priceEstimate,
+    distanceKm: distanceKm,
+    duration: durationMin,
+    mapRef: mapRef,
+    priceEstimateG: priceEstimateG,
+    setPriceG: setPriceG,
+    distanceKmG: distanceKmG,
+    setDistanceKmG: setDistanceKmG,
+    durationMinG: durationMinG,
+    setDurationMinG: setDurationMinG,
+    destination: destinationPosition,
+    durationMinTotal: durationMin,
+    setRequestStatus: setRequestStatus,
+    requestStatus: requestStatus,
+  };
 
   const mapsProps: MapProps = {
     motoristasPosition: guinchos,
     userPosition: userLocation,
     hoveredGuinchoId: hoveredGuinchoId,
     mapRef: mapRef,
+    setRequestStatus: setRequestStatus,
+    requestStatus: requestStatus,
+    setSelectedGuincho: setSelectedGuincho,
+    selectedGuincho: selectedGuincho,
+    setPriceG: setPriceG,
+    setDistanceKmG: setDistanceKmG,
+    setDurationMinG: setDurationMinG,
+    setHoveredGuinchoId: setHoveredGuinchoId,
+    setRouteG: setRouteG,
     route: route,
     routeG: routeG,
     priceEstimate: priceEstimate,
@@ -62,7 +107,7 @@ const HomePage = () => {
     distanceKmG: distanceKmG,
     durationMinG: durationMinG,
   };
-  
+
   useEffect(() => {
     async function loadLastLocation() {
       try {
@@ -156,57 +201,15 @@ const HomePage = () => {
   }
 
   return (
-      <div className="page">
-        <Sidebar
-          locationText={locationText}
-          setLocationText={setLocationText}
-          destinationText={destinationText}
-          setDestinationText={setDestinationText}
-          buscarGuinchos={buscarGuinchos}
-          guinchos={guinchos}
-          selectedGuincho={selectedGuincho}
-          setSelectedGuincho={setSelectedGuincho}
-          setHoveredGuinchoId={setHoveredGuinchoId}
-          setUserLocation={setUserLocation}
-          userLocation={userLocation}
-          handleUpdateDestination={handleUpdateDestination}
-          setRouteG={setRouteG}
-          routeG={routeG}
-          route={route}
-          loading={loading}
-          priceEstimate={priceEstimate}
-          distanceKm={distanceKm}
-          duration={durationMin}
-          mapRef={mapRef}
-          priceEstimateG={priceEstimateG}
-          setPriceG={setPriceG}
-          distanceKmG={distanceKmG}
-          setDistanceKmG={setDistanceKmG}
-          durationMinG={durationMinG}
-          setDurationMinG={setDurationMinG}
-          destination={destinationPosition}
-          durationMinTotal={durationMin}
-        ></Sidebar>
+    <div className="page">
+      <Sidebar {...sideBarProps}></Sidebar>
 
-        <main className="map-container">
-          <div id="map">
-            <Maps
-              motoristasPosition={mapsProps.motoristasPosition}
-              userPosition={mapsProps.userPosition}
-              hoveredGuinchoId={mapsProps.hoveredGuinchoId}
-              mapRef={mapRef}
-              route={route}
-              routeG={routeG}
-              priceEstimate={priceEstimate}
-              distanceKm={distanceKm}
-              duration={durationMin}
-              priceEstimateG={priceEstimateG}
-              distanceKmG={distanceKmG}
-              durationMinG={durationMinG}
-            ></Maps>
-          </div>
-        </main>
-      </div>
+      <main className="map-container">
+        <div id="map">
+          <Maps {...mapsProps}></Maps>
+        </div>
+      </main>
+    </div>
   );
 };
 

@@ -30,6 +30,14 @@ export function Maps({
   userPosition,
   hoveredGuinchoId,
   mapRef,
+  setSelectedGuincho,
+  selectedGuincho,
+  setDistanceKmG,
+  setDurationMinG,
+  setHoveredGuinchoId,
+  setPriceG,
+  setRequestStatus,
+  setRouteG,
   route,
   routeG,
   priceEstimate,
@@ -126,16 +134,33 @@ export function Maps({
               return null;
             }
 
-            const isHovered = hoveredGuinchoId === m.motorista.userId;
+            hoveredGuinchoId = selectedGuincho ? null : hoveredGuinchoId;
+            const isHovered =
+              hoveredGuinchoId === m.motorista.userId
+                ? true
+                : selectedGuincho?.motorista.userId === m.motorista.userId
+                ? true
+                : false;
 
             return (
               <Marker
                 key={motorista.userId}
                 position={[motorista.lat, motorista.lon]}
                 icon={isHovered ? guinchoHoverIcon : guinchoIcon}
-              >
-                <Popup>{motorista.name}</Popup>
-              </Marker>
+                eventHandlers={{
+                  click: () => {
+                    setSelectedGuincho(m);
+                    setPriceG(null);
+                    setDistanceKmG(null);
+                    setDurationMinG(null);
+                    setRouteG(null);
+                    setHoveredGuinchoId(null);
+                    setDistanceKmG(null);
+                    setDurationMinG(null);
+                    setRequestStatus("idle");
+                  },
+                }}
+              ></Marker>
             );
           })}
           ;
