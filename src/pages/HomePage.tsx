@@ -9,7 +9,7 @@ import {
 } from "../dtos/MapPropsDTO";
 import { useRef } from "react";
 import L from "leaflet";
-import { Sidebar } from "./Sidebar/SideBar";
+import { Sidebar, type SidebarProps } from "./Sidebar/SideBar";
 
 interface CoordinateDto {
   lat: number;
@@ -30,6 +30,8 @@ const HomePage = () => {
   const [loading, setLoading] = useState(false);
 
   const [userLocation, setUserLocation] = useState<Position | null>(null);
+  console.log("Render", userLocation);
+
   const [locationText, setLocationText] = useState<string>("");
   const [destinationText, setDestinationText] = useState<string>("");
   const [route, setRoute] = useState<[number, number][] | null>(null);
@@ -43,13 +45,59 @@ const HomePage = () => {
 
   const [hoveredGuinchoId, setHoveredGuinchoId] = useState<number | null>(null);
 
+  const [requestStatus, setRequestStatus] = useState<
+    "idle" | "sending" | "waitingDriver" | "accepted"
+  >("idle");
+
   const mapRef = useRef<L.Map | null>(null);
 
-  const locations: MapProps = {
+  const sideBarProps: SidebarProps = {
+    locationText: locationText,
+    setLocationText: setLocationText,
+    destinationText: destinationText,
+    setDestinationText: setDestinationText,
+    buscarGuinchos: buscarGuinchos,
+    guinchos: guinchos,
+    selectedGuincho: selectedGuincho,
+    setSelectedGuincho: setSelectedGuincho,
+    setHoveredGuinchoId: setHoveredGuinchoId,
+    setUserLocation: setUserLocation,
+    userLocation: userLocation,
+    handleUpdateDestination: handleUpdateDestination,
+    setRouteG: setRouteG,
+    routeG: routeG,
+    route: route,
+    loading: loading,
+    priceEstimate: priceEstimate,
+    distanceKm: distanceKm,
+    duration: durationMin,
+    mapRef: mapRef,
+    priceEstimateG: priceEstimateG,
+    setPriceG: setPriceG,
+    distanceKmG: distanceKmG,
+    setDistanceKmG: setDistanceKmG,
+    durationMinG: durationMinG,
+    setDurationMinG: setDurationMinG,
+    destination: destinationPosition,
+    durationMinTotal: durationMin,
+    setRequestStatus: setRequestStatus,
+    requestStatus: requestStatus,
+  };
+
+  const mapsProps: MapProps = {
     motoristasPosition: guinchos,
     userPosition: userLocation,
     hoveredGuinchoId: hoveredGuinchoId,
     mapRef: mapRef,
+    setRequestStatus: setRequestStatus,
+    requestStatus: requestStatus,
+    setSelectedGuincho: setSelectedGuincho,
+    selectedGuincho: selectedGuincho,
+    setPriceG: setPriceG,
+    setDistanceKmG: setDistanceKmG,
+    setDurationMinG: setDurationMinG,
+    setHoveredGuinchoId: setHoveredGuinchoId,
+    setRouteG: setRouteG,
     route: route,
     routeG: routeG,
     priceEstimate: priceEstimate,
@@ -62,17 +110,24 @@ const HomePage = () => {
 
   useEffect(() => {
     async function loadLastLocation() {
-      const response = await api.get("/maps/last-location");
-      if (response.data) {
-        setUserLocation({
-          lat: response.data.latitude,
-          lon: response.data.longitude,
-        });
-        console.dir(userLocation);
-      } else {
-        setUserLocation({ lat: 0, lon: 0 });
+      try {
+        const response = await api.get("/maps/last-location");
+
+        if (response.data) {
+          setUserLocation({
+            lat: response.data.latitude,
+            lon: response.data.longitude,
+          });
+        } else {
+          setUserLocation({ lat: -9.854179, lon: -51.648332 });
+        }
+      } catch (error) {
+        console.error("Erro ao buscar última localização", error);
+
+        setUserLocation({ lat: -9.854179, lon: -51.648332 });
       }
     }
+
     loadLastLocation();
   }, []);
 
@@ -132,7 +187,7 @@ const HomePage = () => {
     const maps = mapRef.current;
 
     if (!maps) return;
-    
+
     const poly = L.polyline(routePositions, { weight: 4, opacity: 0.6 });
 
     maps.fitBounds(poly.getBounds(), { padding: [60, 60] });
@@ -146,59 +201,15 @@ const HomePage = () => {
   }
 
   return (
-    <>
-      <div className="page">
-        <Sidebar
-          locationText={locationText}
-          setLocationText={setLocationText}
-          destinationText={destinationText}
-          setDestinationText={setDestinationText}
-          buscarGuinchos={buscarGuinchos}
-          guinchos={guinchos}
-          selectedGuincho={selectedGuincho}
-          setSelectedGuincho={setSelectedGuincho}
-          setHoveredGuinchoId={setHoveredGuinchoId}
-          setUserLocation={setUserLocation}
-          userLocation={userLocation}
-          handleUpdateDestination={handleUpdateDestination}
-          setRouteG={setRouteG}
-          routeG={routeG}
-          route={route}
-          loading={loading}
-          priceEstimate={priceEstimate}
-          distanceKm={distanceKm}
-          duration={durationMin}
-          mapRef={mapRef}
-          priceEstimateG={priceEstimateG}
-          setPriceG={setPriceG}
-          distanceKmG={distanceKmG}
-          setDistanceKmG={setDistanceKmG}
-          durationMinG={durationMinG}
-          setDurationMinG={setDurationMinG}
-          destination={destinationPosition}
-          durationMinTotal={durationMin}
-        ></Sidebar>
+    <div className="page">
+      <Sidebar {...sideBarProps}></Sidebar>
 
-        <main className="map-container">
-          <div id="map">
-            <Maps
-              motoristasPosition={locations.motoristasPosition}
-              userPosition={locations.userPosition}
-              hoveredGuinchoId={locations.hoveredGuinchoId}
-              mapRef={mapRef}
-              route={route}
-              routeG={routeG}
-              priceEstimate={priceEstimate}
-              distanceKm={distanceKm}
-              duration={durationMin}
-              priceEstimateG={priceEstimateG}
-              distanceKmG={distanceKmG}
-              durationMinG={durationMinG}
-            ></Maps>
-          </div>
-        </main>
-      </div>
-    </>
+      <main className="map-container">
+        <div id="map">
+          <Maps {...mapsProps}></Maps>
+        </div>
+      </main>
+    </div>
   );
 };
 

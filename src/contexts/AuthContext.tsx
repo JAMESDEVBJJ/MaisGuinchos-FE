@@ -11,6 +11,8 @@ type User = {
 
 type AuthContextType = {
   user: User | null;
+  login: (token: string) => void;
+  logout: () => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -22,32 +24,46 @@ type AuthProviderProps = {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
+  function decodeAndSetUser(token: string) {
     const payload = JSON.parse(atob(token.split(".")[1]));
 
     const role =
       payload["role"] ||
       payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
 
-      const userData = {
-        id: payload.sub,
-        role: role,
-        isDriver: role === "Motorista",
-        isClient: role === "Cliente",
-      };
-    setUser(userData);
+    const userData = {
+      id: payload.sub,
+      role: role,
+      isDriver: role === "Motorista",
+      isClient: role === "Cliente",
+    };
 
-    console.dir(userData);
+    setUser(userData);
+  }
+
+  function login(token: string) {
+    localStorage.setItem("token", token);
+    decodeAndSetUser(token);
+  }
+
+  function logout() {
+    localStorage.removeItem("token");
+    setUser(null);
+  }
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      decodeAndSetUser(token);
+    }
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
+
 }
 
 export function useAuth() {

@@ -44,15 +44,15 @@ type ClientBarProps = {
   isCompact: boolean;
   sidebarW: number;
   setIsResizing: React.Dispatch<React.SetStateAction<boolean>>;
+  setRequestStatus: React.Dispatch<
+    React.SetStateAction<"idle" | "sending" | "waitingDriver" | "accepted">
+  >;
+  requestStatus: string;
 };
 export function ClientSideBar(props: ClientBarProps) {
   const [showDetails, setShowDetails] = useState(false);
 
   const routeLayerRef = useRef<L.Layer | null>(null);
-
-  const [requestStatus, setRequestStatus] = useState<
-    "idle" | "sending" | "waitingDriver" | "accepted"
-  >("idle");
 
   const [vehicleType, setVehicleType] = useState("");
   const [vehicleIssue, setVehicleIssue] = useState("");
@@ -68,7 +68,7 @@ export function ClientSideBar(props: ClientBarProps) {
   const [dots, setDots] = useState("");
 
   useEffect(() => {
-    if (requestStatus !== "waitingDriver") {
+    if (props.requestStatus !== "waitingDriver") {
       setDots("");
       return;
     }
@@ -81,7 +81,7 @@ export function ClientSideBar(props: ClientBarProps) {
     }, 500);
 
     return () => clearInterval(interval);
-  }, [requestStatus]);
+  }, [props.requestStatus]);
 
   function handleMouseDown() {
     props.setIsResizing(true);
@@ -145,7 +145,7 @@ export function ClientSideBar(props: ClientBarProps) {
     props.setSelectedGuincho(null);
     props.setDistanceKmG(null);
     props.setDurationMinG(null);
-    setRequestStatus("idle");
+    props.setRequestStatus("idle");
   }
 
   async function handleTowRequest() {
@@ -179,7 +179,7 @@ export function ClientSideBar(props: ClientBarProps) {
         notes: notes,
       });
 
-      setRequestStatus("waitingDriver");
+      props.setRequestStatus("waitingDriver");
       setTowRequestId(response.data.id);
     } catch (error) {
       console.error(error);
@@ -335,18 +335,18 @@ export function ClientSideBar(props: ClientBarProps) {
               )}
             <button
               className={`secondary fullwidth ${
-                requestStatus === "waitingDriver"
+                props.requestStatus === "waitingDriver"
                   ? "waiting"
                   : props.routeG && props.route
                   ? "contact-enabled"
                   : ""
               }`}
-              disabled={serviceIsDisabled || requestStatus === "waitingDriver"}
+              disabled={serviceIsDisabled || props.requestStatus === "waitingDriver"}
               onClick={handleTowRequest}
             >
-              {requestStatus === "waitingDriver"
+              {props.requestStatus === "waitingDriver"
                 ? `Aguardando motorista${dots}`
-                : requestStatus === "sending"
+                : props.requestStatus === "sending"
                 ? "Enviando..."
                 : "Solicitar Guincho"}
             </button>

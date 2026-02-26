@@ -6,7 +6,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { ClientSideBar } from "./ClientSideBar";
 import { DriverSideBar } from "./DriverSideBar";
 
-type SidebarProps = {
+export type SidebarProps = {
   locationText: string;
   setLocationText: React.Dispatch<React.SetStateAction<string>>;
   destinationText: string;
@@ -35,6 +35,10 @@ type SidebarProps = {
   setDurationMinG: React.Dispatch<React.SetStateAction<number | null>>;
   destination: Position | null;
   durationMinTotal: number;
+  setRequestStatus: React.Dispatch<
+    React.SetStateAction<"idle" | "sending" | "waitingDriver" | "accepted">
+  >;
+  requestStatus: string;
 };
 
 export function Sidebar(props: SidebarProps) {
@@ -76,12 +80,12 @@ export function Sidebar(props: SidebarProps) {
 
   return user?.isDriver ? (
     <DriverSideBar
-    locationText={locationText}
-    setLocationText={setLocationText}
-    setUserLocation={props.setUserLocation}
-    setRouteG={props.setRouteG}
-    sideBarW={sidebarW}
-    setIsResizing={setIsResizing}
+      locationText={locationText}
+      setLocationText={setLocationText}
+      setUserLocation={props.setUserLocation}
+      setRouteG={props.setRouteG}
+      sideBarW={sidebarW}
+      setIsResizing={setIsResizing}
     />
   ) : user?.isClient ? (
     <ClientSideBar
