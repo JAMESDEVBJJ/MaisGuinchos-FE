@@ -281,6 +281,10 @@ input {
   border-left: 4px solid #ff7a00;
 }
 
+.driver-card:hover {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
 .driver-card .client-name {
   color: #ffffff;
   font-size: 1.1rem;
