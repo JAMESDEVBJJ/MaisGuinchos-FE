@@ -3,6 +3,7 @@ import { InputLocation } from "./InputLocation";
 import type { Position } from "../../dtos/MapPropsDTO";
 import type { TowRequestReceiveDto } from "../../dtos/TowRequestReceiveDTO";
 import * as signalR from "@microsoft/signalr";
+import { api } from "../../services/api";
 
 type DriverSideProps = {
   locationText: string;
@@ -32,6 +33,27 @@ export function DriverSideBar(props: DriverSideProps) {
   useEffect(() => {
     if (!token) return;
 
+    async function getPendingTows() {
+      try {
+        const response = await api.get("/towRequests/pendings");
+
+        const towsData = response.data;
+
+        setTowsReceive(towsData);
+        setTowReceived(towsData?.length > 0);
+      } catch (error) {
+        console.error("Erro ao buscar pendências:", error);
+        setTowsReceive([]);
+        setTowReceived(false);
+      }
+    }
+
+    getPendingTows();
+  }, []);
+
+  useEffect(() => {
+    if (!token) return;
+
     const connection = new signalR.HubConnectionBuilder()
       .withUrl("https://localhost:7120/towhub", {
         accessTokenFactory: () => token!,
@@ -57,7 +79,7 @@ export function DriverSideBar(props: DriverSideProps) {
     return () => {
       connection.stop();
     };
-  }, [token]);
+  }, []);
 
   return (
     <aside className="sidebar" style={{ width: props.sideBarW }}>
@@ -68,7 +90,7 @@ export function DriverSideBar(props: DriverSideProps) {
           setRouteG={props.setRouteG}
           setUserLocation={props.setUserLocation}
         />
-        {towReceived && (
+        {towReceived && towsReceive.length > 0 && (
           <div className="results">
             {towsReceive.map((t) => (
               <div className="result-card">

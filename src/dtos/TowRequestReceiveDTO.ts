@@ -1,5 +1,6 @@
 export interface TowRequestReceiveDto {
-  requestId: string;
+  id: string;
+  clientName: string;
   clientId: string;
   pickupLat: number;
   pickupLon: number;
@@ -11,4 +12,5 @@ export interface TowRequestReceiveDto {
   vehicleType?: string | null;
   vehicleIssue?: string | null;
   notes?: string | null;
+  status: number;
 }
