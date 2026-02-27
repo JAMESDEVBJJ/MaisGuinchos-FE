@@ -189,6 +189,7 @@ input {
   transform: scale(0.97);
 }
 
+
 .left {
   display: flex;
   align-items: center;
@@ -276,7 +277,31 @@ input {
   font-weight: 700;
   color: aliceblue;
 }
+.driver-card {
+  border-left: 4px solid #ff7a00;
+}
 
+.driver-card .client-name {
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.driver-card .distance {
+  color: #ff7a00;
+  font-weight: 800;
+}
+
+.driver-card .duration {
+  color: #a8b3bd;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.driver-card .divider {
+  color: #3a4a55;
+  margin: 0 6px;
+}
 .distance {
   font-size: 0.95rem;
   opacity: 0.85;

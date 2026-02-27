@@ -90,17 +90,46 @@ export function DriverSideBar(props: DriverSideProps) {
           setRouteG={props.setRouteG}
           setUserLocation={props.setUserLocation}
         />
-        {towReceived && towsReceive.length > 0 && (
-          <div className="results">
-            {towsReceive.map((t) => (
-              <div className="result-card">
-                {t.totalDistanceKm}Kms {t.suggestedPrice}R$
-              </div>
-            ))}
-          </div>
-        )}
       </div>
+      {towReceived && towsReceive.length > 0 && (
+        <div className="results">
+          {towsReceive.map((t) => {
+            const firstName = t.clientName.split(" ")[0];
+
+            return (
+              <div key={t.id} className="result-card driver-card">
+                <div className="card-main">
+                  <div className="left">
+                    <span className="client-name">{firstName}</span>
+
+                    <span className="distance">{t.totalDistanceKm}km</span>
+
+                    <span className="duration">
+                      há {formatDuration(t.durationMinutes)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
       <div className="resize-handle" onMouseDown={handleMouseDown} />
     </aside>
   );
+}
+
+function formatDuration(minutes: number) {
+  const totalSeconds = minutes * 60;
+
+  if (totalSeconds < 60) {
+    return `${Math.floor(totalSeconds)}s`;
+  }
+
+  if (minutes < 60) {
+    return `${Math.floor(minutes)}min`;
+  }
+
+  const hours = minutes / 60;
+  return `${hours.toFixed(1)}h`;
 }
