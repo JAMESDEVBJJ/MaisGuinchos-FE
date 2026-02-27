@@ -13,4 +13,5 @@ export interface TowRequestReceiveDto {
   vehicleIssue?: string | null;
   notes?: string | null;
   status: number;
+  createdAt: string;
 }

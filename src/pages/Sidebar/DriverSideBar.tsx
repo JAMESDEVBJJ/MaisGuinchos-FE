@@ -41,6 +41,7 @@ export function DriverSideBar(props: DriverSideProps) {
 
         setTowsReceive(towsData);
         setTowReceived(towsData?.length > 0);
+        console.dir(towsData)
       } catch (error) {
         console.error("Erro ao buscar pendências:", error);
         setTowsReceive([]);
@@ -95,7 +96,8 @@ export function DriverSideBar(props: DriverSideProps) {
         <div className="results">
           {towsReceive.map((t) => {
             const firstName = t.clientName.split(" ")[0];
-
+            const diffMs = Date.now() - new Date(t.createdAt).getTime();
+            const diffMinutes = Math.floor(diffMs / 60000);
             return (
               <div key={t.id} className="result-card driver-card">
                 <div className="card-main">
@@ -105,7 +107,7 @@ export function DriverSideBar(props: DriverSideProps) {
                     <span className="distance">{t.totalDistanceKm}km</span>
 
                     <span className="duration">
-                      há {formatDuration(t.durationMinutes)}
+                      há {formatMinutes(diffMinutes)}
                     </span>
                   </div>
                 </div>
@@ -119,7 +121,7 @@ export function DriverSideBar(props: DriverSideProps) {
   );
 }
 
-function formatDuration(minutes: number) {
+function formatMinutes(minutes: number) {
   const totalSeconds = minutes * 60;
 
   if (totalSeconds < 60) {
@@ -131,5 +133,10 @@ function formatDuration(minutes: number) {
   }
 
   const hours = minutes / 60;
+
+  if (hours >= 24) {
+    return `${(hours / 24).toFixed(1)}d`
+  }
+  
   return `${hours.toFixed(1)}h`;
 }
