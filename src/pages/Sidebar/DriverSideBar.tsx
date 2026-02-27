@@ -92,27 +92,31 @@ export function DriverSideBar(props: DriverSideProps) {
         />
       </div>
       {towReceived && towsReceive.length > 0 && (
-        <div className="results">
-          {towsReceive.map((t) => {
-            const firstName = t.clientName.split(" ")[0];
+        <>
+          <span className="results-title">Pedidos de reboque</span>
+          
+          <div className="results">
+            {towsReceive.map((t) => {
+              const firstName = t.clientName.split(" ")[0];
 
-            return (
-              <div key={t.id} className="result-card driver-card">
-                <div className="card-main">
-                  <div className="left">
-                    <span className="client-name">{firstName}</span>
+              return (                            
+                <div key={t.id} className="result-card driver-card">
+                  <div className="card-main">
+                    <div className="left">
+                      <span className="client-name">{firstName}</span>
 
-                    <span className="distance">{t.totalDistanceKm}km</span>
+                      <span className="distance">{t.totalDistanceKm}km</span>
 
-                    <span className="duration">
-                      há {formatDuration(t.durationMinutes)}
-                    </span>
+                      <span className="duration">
+                        há {formatDuration(t.durationMinutes)}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        </>
       )}
       <div className="resize-handle" onMouseDown={handleMouseDown} />
     </aside>
