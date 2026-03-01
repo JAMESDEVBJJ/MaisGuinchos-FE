@@ -21,6 +21,22 @@ export function DriverSideBar(props: DriverSideProps) {
 
   const [towReceived, setTowReceived] = useState<boolean>(false);
 
+  const [isAvailable, setIsAvailable] = useState(false);
+
+  const handleToggle = async () => {
+    try {
+      const newStatus = !isAvailable;
+
+      await api.put("/guincho/status", {
+        status: newStatus,
+      });
+
+      setIsAvailable(newStatus);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   function handleMouseDown() {
     props.setIsResizing(true);
   }
@@ -83,6 +99,18 @@ export function DriverSideBar(props: DriverSideProps) {
 
   return (
     <aside className="sidebar" style={{ width: props.sideBarW }}>
+      <div className="sidebar-header">
+        <span className="status-label">
+          {isAvailable ? "Disponível" : "Indisponível"}
+        </span>
+
+        <div
+          className={`toggle ${isAvailable ? "active" : ""}`}
+          onClick={handleToggle}
+        >
+          <div className="toggle-circle" />
+        </div>
+      </div>
       <div className="search">
         <InputLocation
           locationText={props.locationText}
@@ -94,12 +122,12 @@ export function DriverSideBar(props: DriverSideProps) {
       {towReceived && towsReceive.length > 0 && (
         <>
           <span className="results-title">Pedidos de reboque</span>
-          
+
           <div className="results">
             {towsReceive.map((t) => {
               const firstName = t.clientName.split(" ")[0];
 
-              return (                            
+              return (
                 <div key={t.id} className="result-card driver-card">
                   <div className="card-main">
                     <div className="left">

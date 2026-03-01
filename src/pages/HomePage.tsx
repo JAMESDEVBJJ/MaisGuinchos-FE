@@ -82,6 +82,7 @@ const HomePage = () => {
     durationMinTotal: durationMin,
     setRequestStatus: setRequestStatus,
     requestStatus: requestStatus,
+    setGuinchos: setGuinchos
   };
 
   const mapsProps: MapProps = {
