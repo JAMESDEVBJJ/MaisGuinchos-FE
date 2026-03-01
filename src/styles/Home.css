@@ -38,6 +38,51 @@ body {
   box-shadow: 6px 0 20px rgba(0, 0, 0, 0.38);
 }
 
+.sidebar-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  padding-right: 0px;
+}
+
+.status-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #9ca3af;
+}
+
+.toggle {
+  width: 44px;
+  height: 22px;
+  background-color: #e24331;
+  border-radius: 999px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.toggle.active {
+  background-color: #189948; 
+}
+
+.toggle-circle {
+  width: 18px;
+  height: 18px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  transition: transform 0.3s ease;
+}
+
+.toggle.active .toggle-circle {
+  transform: translateX(20px);
+}
+
 .search {
   display: flex;
   flex-direction: column;
@@ -130,9 +175,10 @@ input {
 }
 
 .empty-state p {
-  font-size: 1.15rem;
-  color: rgba(255, 255, 255, 0.7);
-  text-align: center;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: #6b7280;
 }
 
 .results {
@@ -188,6 +234,7 @@ input {
 .result-card:active {
   transform: scale(0.97);
 }
+
 
 .left {
   display: flex;
@@ -276,7 +323,35 @@ input {
   font-weight: 700;
   color: aliceblue;
 }
+.driver-card {
+  border-left: 4px solid #ff7a00;
+}
 
+.driver-card:hover {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.driver-card .client-name {
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.driver-card .distance {
+  color: #ff7a00;
+  font-weight: 800;
+}
+
+.driver-card .duration {
+  color: #a8b3bd;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.driver-card .divider {
+  color: #3a4a55;
+  margin: 0 6px;
+}
 .distance {
   font-size: 0.95rem;
   opacity: 0.85;
@@ -354,6 +429,17 @@ input {
   height: 18px;
   opacity: 0.95;
   pointer-events: none;
+}
+
+.results-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  margin: 16px 0 8px 0;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  text-align: center;
 }
 
 .results {

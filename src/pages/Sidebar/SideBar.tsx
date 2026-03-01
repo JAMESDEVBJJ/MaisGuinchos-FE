@@ -13,6 +13,7 @@ export type SidebarProps = {
   setDestinationText: React.Dispatch<React.SetStateAction<string>>;
   buscarGuinchos: () => void;
   guinchos: GuinchosDto[];
+  setGuinchos: React.Dispatch<React.SetStateAction<GuinchosDto[]>>;
   selectedGuincho: GuinchosDto | null;
   setSelectedGuincho: (g: GuinchosDto | null) => void;
   setHoveredGuinchoId: React.Dispatch<React.SetStateAction<number | null>>;

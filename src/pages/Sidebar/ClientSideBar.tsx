@@ -6,6 +6,7 @@ import L from "leaflet";
 import defaultUserPng from "../../assets/defaultUser.png";
 import type { GuinchosDto, Position } from "../../dtos/MapPropsDTO";
 import { InputLocation } from "./InputLocation";
+import * as signalR from "@microsoft/signalr";
 
 interface CoordinateDto {
   lat: number;
@@ -20,6 +21,7 @@ type ClientBarProps = {
   setUserLocation: React.Dispatch<React.SetStateAction<Position | null>>;
   buscarGuinchos: () => void;
   guinchos: GuinchosDto[];
+  setGuinchos: React.Dispatch<React.SetStateAction<GuinchosDto[]>>;
   selectedGuincho: GuinchosDto | null;
   setSelectedGuincho: (g: GuinchosDto | null) => void;
   setHoveredGuinchoId: React.Dispatch<React.SetStateAction<number | null>>;
@@ -50,6 +52,8 @@ type ClientBarProps = {
   requestStatus: string;
 };
 export function ClientSideBar(props: ClientBarProps) {
+  const token = localStorage.getItem("token");
+
   const [showDetails, setShowDetails] = useState(false);
 
   const routeLayerRef = useRef<L.Layer | null>(null);
@@ -66,6 +70,42 @@ export function ClientSideBar(props: ClientBarProps) {
   const serviceIsDisabled = !props.routeG || !props.route;
 
   const [dots, setDots] = useState("");
+
+  useEffect(() => {
+    if (!token) return;
+
+    const connection = new signalR.HubConnectionBuilder()
+      .withUrl("https://localhost:7120/towhub", {
+        accessTokenFactory: () => token!,
+      })
+      .withAutomaticReconnect()
+      .build();
+
+    async function startConnection() {
+      try {
+        await connection.start();
+        console.log("Conectado ao TowHub como cliente");
+      } catch (err) {
+        console.error("Erro ao conectar:", err);
+      }
+    }
+    startConnection();
+
+    connection.on("GuinchoStatusUpdated", (data) => {
+      props.setGuinchos((prev) =>
+        prev.map((g) => {
+          if (g.motorista.userId === data.motoristaId) {
+            return { ...g, available: data.disponivel };
+          }
+          return g;
+        })
+      );
+    });
+
+    return () => {
+      connection.stop();
+    };
+  }, []);
 
   useEffect(() => {
     if (props.requestStatus !== "waitingDriver") {
@@ -341,7 +381,9 @@ export function ClientSideBar(props: ClientBarProps) {
                   ? "contact-enabled"
                   : ""
               }`}
-              disabled={serviceIsDisabled || props.requestStatus === "waitingDriver"}
+              disabled={
+                serviceIsDisabled || props.requestStatus === "waitingDriver"
+              }
               onClick={handleTowRequest}
             >
               {props.requestStatus === "waitingDriver"
