@@ -68,6 +68,8 @@ type ClientBarProps = {
 export function ClientSideBar(props: ClientBarProps) {
   const token = localStorage.getItem("token");
 
+  const distanceRouteTotal = props.distanceKm + (props.distanceKmG ? props.distanceKmG : 0);
+
   const [showDetails, setShowDetails] = useState(false);
 
   const routeLayerRef = useRef<L.Layer | null>(null);
@@ -229,7 +231,7 @@ export function ClientSideBar(props: ClientBarProps) {
       dropoffLat: props.destination.lat,
       dropoffLon: props.destination.lon,
 
-      totalDistanceKm: props.distanceKm,
+      totalDistanceKm: distanceRouteTotal,
       durationMinutes: props.durationMinTotal,
 
       suggestedPrice: props.priceEstimate,
@@ -437,32 +439,56 @@ export function ClientSideBar(props: ClientBarProps) {
         <div className="modal-overlay">
           <div className="modal">
             <button className="close" onClick={() => setShowModal(false)}>
-              X
+              ✕
             </button>
 
             <h2>Complementar Solicitação</h2>
 
-            <input
-              type="text"
-              placeholder="Tipo do veículo *"
-              value={vehicleType}
-              onChange={(e) => setVehicleType(e.target.value)}
-            />
+            <div className="field">
+              <span>Tipo do veículo:</span>
+              <input
+                type="text"
+                value={vehicleType}
+                onChange={(e) => setVehicleType(e.target.value)}
+              />
+            </div>
 
-            <input
-              type="text"
-              placeholder="Questão do veículo *"
-              value={vehicleIssue}
-              onChange={(e) => setVehicleIssue(e.target.value)}
-            />
+            <div className="field">
+              <span>Questão do veículo:</span>
+              <input
+                type="text"
+                value={vehicleIssue}
+                onChange={(e) => setVehicleIssue(e.target.value)}
+              />
+            </div>
 
-            <textarea
-              placeholder="Notas (opcional)"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-            />
+            <div className="field">
+              <span>Notas:</span>
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+              />
+            </div>
 
-            <button onClick={handleConfirmSend}>Enviar Solicitação</button>
+            <button
+              className={`secondary fullwidth ${
+                props.requestStatus === "waitingDriver"
+                  ? "waiting"
+                  : props.routeG && props.route
+                  ? "contact-enabled"
+                  : ""
+              }`}
+              disabled={
+                serviceIsDisabled || props.requestStatus === "waitingDriver"
+              }
+              onClick={handleConfirmSend}
+            >
+              {props.requestStatus === "waitingDriver"
+                ? `Aguardando motorista${dots}`
+                : props.requestStatus === "sending"
+                ? "Enviando..."
+                : "Solicitar Guincho"}
+            </button>
           </div>
         </div>
       )}
