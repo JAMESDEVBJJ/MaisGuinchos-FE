@@ -1,4 +1,5 @@
 import type { GuinchosDto } from "../dtos/MapPropsDTO";
+import { flyToTarget } from "./Maps";
 
 type GuinchosResultsProps = {
   guinchos: GuinchosDto[];
@@ -32,11 +33,7 @@ export default function GuinchosResults({
               g.motorista.lon != null &&
               mapRef.current
             ) {
-              mapRef.current.flyTo(
-                [g.motorista.lat, g.motorista.lon],
-                mapRef.current.getZoom(),
-                { animate: true }
-              );
+              flyToTarget(mapRef.current, g.motorista.lat, g.motorista.lon, 0.8);
             }
             setSelectedGuincho(g);
           }}

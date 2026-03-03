@@ -80,7 +80,7 @@ export function ClientSideBar(props: ClientBarProps) {
   const [vehicleIssue, setVehicleIssue] = useState("");
   const [notes, setNotes] = useState("");
 
-  const [towRequestId, setTowRequestId] = useState<string | null>(null);
+  const [towRequestId, setTowRequestId] = useState<string | null>(null); //usar p mostra dai 
 
   const foto = props.selectedGuincho?.motorista?.foto;
   const isDefault = !foto || foto.trim() === "";
