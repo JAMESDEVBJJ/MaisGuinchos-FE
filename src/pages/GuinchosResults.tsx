@@ -3,7 +3,7 @@ import type { GuinchosDto } from "../dtos/MapPropsDTO";
 type GuinchosResultsProps = {
   guinchos: GuinchosDto[];
   isCompact: boolean;
-  setHovered: (userid: number | null) => void;
+  setHovered: (userid: string | null) => void;
   mapRef: React.RefObject<L.Map | null>;
   setSelectedGuincho: (g: GuinchosDto | null) => void;
 };

@@ -16,7 +16,7 @@ export type SidebarProps = {
   setGuinchos: React.Dispatch<React.SetStateAction<GuinchosDto[]>>;
   selectedGuincho: GuinchosDto | null;
   setSelectedGuincho: (g: GuinchosDto | null) => void;
-  setHoveredGuinchoId: React.Dispatch<React.SetStateAction<number | null>>;
+  setHoveredGuinchoId: React.Dispatch<React.SetStateAction<string | null>>;
   setUserLocation: React.Dispatch<React.SetStateAction<Position | null>>;
   userLocation: Position | null;
   handleUpdateDestination: () => Promise<void>;

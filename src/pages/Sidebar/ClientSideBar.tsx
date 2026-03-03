@@ -13,6 +13,20 @@ interface CoordinateDto {
   lon: number;
 }
 
+interface CreateTowRequestDTO {
+  driverId: string;
+  pickupLat: number;
+  pickupLon: number;
+  dropoffLat: number;
+  dropoffLon: number;
+  totalDistanceKm: number;
+  durationMinutes: number;
+  suggestedPrice: number;
+  vehicleType: string;
+  vehicleIssue: string;
+  notes?: string;
+}
+
 type ClientBarProps = {
   locationText: string;
   setLocationText: React.Dispatch<React.SetStateAction<string>>;
@@ -24,7 +38,7 @@ type ClientBarProps = {
   setGuinchos: React.Dispatch<React.SetStateAction<GuinchosDto[]>>;
   selectedGuincho: GuinchosDto | null;
   setSelectedGuincho: (g: GuinchosDto | null) => void;
-  setHoveredGuinchoId: React.Dispatch<React.SetStateAction<number | null>>;
+  setHoveredGuinchoId: React.Dispatch<React.SetStateAction<string | null>>;
   userLocation: Position | null;
   handleUpdateDestination: () => Promise<void>;
   setRouteG: React.Dispatch<React.SetStateAction<[number, number][] | null>>;
@@ -57,6 +71,8 @@ export function ClientSideBar(props: ClientBarProps) {
   const [showDetails, setShowDetails] = useState(false);
 
   const routeLayerRef = useRef<L.Layer | null>(null);
+
+  const [showModal, setShowModal] = useState(false);
 
   const [vehicleType, setVehicleType] = useState("");
   const [vehicleIssue, setVehicleIssue] = useState("");
@@ -188,7 +204,7 @@ export function ClientSideBar(props: ClientBarProps) {
     props.setRequestStatus("idle");
   }
 
-  async function handleTowRequest() {
+  async function handleConfirmSend() {
     if (!props.selectedGuincho) {
       alert("Selecione um motorista primeiro.");
       return;
@@ -199,28 +215,41 @@ export function ClientSideBar(props: ClientBarProps) {
       return;
     }
 
+    if (!vehicleType || !vehicleIssue) {
+      alert("Preencha os campos obrigatórios.");
+      return;
+    }
+
+    const towRequestDto: CreateTowRequestDTO = {
+      driverId: props.selectedGuincho.motorista.userId,
+
+      pickupLat: props.userLocation.lat,
+      pickupLon: props.userLocation.lon,
+
+      dropoffLat: props.destination.lat,
+      dropoffLon: props.destination.lon,
+
+      totalDistanceKm: props.distanceKm,
+      durationMinutes: props.durationMinTotal,
+
+      suggestedPrice: props.priceEstimate,
+
+      vehicleType: vehicleType,
+      vehicleIssue: vehicleIssue,
+      notes: notes,
+    };
+
     try {
-      const response = await api.post("/towrequests", {
-        driverId: props.selectedGuincho.motorista.userId,
-
-        pickupLat: props.userLocation.lat,
-        pickupLon: props.userLocation.lon,
-
-        dropoffLat: props.destination.lat,
-        dropoffLon: props.destination.lon,
-
-        totalDistanceKm: props.distanceKm,
-        durationMinutes: props.durationMinTotal,
-
-        suggestedPrice: props.priceEstimate,
-
-        vehicleType: vehicleType,
-        vehicleIssue: vehicleIssue,
-        notes: notes,
-      });
+      const response = await api.post("/towrequests", towRequestDto);
 
       props.setRequestStatus("waitingDriver");
       setTowRequestId(response.data.id);
+
+      setShowModal(false);
+
+      setVehicleType("");
+      setVehicleIssue("");
+      setNotes("");
     } catch (error) {
       console.error(error);
       alert("Erro ao solicitar guincho.");
@@ -228,175 +257,216 @@ export function ClientSideBar(props: ClientBarProps) {
   }
 
   return (
-    <aside className="sidebar" style={{ width: props.sidebarW }}>
-      {props.selectedGuincho == null ? (
-        <>
-          {props.selectedGuincho == null && (
-            <div className="sidebar-1">
-              <div className="search">
-                <InputLocation
-                  locationText={props.locationText}
-                  setLocationText={props.setLocationText}
-                  setRouteG={props.setRouteG}
-                  setUserLocation={props.setUserLocation}
-                />
-                <div className="input-wrapper">
-                  <input
-                    type="text"
-                    placeholder="Setar destino"
-                    value={props.destinationText}
-                    onChange={(e) => props.setDestinationText(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        props.handleUpdateDestination();
-                      }
-                    }}
+    <>
+      <aside className="sidebar" style={{ width: props.sidebarW }}>
+        {props.selectedGuincho == null ? (
+          <>
+            {props.selectedGuincho == null && (
+              <div className="sidebar-1">
+                <div className="search">
+                  <InputLocation
+                    locationText={props.locationText}
+                    setLocationText={props.setLocationText}
+                    setRouteG={props.setRouteG}
+                    setUserLocation={props.setUserLocation}
                   />
-                  <img src={iconDestination} className="input-icon" />
-                </div>
+                  <div className="input-wrapper">
+                    <input
+                      type="text"
+                      placeholder="Setar destino"
+                      value={props.destinationText}
+                      onChange={(e) => props.setDestinationText(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          props.handleUpdateDestination();
+                        }
+                      }}
+                    />
+                    <img src={iconDestination} className="input-icon" />
+                  </div>
 
-                <button onClick={props.buscarGuinchos}>Buscar guinchos</button>
-              </div>
-            </div>
-          )}
-          {props.loading && (
-            <>
-              <h1>LOADING...</h1>
-            </>
-          )}
-          {!props.loading && props.guinchos.length === 0 && (
-            <div className="empty-state">
-              <p>Digite sua localização e procure por guinchos.</p>
-            </div>
-          )}
-
-          {!props.loading && props.guinchos.length >= 1 && (
-            <GuinchosResults
-              isCompact={props.isCompact}
-              guinchos={props.guinchos}
-              setHovered={props.setHoveredGuinchoId}
-              mapRef={props.mapRef}
-              setSelectedGuincho={props.setSelectedGuincho}
-            ></GuinchosResults>
-          )}
-        </>
-      ) : (
-        <>
-          <div className="detail">
-            <button className="back" onClick={handleBackToList}>
-              ⬅
-            </button>
-            <div className="detail-top">
-              <img
-                className={`detail-photo ${isDefault ? "default-photo" : ""}`}
-                src={
-                  isDefault ? defaultUserPng : `https://localhost:7120${foto}`
-                }
-                alt={props.selectedGuincho?.motorista?.name}
-              />
-              <div className="detail-info">
-                <h3>{props.selectedGuincho?.motorista.name}</h3>
-                <div className="rating-row">
-                  {renderStars(props.selectedGuincho?.stars)}{" "}
-                  <span className="rating-number">
-                    {props.selectedGuincho?.stars.toFixed(1)}
-                  </span>
-                </div>
-                <div className="driver-data">
-                  <span className="phone">
-                    {props.selectedGuincho?.motorista.number}
-                  </span>
-                  <div>Modelo: {props.selectedGuincho?.model}</div>
-                  <div>Placa: {props.selectedGuincho?.motorista.placa}</div>
-                  <div>Cor: {props.selectedGuincho?.color}</div>
+                  <button onClick={props.buscarGuinchos}>
+                    Buscar guinchos
+                  </button>
                 </div>
               </div>
-            </div>
+            )}
+            {props.loading && (
+              <>
+                <h1>LOADING...</h1>
+              </>
+            )}
+            {!props.loading && props.guinchos.length === 0 && (
+              <div className="empty-state">
+                <p>Digite sua localização e procure por guinchos.</p>
+              </div>
+            )}
 
-            <div className="detail-actions">
+            {!props.loading && props.guinchos.length >= 1 && (
+              <GuinchosResults
+                isCompact={props.isCompact}
+                guinchos={props.guinchos}
+                setHovered={props.setHoveredGuinchoId}
+                mapRef={props.mapRef}
+                setSelectedGuincho={props.setSelectedGuincho}
+              ></GuinchosResults>
+            )}
+          </>
+        ) : (
+          <>
+            <div className="detail">
+              <button className="back" onClick={handleBackToList}>
+                ⬅
+              </button>
+              <div className="detail-top">
+                <img
+                  className={`detail-photo ${isDefault ? "default-photo" : ""}`}
+                  src={
+                    isDefault ? defaultUserPng : `https://localhost:7120${foto}`
+                  }
+                  alt={props.selectedGuincho?.motorista?.name}
+                />
+                <div className="detail-info">
+                  <h3>{props.selectedGuincho?.motorista.name}</h3>
+                  <div className="rating-row">
+                    {renderStars(props.selectedGuincho?.stars)}{" "}
+                    <span className="rating-number">
+                      {props.selectedGuincho?.stars.toFixed(1)}
+                    </span>
+                  </div>
+                  <div className="driver-data">
+                    <span className="phone">
+                      {props.selectedGuincho?.motorista.number}
+                    </span>
+                    <div>Modelo: {props.selectedGuincho?.model}</div>
+                    <div>Placa: {props.selectedGuincho?.motorista.placa}</div>
+                    <div>Cor: {props.selectedGuincho?.color}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="detail-actions">
+                <button
+                  className="primary fullwidth"
+                  onClick={calcularRotaComGuincho}
+                >
+                  Calcular rota com guincho
+                </button>
+              </div>
+              {props.distanceKmG &&
+                props.durationMinG &&
+                props.priceEstimateG &&
+                props.routeG && (
+                  <div className="route-summary">
+                    <ul>
+                      <li>
+                        <strong>Distância total:</strong>{" "}
+                        {(props.distanceKm + props.distanceKmG).toFixed(1)} Km
+                      </li>
+
+                      <li>
+                        <strong>Tempo médio:</strong>{" "}
+                        {((props.duration + props.durationMinG) / 60).toFixed(
+                          1
+                        )}{" "}
+                        h
+                      </li>
+
+                      {!showDetails && (
+                        <li>
+                          <strong>Preço estimado:</strong> $
+                          {(props.priceEstimate + props.priceEstimateG).toFixed(
+                            0
+                          )}
+                        </li>
+                      )}
+                    </ul>
+                    {showDetails && (
+                      <div className="route-breakdown">
+                        <p>
+                          <strong>
+                            Guincho <span className="arrow yellow">→</span>{" "}
+                            Você:
+                          </strong>{" "}
+                          {props.priceEstimateG.toFixed(0)}R${" "}
+                          {props.distanceKmG.toFixed(0)}km
+                        </p>
+                        <p>
+                          <strong>
+                            Você <span className="arrow orange">→</span>{" "}
+                            Destino:
+                          </strong>{" "}
+                          {props.priceEstimate.toFixed(0)}R${" "}
+                          {props.distanceKm.toFixed(0)}km
+                        </p>
+                      </div>
+                    )}
+                    <span
+                      className="more-details"
+                      onClick={() => setShowDetails(!showDetails)}
+                    >
+                      {showDetails ? "Menos detalhes" : "Mais detalhes"}
+                    </span>
+                  </div>
+                )}
               <button
-                className="primary fullwidth"
-                onClick={calcularRotaComGuincho}
+                className={`secondary fullwidth ${
+                  props.requestStatus === "waitingDriver"
+                    ? "waiting"
+                    : props.routeG && props.route
+                    ? "contact-enabled"
+                    : ""
+                }`}
+                disabled={
+                  serviceIsDisabled || props.requestStatus === "waitingDriver"
+                }
+                onClick={() => setShowModal(true)}
               >
-                Calcular rota com guincho
+                {props.requestStatus === "waitingDriver"
+                  ? `Aguardando motorista${dots}`
+                  : props.requestStatus === "sending"
+                  ? "Enviando..."
+                  : "Solicitar Guincho"}
               </button>
             </div>
-            {props.distanceKmG &&
-              props.durationMinG &&
-              props.priceEstimateG &&
-              props.routeG && (
-                <div className="route-summary">
-                  <ul>
-                    <li>
-                      <strong>Distância total:</strong>{" "}
-                      {(props.distanceKm + props.distanceKmG).toFixed(1)} Km
-                    </li>
-
-                    <li>
-                      <strong>Tempo médio:</strong>{" "}
-                      {((props.duration + props.durationMinG) / 60).toFixed(1)}{" "}
-                      h
-                    </li>
-
-                    {!showDetails && (
-                      <li>
-                        <strong>Preço estimado:</strong> $
-                        {(props.priceEstimate + props.priceEstimateG).toFixed(
-                          0
-                        )}
-                      </li>
-                    )}
-                  </ul>
-                  {showDetails && (
-                    <div className="route-breakdown">
-                      <p>
-                        <strong>
-                          Guincho <span className="arrow yellow">→</span> Você:
-                        </strong>{" "}
-                        {props.priceEstimateG.toFixed(0)}R${" "}
-                        {props.distanceKmG.toFixed(0)}km
-                      </p>
-                      <p>
-                        <strong>
-                          Você <span className="arrow orange">→</span> Destino:
-                        </strong>{" "}
-                        {props.priceEstimate.toFixed(0)}R${" "}
-                        {props.distanceKm.toFixed(0)}km
-                      </p>
-                    </div>
-                  )}
-                  <span
-                    className="more-details"
-                    onClick={() => setShowDetails(!showDetails)}
-                  >
-                    {showDetails ? "Menos detalhes" : "Mais detalhes"}
-                  </span>
-                </div>
-              )}
-            <button
-              className={`secondary fullwidth ${
-                props.requestStatus === "waitingDriver"
-                  ? "waiting"
-                  : props.routeG && props.route
-                  ? "contact-enabled"
-                  : ""
-              }`}
-              disabled={
-                serviceIsDisabled || props.requestStatus === "waitingDriver"
-              }
-              onClick={handleTowRequest}
-            >
-              {props.requestStatus === "waitingDriver"
-                ? `Aguardando motorista${dots}`
-                : props.requestStatus === "sending"
-                ? "Enviando..."
-                : "Solicitar Guincho"}
+          </>
+        )}
+        <div className="resize-handle" onMouseDown={handleMouseDown} />
+      </aside>
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <button className="close" onClick={() => setShowModal(false)}>
+              X
             </button>
+
+            <h2>Complementar Solicitação</h2>
+
+            <input
+              type="text"
+              placeholder="Tipo do veículo *"
+              value={vehicleType}
+              onChange={(e) => setVehicleType(e.target.value)}
+            />
+
+            <input
+              type="text"
+              placeholder="Questão do veículo *"
+              value={vehicleIssue}
+              onChange={(e) => setVehicleIssue(e.target.value)}
+            />
+
+            <textarea
+              placeholder="Notas (opcional)"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+            />
+
+            <button onClick={handleConfirmSend}>Enviar Solicitação</button>
           </div>
-        </>
+        </div>
       )}
-      <div className="resize-handle" onMouseDown={handleMouseDown} />
-    </aside>
+    </>
   );
 }
 function renderStars(n?: number) {
