@@ -136,7 +136,7 @@ export function DriverSideBar(props: DriverSideProps) {
                       <span className="distance">{t.totalDistanceKm}km</span>
 
                       <span className="duration">
-                        há {formatDuration(t.durationMinutes)}
+                        há {formatTime(getMinutesSince(t.createdAt))}
                       </span>
                     </div>
                   </div>
@@ -151,7 +151,7 @@ export function DriverSideBar(props: DriverSideProps) {
   );
 }
 
-function formatDuration(minutes: number) {
+function formatTime(minutes: number) {
   const totalSeconds = minutes * 60;
 
   if (totalSeconds < 60) {
@@ -163,5 +163,20 @@ function formatDuration(minutes: number) {
   }
 
   const hours = minutes / 60;
+
+  if (hours >= 24) {
+    return `${(hours / 24).toFixed(1)}d`
+  }
+  
   return `${hours.toFixed(1)}h`;
+}
+
+function getMinutesSince(dateValue: string | number | Date) {
+  const created = new Date(dateValue).getTime();
+  const now = Date.now();
+
+  const diffMs = now - created;
+  const diffMinutes = Math.floor(diffMs / 1000 / 60);
+
+  return diffMinutes;
 }

@@ -41,7 +41,7 @@ function Signup() {
         alert("Senhas não conferem");
         return;
       }
-    } 
+    }
 
     setStep((s) => s + 1);
   }
@@ -52,35 +52,33 @@ function Signup() {
     console.log(form);
 
     try {
+      const formData = new FormData();
+
+      formData.append("Name", form.name);
+      formData.append("UserName", form.userName);
+      formData.append("Cpf", form.cpf);
+      formData.append("NumeroTelefone", form.numeroTelefone);
+      formData.append("Email", form.email);
+      formData.append("Password", form.password);
+      formData.append("Tipo", form.tipo.toString());
 
       if (form.tipo === 1) {
-        const formData = new FormData();
-  
-        formData.append("Name", form.name);
-        formData.append("UserName", form.userName);
-        formData.append("Cpf", form.cpf);
-        formData.append("NumeroTelefone", form.numeroTelefone);
-        formData.append("Email", form.email);
-        formData.append("Password", form.password);
-        formData.append("Tipo", form.tipo.toString());
-  
         formData.append("Guincho.Modelo", form.guincho?.modelo ?? "");
         formData.append("Guincho.Cor", form.guincho?.cor ?? "");
         formData.append("Guincho.Placa", form.guincho?.placa ?? "");
         formData.append("Guincho.Cnh", form.guincho?.cnh ?? "");
-  
+
         if (file) {
           formData.append("Guincho.Foto", file);
         }
-          console.dir(formData)
-        await api.post("/user", formData);
-      } else {
-        await api.post("/user", form);
+
       }
-  
+
+      await api.post("/user", formData);
+
       alert("Usuário criado com sucesso :3!");
+      
       navigate("/");
-  
     } catch (error) {
       alert("Erro ao criar a conta.");
       console.log(error);
@@ -100,8 +98,8 @@ function Signup() {
       modelo: "",
       cor: "",
       placa: "",
-      cnh: ""
-    }
+      cnh: "",
+    },
   });
 
   return (
@@ -131,7 +129,6 @@ function Signup() {
                 if (tipo === 1) {
                   setStep(4);
                 } else {
-                  console.log("FORM TIPO NAO È 1")
                   handleSubmit();
                 }
               }}
