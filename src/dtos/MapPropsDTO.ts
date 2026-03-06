@@ -1,5 +1,5 @@
 export type MotoristaDto = {
-  userId: number;
+  userId: string;
   name: string;
   arrivalTime?: number;
   lat: number;
@@ -26,14 +26,14 @@ export type Position = {
 
 export type UserDto = {
   userPosition: Position;
-  userId?: number;
+  userId?: string;
   userName?: string;
 };
 
 export type MapProps = {
   motoristasPosition: GuinchosDto[];
   userPosition: Position | null;
-  hoveredGuinchoId: number | null;
+  hoveredGuinchoId: string | null;
   mapRef: React.RefObject<L.Map | null>;
   setSelectedGuincho: React.Dispatch<React.SetStateAction<GuinchosDto | null>>;
   selectedGuincho: GuinchosDto | null;
@@ -41,7 +41,7 @@ export type MapProps = {
   setDistanceKmG: React.Dispatch<React.SetStateAction<number | null>>;
   setDurationMinG: React.Dispatch<React.SetStateAction<number | null>>;
   setRouteG: React.Dispatch<React.SetStateAction<[number, number][] | null>>;
-  setHoveredGuinchoId: React.Dispatch<React.SetStateAction<number | null>>;
+  setHoveredGuinchoId: React.Dispatch<React.SetStateAction<string | null>>;
   setRequestStatus: React.Dispatch<
     React.SetStateAction<"idle" | "sending" | "waitingDriver" | "accepted">
   >;

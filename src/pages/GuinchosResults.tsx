@@ -1,9 +1,10 @@
 import type { GuinchosDto } from "../dtos/MapPropsDTO";
+import { flyToTarget } from "./Maps";
 
 type GuinchosResultsProps = {
   guinchos: GuinchosDto[];
   isCompact: boolean;
-  setHovered: (userid: number | null) => void;
+  setHovered: (userid: string | null) => void;
   mapRef: React.RefObject<L.Map | null>;
   setSelectedGuincho: (g: GuinchosDto | null) => void;
 };
@@ -32,11 +33,7 @@ export default function GuinchosResults({
               g.motorista.lon != null &&
               mapRef.current
             ) {
-              mapRef.current.flyTo(
-                [g.motorista.lat, g.motorista.lon],
-                mapRef.current.getZoom(),
-                { animate: true }
-              );
+              flyToTarget(mapRef.current, g.motorista.lat, g.motorista.lon, 0.8);
             }
             setSelectedGuincho(g);
           }}

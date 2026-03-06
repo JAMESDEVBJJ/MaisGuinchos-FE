@@ -63,9 +63,7 @@ export function Maps({
       lastUserPosRef.current[0] !== newCenter[0] ||
       lastUserPosRef.current[1] !== newCenter[1]
     ) {
-      mapRef.current.flyTo(newCenter, mapRef.current.getZoom(), {
-        animate: true,
-      });
+      flyToTarget(mapRef.current, newCenter[0], newCenter[1], 1);
 
       lastUserPosRef.current = newCenter;
     }
@@ -158,6 +156,8 @@ export function Maps({
                     setDistanceKmG(null);
                     setDurationMinG(null);
                     setRequestStatus("idle");
+
+                    flyToTarget(mapRef.current, motorista.lat, motorista.lon, null);
                   },
                 }}
               ></Marker>
@@ -242,4 +242,23 @@ export function Maps({
       )}
     </div>
   );
+}
+
+export function flyToTarget(map: L.Map | null, lat: number, lon: number, boost: number | null) {
+  if (!map) return;
+  const currentZoom = map.getZoom();
+
+  const minZoom = 10;
+  if (!boost) {
+    boost = 0.7;
+  }
+
+  const targetZoom =
+    currentZoom < minZoom ? Math.min(currentZoom + boost, 16) : currentZoom;
+
+  map.flyTo([lat, lon], targetZoom, {
+    animate: true,
+    duration: 0.9,
+    easeLinearity: 0.25,
+  });
 }

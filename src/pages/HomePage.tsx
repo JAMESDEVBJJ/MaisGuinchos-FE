@@ -43,8 +43,8 @@ const HomePage = () => {
   const [distanceKm, setDistanceKm] = useState<number>(0);
   const [durationMin, setDurationMin] = useState<number>(0);
 
-  const [hoveredGuinchoId, setHoveredGuinchoId] = useState<number | null>(null);
-
+  const [hoveredGuinchoId, setHoveredGuinchoId] = useState<string | null>(null);
+  
   const [requestStatus, setRequestStatus] = useState<
     "idle" | "sending" | "waitingDriver" | "accepted"
   >("idle");

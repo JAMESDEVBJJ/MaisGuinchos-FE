@@ -48,7 +48,7 @@ body {
 }
 
 .status-label {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 13px;
   font-weight: 500;
   color: #9ca3af;
@@ -65,7 +65,7 @@ body {
 }
 
 .toggle.active {
-  background-color: #189948; 
+  background-color: #189948;
 }
 
 .toggle-circle {
@@ -120,7 +120,7 @@ input {
 
 .input-wrapper input {
   width: 100%;
-  padding: 10px 40px 10px 10px; 
+  padding: 10px 40px 10px 10px;
   border-radius: 8px;
   font-size: 14px;
 }
@@ -175,7 +175,7 @@ input {
 }
 
 .empty-state p {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 16px;
   font-weight: 500;
   color: #6b7280;
@@ -234,7 +234,6 @@ input {
 .result-card:active {
   transform: scale(0.97);
 }
-
 
 .left {
   display: flex;
@@ -432,7 +431,7 @@ input {
 }
 
 .results-title {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 12px;
   font-weight: 600;
   color: #6b7280;
@@ -476,7 +475,7 @@ input {
 
 .detail {
   padding-top: 8px;
-  font-family: 'Inter', 'Segoe UI', sans-serif;
+  font-family: "Inter", "Segoe UI", sans-serif;
   font-weight: 400;
 }
 
@@ -505,7 +504,7 @@ input {
 .detail-photo {
   width: 120px;
   height: 120px;
-  border-radius: 50%; 
+  border-radius: 50%;
   object-fit: cover;
   border: 3px solid #ff7a2d;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
@@ -513,8 +512,8 @@ input {
 }
 
 .detail-photo.default-photo {
-  object-fit: contain;    
-  padding: 0px;         
+  object-fit: contain;
+  padding: 0px;
   border: none;
   box-shadow: none;
   width: 150px;
@@ -609,7 +608,7 @@ button.secondary {
 
 button.secondary.contact-enabled:hover {
   background: rgba(255, 255, 255, 0.05);
-  cursor:pointer;
+  cursor: pointer;
 }
 
 button.contact-enabled {
@@ -628,7 +627,7 @@ button.contact-enabled:hover {
 }
 
 button.waiting {
-  background: linear-gradient(135deg,#caa50e, #c29204);
+  background: linear-gradient(135deg, #caa50e, #c29204);
   border: none;
   color: #1f2937;
   font-weight: 800;
@@ -696,16 +695,14 @@ button.waiting:hover {
   color: #cbd5e1;
 }
 
-
 .fullwidth {
   width: 100%;
 }
 
-
 .route-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.35); 
+  background: rgba(0, 0, 0, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -713,7 +710,7 @@ button.waiting:hover {
 }
 
 .route-panel {
-  background: rgba(255, 255, 255, 0.80);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(2px);
   padding: 40px 30px;
   border-radius: 24px;
@@ -767,4 +764,112 @@ button.waiting:hover {
 
 .map-theme-toggle:hover {
   transform: scale(1.1);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 999;
+}
+
+.modal {
+  background: linear-gradient(135deg, #141d25, #0f1a21);
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  position: relative; 
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: #c8d6e5;
+  cursor: pointer;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 9999;
+
+  backdrop-filter: blur(1px);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.field span {
+  font-size: 0.85rem;
+  color: #c8d6e5;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  font-family: Trebuchet MS, sans-serif;
+}
+
+.field input,
+.field textarea {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #2f3e4e;
+  background-color: #22313f;
+  color: white;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.field textarea {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  resize: vertical; 
+}
+
+
+.field textarea::-webkit-scrollbar {
+  width: 4px;
+}
+
+.field textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.field textarea::-webkit-scrollbar-thumb {
+  background-color: #555;
+  border-radius: 6px;
+}
+
+.field textarea::-webkit-scrollbar-thumb:hover {
+  background-color: #777;
+  cursor: pointer;
+}
+
+.field textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(234, 84, 3), 0 4px 10px rgba(0, 0, 0, 0.6);
 }
