@@ -157,7 +157,12 @@ export function Maps({
                     setDurationMinG(null);
                     setRequestStatus("idle");
 
-                    flyToTarget(mapRef.current, motorista.lat, motorista.lon, null);
+                    flyToTarget(
+                      mapRef.current,
+                      motorista.lat,
+                      motorista.lon,
+                      null
+                    );
                   },
                 }}
               ></Marker>
@@ -244,21 +249,29 @@ export function Maps({
   );
 }
 
-export function flyToTarget(map: L.Map | null, lat: number, lon: number, boost: number | null) {
+export function flyToTarget(
+  map: L.Map | null,
+  lat: number,
+  lon: number,
+  boost: number | null
+) {
   if (!map) return;
-  const currentZoom = map.getZoom();
 
-  const minZoom = 10;
+  const currentZoom = map.getZoom();
+  const maxZoom = 10;
+
   if (!boost) {
     boost = 0.7;
   }
 
   const targetZoom =
-    currentZoom < minZoom ? Math.min(currentZoom + boost, 16) : currentZoom;
+    currentZoom < maxZoom ? Math.min(currentZoom + boost, 16) : currentZoom;
+
+  const duration = 0.5 + (currentZoom / 5);
 
   map.flyTo([lat, lon], targetZoom, {
     animate: true,
-    duration: 0.9,
+    duration,
     easeLinearity: 0.25,
   });
 }
