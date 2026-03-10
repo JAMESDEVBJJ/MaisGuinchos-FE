@@ -182,8 +182,11 @@ export function ClientSideBar(props: ClientBarProps) {
 
     const poly = L.polyline(routePositions, { weight: 4, opacity: 0.6 });
 
-    map.fitBounds(poly.getBounds(), { padding: [60, 60] });
-    console.dir(props.route);
+    map.flyToBounds(poly.getBounds(), {
+      padding: [60, 60],
+      duration: 0.5
+    });
+        console.dir(props.route);
   }
 
   function handleBackToList() {
