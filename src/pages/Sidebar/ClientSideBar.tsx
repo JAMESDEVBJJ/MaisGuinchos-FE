@@ -372,6 +372,7 @@ export function ClientSideBar(props: ClientBarProps) {
                     durationMinG={props.durationMinG}
                     priceEstimateG={props.priceEstimateG}
                     routeG={props.routeG}
+                    modelo={null}
                   />
                 )}
               <button

@@ -30,6 +30,12 @@ export function DriverSideBar(props: DriverSideProps) {
     null
   );
 
+  const initials = selectedTow?.clientName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2);
+
   const handleToggle = async () => {
     try {
       const newStatus = !isAvailable;
@@ -168,34 +174,33 @@ export function DriverSideBar(props: DriverSideProps) {
             ⬅
           </button>
 
-          <h3>Solicitação de serviço</h3>
+          <h3 className="solicith3">Solicitação de serviço</h3>
 
-          <div className="client-header">
-            <div className="avatar" />
-
-            <div className="client-info">
-              <span className="name">{selectedTow.clientName}</span>
-
-              <span className="phone">{}</span>
+          <div className="detail-top">
+            <h3>{selectedTow.clientName}</h3>
+            <div className="detail-info">
+              <div className="client-data">
+                <span className="phone">+55 48 9 8832-2133</span>
+              </div>
             </div>
           </div>
-
-          <TowRequestData
-            distanceKm={selectedTow.totalDistanceKm}
-            durationMin={selectedTow.durationMinutes}
-            priceEstimate={selectedTow.suggestedPrice}
-            distanceKmG={selectedTow.totalDistanceKm}
-            durationMinG={selectedTow.durationMinutes}
-            priceEstimateG={selectedTow.suggestedPrice}
-            routeG={null}
-          />
-
-          <div className="tow-question">
-            <b>Questão:</b> {selectedTow.vehicleIssue}
+          <div className="detail">
+            <TowRequestData
+              distanceKm={selectedTow.totalDistanceKm}
+              durationMin={selectedTow.durationMinutes}
+              priceEstimate={selectedTow.suggestedPrice}
+              distanceKmG={selectedTow.totalDistanceKm}
+              durationMinG={selectedTow.durationMinutes}
+              priceEstimateG={selectedTow.suggestedPrice}
+              routeG={null}
+              modelo={selectedTow.vehicleType}
+            />
           </div>
 
-          <div className="tow-notes">
-            <b>Notas:</b> {selectedTow.notes}
+          <div className="tow-extra">
+            <p>Questão: {selectedTow.vehicleIssue}</p>
+
+            <p>Notas: {selectedTow.notes}</p>
           </div>
 
           <button className="accept-btn">Aceitar</button>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 type TowRequestDataProps = {
   distanceKm: number;
   durationMin: number;
@@ -9,6 +9,8 @@ type TowRequestDataProps = {
   priceEstimateG: number;
 
   routeG?: any;
+
+  modelo: string | null;
 };
 
 export function TowRequestData({
@@ -19,6 +21,7 @@ export function TowRequestData({
   durationMinG,
   priceEstimateG,
   routeG,
+  modelo,
 }: TowRequestDataProps) {
   const [showDetails, setShowDetails] = useState(false);
 
@@ -38,6 +41,12 @@ export function TowRequestData({
         <li>
           <strong>Tempo médio:</strong> {(totalDuration / 60).toFixed(1)} h
         </li>
+
+        {modelo && (
+          <li>
+            <strong>Modelo:</strong> {modelo} 
+          </li>
+        )}
 
         {!showDetails && (
           <li>
