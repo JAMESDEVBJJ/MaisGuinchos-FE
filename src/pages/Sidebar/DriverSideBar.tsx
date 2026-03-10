@@ -23,6 +23,12 @@ export function DriverSideBar(props: DriverSideProps) {
 
   const [isAvailable, setIsAvailable] = useState(false);
 
+  const [show, setShow] = useState(false);
+
+  const [selectedTow, setSelectedTow] = useState<TowRequestReceiveDto | null>(
+    null
+  );
+
   const handleToggle = async () => {
     try {
       const newStatus = !isAvailable;
@@ -99,7 +105,9 @@ export function DriverSideBar(props: DriverSideProps) {
 
   return (
     <aside className="sidebar" style={{ width: props.sideBarW }}>
-      <div className="sidebar-header">
+      {!selectedTow && (
+        <>
+        <div className="sidebar-header">
         <span className="status-label">
           {isAvailable ? "Disponível" : "Indisponível"}
         </span>
@@ -111,46 +119,103 @@ export function DriverSideBar(props: DriverSideProps) {
           <div className="toggle-circle" />
         </div>
       </div>
-      <div className="search">
-        <InputLocation
-          locationText={props.locationText}
-          setLocationText={props.setLocationText}
-          setRouteG={props.setRouteG}
-          setUserLocation={props.setUserLocation}
-        />
-      </div>
-      {towReceived && towsReceive.length > 0 && (
-        <>
-          <span className="results-title">Pedidos de reboque</span>
-
-          <div className="results">
-            {towsReceive.map((t) => {
-              const firstName = t.clientName.split(" ")[0];
-
-              return (
-                <div key={t.id} className="result-card driver-card">
-                  <div className="card-main">
-                    <div className="left">
-                      <span className="client-name">{firstName}</span>
-
-                      <span className="distance">{t.totalDistanceKm}km</span>
-
-                      <span className="duration">
-                        há {formatTime(getMinutesSince(t.createdAt))}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+          <div className="search">
+            <InputLocation
+              locationText={props.locationText}
+              setLocationText={props.setLocationText}
+              setRouteG={props.setRouteG}
+              setUserLocation={props.setUserLocation}
+            />
           </div>
+
+          {towReceived && towsReceive.length > 0 && (
+            <>
+              <span className="results-title">Pedidos de reboque</span>
+
+              <div className="results">
+                {towsReceive.map((t) => {
+                  const firstName = t.clientName.split(" ")[0];
+
+                  return (
+                    <div
+                      key={t.id}
+                      className="result-card driver-card"
+                      onClick={() => setSelectedTow(t)}
+                    >
+                      <div className="card-main">
+                        <div className="left">
+                          <span className="client-name">{firstName}</span>
+                          <span className="distance">
+                            {t.totalDistanceKm}km
+                          </span>
+                          <span className="duration">
+                            há {formatTime(getMinutesSince(t.createdAt))}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
         </>
+      )}
+      {selectedTow && (
+        <div className="tow-details">
+           <button className="back" onClick={() => setSelectedTow(null)}>
+                ⬅
+          </button>
+
+          <h3>Solicitação de serviço</h3>
+
+          <div className="client-header">
+            <div className="avatar" />
+
+            <div className="client-info">
+              <span className="name">{selectedTow.clientName}</span>
+
+              <span className="phone">{}</span>
+            </div>
+          </div>
+
+          <ul className="tow-info">
+            <li>Distancia total: {selectedTow.totalDistanceKm}Km</li>
+
+            <li>Tempo médio: {selectedTow.durationMinutes}min</li>
+
+            <li>Modelo: {selectedTow.vehicleType}</li>
+
+            <li>Reboque → Destino: {selectedTow.suggestedPrice}R$</li>
+          </ul>
+
+          <div className="tow-question">
+            <b>Questão:</b> {selectedTow.vehicleIssue}
+          </div>
+
+          <div className="tow-notes">
+            <b>Notas:</b> {selectedTow.notes}
+          </div>
+
+          <button className="accept-btn">Aceitar</button>
+
+          <button className="counter-btn">Enviar contraproposta</button>
+        </div>
       )}
       <div className="resize-handle" onMouseDown={handleMouseDown} />
     </aside>
   );
 }
+/*<button onClick={()=>setShow(true)}>
+Enviar contraproposta
+</button>
 
+{show && (
+  <CounterOfferModal
+    price={550}
+    onClose={()=>setShow(false)}
+  />
+)}*/
 function formatTime(minutes: number) {
   const totalSeconds = minutes * 60;
 
@@ -165,9 +230,9 @@ function formatTime(minutes: number) {
   const hours = minutes / 60;
 
   if (hours >= 24) {
-    return `${(hours / 24).toFixed(1)}d`
+    return `${(hours / 24).toFixed(1)}d`;
   }
-  
+
   return `${hours.toFixed(1)}h`;
 }
 
