@@ -9,7 +9,7 @@ export interface TowRequestReceiveDto {
   totalDistanceKm: number;
   durationMinutes: number;
   suggestedPrice: number;
-  vehicleType?: string | null;
+  vehicleType: string | null;
   vehicleIssue?: string | null;
   notes?: string | null;
   createdAt: number;

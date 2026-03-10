@@ -7,6 +7,7 @@ import defaultUserPng from "../../assets/defaultUser.png";
 import type { GuinchosDto, Position } from "../../dtos/MapPropsDTO";
 import { InputLocation } from "./InputLocation";
 import * as signalR from "@microsoft/signalr";
+import { TowRequestData } from "./TowRequestData";
 
 interface CoordinateDto {
   lat: number;
@@ -68,7 +69,8 @@ type ClientBarProps = {
 export function ClientSideBar(props: ClientBarProps) {
   const token = localStorage.getItem("token");
 
-  const distanceRouteTotal = props.distanceKm + (props.distanceKmG ? props.distanceKmG : 0);
+  const distanceRouteTotal =
+    props.distanceKm + (props.distanceKmG ? props.distanceKmG : 0);
 
   const [showDetails, setShowDetails] = useState(false);
 
@@ -80,7 +82,7 @@ export function ClientSideBar(props: ClientBarProps) {
   const [vehicleIssue, setVehicleIssue] = useState("");
   const [notes, setNotes] = useState("");
 
-  const [towRequestId, setTowRequestId] = useState<string | null>(null); //usar p mostra dai 
+  const [towRequestId, setTowRequestId] = useState<string | null>(null); //usar p mostra dai
 
   const foto = props.selectedGuincho?.motorista?.foto;
   const isDefault = !foto || foto.trim() === "";
@@ -184,9 +186,9 @@ export function ClientSideBar(props: ClientBarProps) {
 
     map.flyToBounds(poly.getBounds(), {
       padding: [60, 60],
-      duration: 0.5
+      duration: 0.5,
     });
-        console.dir(props.route);
+    console.dir(props.route);
   }
 
   function handleBackToList() {
@@ -362,57 +364,16 @@ export function ClientSideBar(props: ClientBarProps) {
                 props.durationMinG &&
                 props.priceEstimateG &&
                 props.routeG && (
-                  <div className="route-summary">
-                    <ul>
-                      <li>
-                        <strong>Distância total:</strong>{" "}
-                        {(props.distanceKm + props.distanceKmG).toFixed(1)} Km
-                      </li>
-
-                      <li>
-                        <strong>Tempo médio:</strong>{" "}
-                        {((props.duration + props.durationMinG) / 60).toFixed(
-                          1
-                        )}{" "}
-                        h
-                      </li>
-
-                      {!showDetails && (
-                        <li>
-                          <strong>Preço estimado:</strong> $
-                          {(props.priceEstimate + props.priceEstimateG).toFixed(
-                            0
-                          )}
-                        </li>
-                      )}
-                    </ul>
-                    {showDetails && (
-                      <div className="route-breakdown">
-                        <p>
-                          <strong>
-                            Guincho <span className="arrow yellow">→</span>{" "}
-                            Você:
-                          </strong>{" "}
-                          {props.priceEstimateG.toFixed(0)}R${" "}
-                          {props.distanceKmG.toFixed(0)}km
-                        </p>
-                        <p>
-                          <strong>
-                            Você <span className="arrow orange">→</span>{" "}
-                            Destino:
-                          </strong>{" "}
-                          {props.priceEstimate.toFixed(0)}R${" "}
-                          {props.distanceKm.toFixed(0)}km
-                        </p>
-                      </div>
-                    )}
-                    <span
-                      className="more-details"
-                      onClick={() => setShowDetails(!showDetails)}
-                    >
-                      {showDetails ? "Menos detalhes" : "Mais detalhes"}
-                    </span>
-                  </div>
+                  <TowRequestData
+                    distanceKm={props.distanceKm}
+                    durationMin={props.durationMinTotal}
+                    priceEstimate={props.priceEstimate}
+                    distanceKmG={props.distanceKmG}
+                    durationMinG={props.durationMinG}
+                    priceEstimateG={props.priceEstimateG}
+                    routeG={props.routeG}
+                    modelo={null}
+                  />
                 )}
               <button
                 className={`secondary fullwidth ${

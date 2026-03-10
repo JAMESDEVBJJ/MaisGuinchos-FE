@@ -4,6 +4,7 @@ import type { Position } from "../../dtos/MapPropsDTO";
 import type { TowRequestReceiveDto } from "../../dtos/TowRequestReceiveDTO";
 import * as signalR from "@microsoft/signalr";
 import { api } from "../../services/api";
+import { TowRequestData } from "./TowRequestData";
 
 type DriverSideProps = {
   locationText: string;
@@ -22,6 +23,18 @@ export function DriverSideBar(props: DriverSideProps) {
   const [towReceived, setTowReceived] = useState<boolean>(false);
 
   const [isAvailable, setIsAvailable] = useState(false);
+
+  const [show, setShow] = useState(false);
+
+  const [selectedTow, setSelectedTow] = useState<TowRequestReceiveDto | null>(
+    null
+  );
+
+  const initials = selectedTow?.clientName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2);
 
   const handleToggle = async () => {
     try {
@@ -99,58 +112,116 @@ export function DriverSideBar(props: DriverSideProps) {
 
   return (
     <aside className="sidebar" style={{ width: props.sideBarW }}>
-      <div className="sidebar-header">
-        <span className="status-label">
-          {isAvailable ? "Disponível" : "Indisponível"}
-        </span>
-
-        <div
-          className={`toggle ${isAvailable ? "active" : ""}`}
-          onClick={handleToggle}
-        >
-          <div className="toggle-circle" />
-        </div>
-      </div>
-      <div className="search">
-        <InputLocation
-          locationText={props.locationText}
-          setLocationText={props.setLocationText}
-          setRouteG={props.setRouteG}
-          setUserLocation={props.setUserLocation}
-        />
-      </div>
-      {towReceived && towsReceive.length > 0 && (
+      {!selectedTow && (
         <>
-          <span className="results-title">Pedidos de reboque</span>
+          <div className="sidebar-header">
+            <span className="status-label">
+              {isAvailable ? "Disponível" : "Indisponível"}
+            </span>
 
-          <div className="results">
-            {towsReceive.map((t) => {
-              const firstName = t.clientName.split(" ")[0];
-
-              return (
-                <div key={t.id} className="result-card driver-card">
-                  <div className="card-main">
-                    <div className="left">
-                      <span className="client-name">{firstName}</span>
-
-                      <span className="distance">{t.totalDistanceKm}km</span>
-
-                      <span className="duration">
-                        há {formatTime(getMinutesSince(t.createdAt))}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+            <div
+              className={`toggle ${isAvailable ? "active" : ""}`}
+              onClick={handleToggle}
+            >
+              <div className="toggle-circle" />
+            </div>
           </div>
+          <div className="search">
+            <InputLocation
+              locationText={props.locationText}
+              setLocationText={props.setLocationText}
+              setRouteG={props.setRouteG}
+              setUserLocation={props.setUserLocation}
+            />
+          </div>
+
+          {towReceived && towsReceive.length > 0 && (
+            <>
+              <span className="results-title">Pedidos de reboque</span>
+
+              <div className="results">
+                {towsReceive.map((t) => {
+                  const firstName = t.clientName.split(" ")[0];
+
+                  return (
+                    <div
+                      key={t.id}
+                      className="result-card driver-card"
+                      onClick={() => setSelectedTow(t)}
+                    >
+                      <div className="card-main">
+                        <div className="left">
+                          <span className="client-name">{firstName}</span>
+                          <span className="distance">
+                            {t.totalDistanceKm}km
+                          </span>
+                          <span className="duration">
+                            há {formatTime(getMinutesSince(t.createdAt))}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
         </>
+      )}
+      {selectedTow && (
+        <div className="tow-details">
+          <button className="back" onClick={() => setSelectedTow(null)}>
+            ⬅
+          </button>
+
+          <h3 className="solicith3">Solicitação de serviço</h3>
+
+          <div className="detail-top">
+            <h3>{selectedTow.clientName}</h3>
+            <div className="detail-info">
+              <div className="client-data">
+                <span className="phone">+55 48 9 8832-2133</span>
+              </div>
+            </div>
+          </div>
+          <div className="detail">
+            <TowRequestData
+              distanceKm={selectedTow.totalDistanceKm}
+              durationMin={selectedTow.durationMinutes}
+              priceEstimate={selectedTow.suggestedPrice}
+              distanceKmG={selectedTow.totalDistanceKm}
+              durationMinG={selectedTow.durationMinutes}
+              priceEstimateG={selectedTow.suggestedPrice}
+              routeG={null}
+              modelo={selectedTow.vehicleType}
+            />
+          </div>
+
+          <div className="tow-extra">
+            <p>Questão: {selectedTow.vehicleIssue}</p>
+
+            <p>Notas: {selectedTow.notes}</p>
+          </div>
+
+          <button className="accept-btn">Aceitar</button>
+
+          <button className="counter-btn">Enviar contraproposta</button>
+        </div>
       )}
       <div className="resize-handle" onMouseDown={handleMouseDown} />
     </aside>
   );
 }
+/*<button onClick={()=>setShow(true)}>
+Enviar contraproposta
+</button>
 
+{show && (
+  <CounterOfferModal
+    price={550}
+    onClose={()=>setShow(false)}
+  />
+)}*/
 function formatTime(minutes: number) {
   const totalSeconds = minutes * 60;
 
@@ -165,9 +236,9 @@ function formatTime(minutes: number) {
   const hours = minutes / 60;
 
   if (hours >= 24) {
-    return `${(hours / 24).toFixed(1)}d`
+    return `${(hours / 24).toFixed(1)}d`;
   }
-  
+
   return `${hours.toFixed(1)}h`;
 }
 
