@@ -4,6 +4,7 @@ import type { Position } from "../../dtos/MapPropsDTO";
 import type { TowRequestReceiveDto } from "../../dtos/TowRequestReceiveDTO";
 import * as signalR from "@microsoft/signalr";
 import { api } from "../../services/api";
+import { TowRequestData } from "./TowRequestData";
 
 type DriverSideProps = {
   locationText: string;
@@ -107,18 +108,18 @@ export function DriverSideBar(props: DriverSideProps) {
     <aside className="sidebar" style={{ width: props.sideBarW }}>
       {!selectedTow && (
         <>
-        <div className="sidebar-header">
-        <span className="status-label">
-          {isAvailable ? "Disponível" : "Indisponível"}
-        </span>
+          <div className="sidebar-header">
+            <span className="status-label">
+              {isAvailable ? "Disponível" : "Indisponível"}
+            </span>
 
-        <div
-          className={`toggle ${isAvailable ? "active" : ""}`}
-          onClick={handleToggle}
-        >
-          <div className="toggle-circle" />
-        </div>
-      </div>
+            <div
+              className={`toggle ${isAvailable ? "active" : ""}`}
+              onClick={handleToggle}
+            >
+              <div className="toggle-circle" />
+            </div>
+          </div>
           <div className="search">
             <InputLocation
               locationText={props.locationText}
@@ -163,8 +164,8 @@ export function DriverSideBar(props: DriverSideProps) {
       )}
       {selectedTow && (
         <div className="tow-details">
-           <button className="back" onClick={() => setSelectedTow(null)}>
-                ⬅
+          <button className="back" onClick={() => setSelectedTow(null)}>
+            ⬅
           </button>
 
           <h3>Solicitação de serviço</h3>
@@ -179,15 +180,15 @@ export function DriverSideBar(props: DriverSideProps) {
             </div>
           </div>
 
-          <ul className="tow-info">
-            <li>Distancia total: {selectedTow.totalDistanceKm}Km</li>
-
-            <li>Tempo médio: {selectedTow.durationMinutes}min</li>
-
-            <li>Modelo: {selectedTow.vehicleType}</li>
-
-            <li>Reboque → Destino: {selectedTow.suggestedPrice}R$</li>
-          </ul>
+          <TowRequestData
+            distanceKm={selectedTow.totalDistanceKm}
+            durationMin={selectedTow.durationMinutes}
+            priceEstimate={selectedTow.suggestedPrice}
+            distanceKmG={selectedTow.totalDistanceKm}
+            durationMinG={selectedTow.durationMinutes}
+            priceEstimateG={selectedTow.suggestedPrice}
+            routeG={null}
+          />
 
           <div className="tow-question">
             <b>Questão:</b> {selectedTow.vehicleIssue}
