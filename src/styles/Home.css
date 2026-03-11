@@ -136,20 +136,25 @@ input {
 }
 
 .search button {
-  height: 45px;
-  width: 80%;
+  height: 40px;
+  width: 90%;
   align-self: center;
+
   background-color: rgb(236, 116, 30);
-  border-radius: 10px;
-  font-size: large;
-  font-weight: 800;
-  color: rgb(195, 195, 195);
+
   border: none;
   border-radius: 12px;
+
+  font-family: "Inter", sans-serif;
+  font-size: 17.5px;
+  font-weight: 700;
+  letter-spacing: 1px;
+
+  color: white;
+
   cursor: pointer;
+
   transition: filter 0.2s ease, transform 0.1s ease;
-  color: whitesmoke;
-  letter-spacing: 1.85px;
 }
 
 .search button:hover {
@@ -773,15 +778,21 @@ button.waiting:hover {
 }
 
 .modal {
-  background: linear-gradient(135deg, #141d25, #0f1a21);
   padding: 20px;
-  border-radius: 8px;
-  width: 400px;
-  position: relative; 
+  position: relative;
 
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 20px;
+  width:340px;
+  padding:24px;
+  border-radius:12px;
+
+  background: linear-gradient(180deg,#1f2b38,#1a2430);
+  box-shadow:0 10px 30px rgba(0,0,0,0.4);
+
+  color:white;
+  text-align:center;
 }
 
 .close {
@@ -798,7 +809,6 @@ button.waiting:hover {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
 
   display: flex;
   justify-content: center;
@@ -806,7 +816,8 @@ button.waiting:hover {
 
   z-index: 9999;
 
-  backdrop-filter: blur(1px);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(3px);
 }
 
 .field {
@@ -838,9 +849,8 @@ button.waiting:hover {
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  resize: vertical; 
+  resize: vertical;
 }
-
 
 .field textarea::-webkit-scrollbar {
   width: 4px;
@@ -865,91 +875,89 @@ button.waiting:hover {
   box-shadow: 0 0 0 2px rgb(234, 84, 3), 0 4px 10px rgba(0, 0, 0, 0.6);
 }
 
-
-.tow-details{
-  padding:20px;
-  color:white;
+.tow-details {
+  padding: 20px;
+  color: white;
 }
-.solicith3{
+.solicith3 {
   padding-bottom: 40px;
-  font-size: 22.5px;
+  font-size: 17.5px;
   padding-bottom: 30px;
 }
 
-.client-info{
-  display:flex;
-  flex-direction:column;
+.client-info {
+  display: flex;
+  flex-direction: column;
 }
 
-.tow-info{
-  margin-top:20px;
-  list-style:none;
-  padding:0;
-  display:flex;
-  flex-direction:column;
-  gap:6px;
+.tow-info {
+  margin-top: 20px;
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.accept-btn{
-  margin-top:20px;
-  width:100%;
-  padding:10px;
-  background:#3bb273;
-  border:none;
-  border-radius:6px;
-  color:white;
-  cursor:pointer;
+.accept-btn {
+  margin-top: 20px;
+  width: 100%;
+  padding: 10px;
+  background: #3bb273;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
 }
 
-.counter-btn{
-  margin-top:10px;
-  width:100%;
-  padding:10px;
-  background:#f2b632;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
+.counter-btn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px;
+  background: #f2b632;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
-.client-data{
-  text-align:right;
+.client-data {
+  text-align: right;
 }
 
-.detail-top{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
+.detail-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.detail-info{
-  display:flex;
-  flex-direction:column;
-  align-items:flex-start;
-  text-align:left;
+.detail-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
 }
 
-.driver-data{
-  margin-left:15px;
+.driver-data {
+  margin-left: 15px;
 }
 
-.tow-extra{
-  margin-top:14px;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-  font-size:14px;
-  line-height:1.4;
+.tow-extra {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 1.4;
   font-family: "Inter", sans-serif;
 }
 
-.tow-extra p{
-  margin:0;
-  color:#e5e7eb;
-  font-weight:600;
-  color:#f1f5f9;
-  margin-right:4px;
+.tow-extra p {
+  margin: 0;
+  color: #e5e7eb;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin-right: 4px;
 }
-
 
 .phone {
   font-size: 16px;
