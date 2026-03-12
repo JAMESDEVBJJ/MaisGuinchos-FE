@@ -360,10 +360,10 @@ export function ClientSideBar(props: ClientBarProps) {
                   Calcular rota com guincho
                 </button>
               </div>
-              {props.distanceKmG &&
-                props.durationMinG &&
-                props.priceEstimateG &&
-                props.routeG && (
+              {props.routeG &&
+                props.distanceKmG != null &&
+                props.durationMinG != null &&
+                props.priceEstimateG != null && (
                   <TowRequestData
                     distanceKm={props.distanceKm}
                     durationMin={props.durationMinTotal}

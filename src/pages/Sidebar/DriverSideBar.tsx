@@ -5,6 +5,7 @@ import type { TowRequestReceiveDto } from "../../dtos/TowRequestReceiveDTO";
 import * as signalR from "@microsoft/signalr";
 import { api } from "../../services/api";
 import { TowRequestData } from "./TowRequestData";
+import CounterOfferModal from "./CounterTowModal";
 
 type DriverSideProps = {
   locationText: string;
@@ -25,6 +26,7 @@ export function DriverSideBar(props: DriverSideProps) {
   const [isAvailable, setIsAvailable] = useState(false);
 
   const [show, setShow] = useState(false);
+  const [showCounterModal, setShowCounterModal] = useState(false);
 
   const [selectedTow, setSelectedTow] = useState<TowRequestReceiveDto | null>(
     null
@@ -111,117 +113,122 @@ export function DriverSideBar(props: DriverSideProps) {
   }, []);
 
   return (
-    <aside className="sidebar" style={{ width: props.sideBarW }}>
-      {!selectedTow && (
-        <>
-          <div className="sidebar-header">
-            <span className="status-label">
-              {isAvailable ? "Disponível" : "Indisponível"}
-            </span>
+    <>
+      <aside className="sidebar" style={{ width: props.sideBarW }}>
+        {!selectedTow && (
+          <>
+            <div className="sidebar-header">
+              <span className="status-label">
+                {isAvailable ? "Disponível" : "Indisponível"}
+              </span>
 
-            <div
-              className={`toggle ${isAvailable ? "active" : ""}`}
-              onClick={handleToggle}
-            >
-              <div className="toggle-circle" />
+              <div
+                className={`toggle ${isAvailable ? "active" : ""}`}
+                onClick={handleToggle}
+              >
+                <div className="toggle-circle" />
+              </div>
             </div>
-          </div>
-          <div className="search">
-            <InputLocation
-              locationText={props.locationText}
-              setLocationText={props.setLocationText}
-              setRouteG={props.setRouteG}
-              setUserLocation={props.setUserLocation}
-            />
-          </div>
+            <div className="search">
+              <InputLocation
+                locationText={props.locationText}
+                setLocationText={props.setLocationText}
+                setRouteG={props.setRouteG}
+                setUserLocation={props.setUserLocation}
+              />
+            </div>
 
-          {towReceived && towsReceive.length > 0 && (
-            <>
-              <span className="results-title">Pedidos de reboque</span>
+            {towReceived && towsReceive.length > 0 && (
+              <>
+                <span className="results-title">Pedidos de reboque</span>
 
-              <div className="results">
-                {towsReceive.map((t) => {
-                  const firstName = t.clientName.split(" ")[0];
+                <div className="results">
+                  {towsReceive.map((t) => {
+                    const firstName = t.clientName.split(" ")[0];
 
-                  return (
-                    <div
-                      key={t.id}
-                      className="result-card driver-card"
-                      onClick={() => setSelectedTow(t)}
-                    >
-                      <div className="card-main">
-                        <div className="left">
-                          <span className="client-name">{firstName}</span>
-                          <span className="distance">
-                            {t.totalDistanceKm}km
-                          </span>
-                          <span className="duration">
-                            há {formatTime(getMinutesSince(t.createdAt))}
-                          </span>
+                    return (
+                      <div
+                        key={t.id}
+                        className="result-card driver-card"
+                        onClick={() => setSelectedTow(t)}
+                      >
+                        <div className="card-main">
+                          <div className="left">
+                            <span className="client-name">{firstName}</span>
+                            <span className="distance">
+                              {t.totalDistanceKm}km
+                            </span>
+                            <span className="duration">
+                              há {formatTime(getMinutesSince(t.createdAt))}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </>
-          )}
-        </>
-      )}
-      {selectedTow && (
-        <div className="tow-details">
-          <button className="back" onClick={() => setSelectedTow(null)}>
-            ⬅
-          </button>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+          </>
+        )}
+        {selectedTow && (
+          <div className="tow-details">
+            <button className="back" onClick={() => setSelectedTow(null)}>
+              ⬅
+            </button>
 
-          <h3 className="solicith3">Solicitação de serviço</h3>
+            <h3 className="solicith3">Solicitação de serviço</h3>
 
-          <div className="detail-top">
-            <h3>{selectedTow.clientName}</h3>
-            <div className="detail-info">
-              <div className="client-data">
-                <span className="phone">+55 48 9 8832-2133</span>
+            <div className="detail-top">
+              <h3>{selectedTow.clientName}</h3>
+              <div className="detail-info">
+                <div className="client-data">
+                  <span className="phone">+55 48 9 8832-2133</span>
+                </div>
               </div>
             </div>
+            <div className="detail">
+              <TowRequestData
+                distanceKm={selectedTow.totalDistanceKm}
+                durationMin={selectedTow.durationMinutes}
+                priceEstimate={selectedTow.suggestedPrice}
+                distanceKmG={selectedTow.totalDistanceKm}
+                durationMinG={selectedTow.durationMinutes}
+                priceEstimateG={selectedTow.suggestedPrice}
+                routeG={null}
+                modelo={selectedTow.vehicleType}
+              />
+            </div>
+
+            <div className="tow-extra">
+              <p>Questão: {selectedTow.vehicleIssue}</p>
+
+              <p>Notas: {selectedTow.notes}</p>
+            </div>
+
+            <button className="accept-btn">Aceitar</button>
+
+            <button
+              className="counter-btn"
+              onClick={() => setShowCounterModal(!showCounterModal)}
+            >
+              Enviar contraproposta
+            </button>
           </div>
-          <div className="detail">
-            <TowRequestData
-              distanceKm={selectedTow.totalDistanceKm}
-              durationMin={selectedTow.durationMinutes}
-              priceEstimate={selectedTow.suggestedPrice}
-              distanceKmG={selectedTow.totalDistanceKm}
-              durationMinG={selectedTow.durationMinutes}
-              priceEstimateG={selectedTow.suggestedPrice}
-              routeG={null}
-              modelo={selectedTow.vehicleType}
-            />
-          </div>
-
-          <div className="tow-extra">
-            <p>Questão: {selectedTow.vehicleIssue}</p>
-
-            <p>Notas: {selectedTow.notes}</p>
-          </div>
-
-          <button className="accept-btn">Aceitar</button>
-
-          <button className="counter-btn">Enviar contraproposta</button>
-        </div>
+        )}
+        <div className="resize-handle" onMouseDown={handleMouseDown} />
+      </aside>
+      {showCounterModal && selectedTow !== null && (
+        <CounterOfferModal
+          price={selectedTow.suggestedPrice}
+          onClose={() => {
+            setShowCounterModal(false);
+          }}
+        />
       )}
-      <div className="resize-handle" onMouseDown={handleMouseDown} />
-    </aside>
+    </>
   );
 }
-/*<button onClick={()=>setShow(true)}>
-Enviar contraproposta
-</button>
-
-{show && (
-  <CounterOfferModal
-    price={550}
-    onClose={()=>setShow(false)}
-  />
-)}*/
 function formatTime(minutes: number) {
   const totalSeconds = minutes * 60;
 
