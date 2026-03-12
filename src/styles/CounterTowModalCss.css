@@ -36,7 +36,8 @@
 .newPrice {
   font-size: 28px;
   font-weight: 700;
-  margin: 6px 0;
+  margin: 10px 0;
+  margin-bottom: 15px;
 }
 
 .percent {
@@ -125,8 +126,8 @@
 }
 
 .reasonButtons {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 6px;
   margin-bottom: 10px;
 }
@@ -174,4 +175,15 @@
   border: none;
   color: #9aa6b2;
   cursor: pointer;
+}
+
+.field input,
+.field textarea {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #2f3e4e;
+  background-color: #22313f;
+  color: white;
+  font-size: 0.9rem;
+  outline: none;
 }

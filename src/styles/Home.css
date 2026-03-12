@@ -881,7 +881,7 @@ button.waiting:hover {
 }
 .solicith3 {
   padding-bottom: 40px;
-  font-size: 17.5px;
+  font-size: 22px;
   padding-bottom: 30px;
 }
 
@@ -921,7 +921,7 @@ button.waiting:hover {
 }
 
 .client-data {
-  text-align: right;
+  text-align: left;
 }
 
 .detail-top {
@@ -935,6 +935,9 @@ button.waiting:hover {
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
+}
+.detail {
+  padding-top: 15px;
 }
 
 .driver-data {

@@ -6,6 +6,9 @@ const reasons = [
   "Garagem apertada",
   "Terreno irregular",
   "Acesso difícil",
+  "Veículo pesado",
+  "Rua inclinada",
+  "Risco de danos",
   "Outro",
 ];
 
@@ -83,12 +86,12 @@ export default function CounterOfferModal({
         <div className="sliderSection">
           <input
             type="range"
-            min="0"
+            min="1"
             max="15"
             value={percent}
             style={
               {
-                "--progress": `${(percent / 15) * 100}%`,
+                "--progress": `${((percent - 1) / (15 - 1)) * 100}%`,
               } as React.CSSProperties
             }
             onChange={(e) => setPercent(Number(e.target.value))}
@@ -114,12 +117,14 @@ export default function CounterOfferModal({
         </div>
 
         {reasonsSelected.includes("Outro") && (
-          <input
-            className="customReason"
-            placeholder="Descreva o motivo"
-            value={customReason}
-            onChange={(e) => setCustomReason(e.target.value)}
-          />
+          <div className="field">
+            <input
+              className="customReason"
+              placeholder="Descreva o motivo"
+              value={customReason}
+              onChange={(e) => setCustomReason(e.target.value)}
+            />
+          </div>
         )}
 
         <button className="sendButton" onClick={submit}>
