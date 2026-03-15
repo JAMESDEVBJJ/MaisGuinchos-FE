@@ -224,6 +224,7 @@ export function DriverSideBar(props: DriverSideProps) {
           onClose={() => {
             setShowCounterModal(false);
           }}
+          towRequest={selectedTow}
         />
       )}
     </>

@@ -1,5 +1,5 @@
-import type { GuinchosDto } from "../dtos/MapPropsDTO";
-import { flyToTarget } from "./Maps";
+import type { GuinchosDto } from "../../dtos/MapPropsDTO";
+import { flyToTarget } from "../Maps";
 
 type GuinchosResultsProps = {
   guinchos: GuinchosDto[];
