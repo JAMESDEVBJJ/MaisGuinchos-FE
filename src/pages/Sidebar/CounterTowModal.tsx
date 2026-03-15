@@ -18,6 +18,7 @@ type CounterOfferModalProps = {
   price: number;
   onClose: () => void;
   towRequest: TowRequestReceiveDto;
+  setTowsReceived: React.Dispatch<React.SetStateAction<TowRequestReceiveDto[]>>;
 };
 
 export interface TowRequestCounterOfferDto {
@@ -32,6 +33,7 @@ export default function CounterOfferModal({
   price,
   onClose,
   towRequest,
+  setTowsReceived,
 }: CounterOfferModalProps) {
   const [percent, setPercent] = useState(5);
   const [reason, setReason] = useState("");
@@ -48,33 +50,48 @@ export default function CounterOfferModal({
     }
   }
 
-  function submit() {
-    let finalReasons = [...reasonsSelected];
+  async function submit() {
+    try {
+      let finalReasons = [...reasonsSelected];
 
-    if (reasonsSelected.includes("Outro") && customReason) {
-      finalReasons = finalReasons.filter((r) => r !== "Outro");
-      finalReasons.push(customReason);
+      if (reasonsSelected.includes("Outro") && customReason) {
+        finalReasons = finalReasons.filter((r) => r !== "Outro");
+        finalReasons.push(customReason);
+      }
+
+      let reasonString = finalReasons.join(", ");
+
+      if (!reasonString.trim()) {
+        alert("Informe ao menos um motivo");
+        return;
+      }
+
+      if (!reasonString.endsWith(".")) {
+        reasonString += ".";
+      }
+
+      setReason(reasonString);
+
+      const response = await api.put(
+        `/towRequests/${towRequest.id}/counter-offer`,
+        {
+          newPrice: newPrice,
+          initialPrice: price,
+          percent: percent,
+          reason: reasonString,
+        }
+      );
+
+      const updatedTow = response.data;
+
+      setTowsReceived((prev) =>
+        prev.map((t) => (t.id === updatedTow.id ? updatedTow : t))
+      );
+
+    } catch (error) {
+      console.error("Erro ao enviar contra oferta:", error);
+      alert("Erro ao enviar contra oferta");
     }
-
-    let reasonString = finalReasons.join(", ");
-
-    if (!reasonString) {
-      alert("Informe ao menos um motivo");
-      return;
-    }
-
-    if (reasonString[reasonString.length - 1] !== ".") {
-      reasonString += ".";
-    }
-
-    setReason(reasonString);
-
-    api.put(`/towRequests/${towRequest.id}/counter-offer`, {
-      newPrice: newPrice,
-      initialPrice: price,
-      percent: percent,
-      reason: reasonString,
-    });
   }
 
   return (
