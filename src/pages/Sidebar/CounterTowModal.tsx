@@ -1,5 +1,7 @@
 import { useState } from "react";
 import "../../styles/CounterTowModalCss.css";
+import type { TowRequestReceiveDto } from "../../dtos/TowRequestReceiveDTO";
+import { api } from "../../services/api";
 
 const reasons = [
   "Veículo sem pneus",
@@ -15,11 +17,21 @@ const reasons = [
 type CounterOfferModalProps = {
   price: number;
   onClose: () => void;
+  towRequest: TowRequestReceiveDto;
 };
+
+export interface TowRequestCounterOfferDto {
+  towRequestId: string;
+  newPrice: number;
+  initialPrice: number;
+  percent: number;
+  reason?: string;
+}
 
 export default function CounterOfferModal({
   price,
   onClose,
+  towRequest,
 }: CounterOfferModalProps) {
   const [percent, setPercent] = useState(5);
   const [reason, setReason] = useState("");
@@ -44,16 +56,23 @@ export default function CounterOfferModal({
       finalReasons.push(customReason);
     }
 
-    const reasonString = finalReasons.join(", ");
+    let reasonString = finalReasons.join(", ");
 
     if (!reasonString) {
       alert("Informe ao menos um motivo");
       return;
     }
 
-    console.log({
-      percent,
-      newPrice,
+    if (reasonString[reasonString.length - 1] !== ".") {
+      reasonString += ".";
+    }
+
+    setReason(reasonString);
+
+    api.put(`/towRequests/${towRequest.id}/counter-offer`, {
+      newPrice: newPrice,
+      initialPrice: price,
+      percent: percent,
       reason: reasonString,
     });
   }

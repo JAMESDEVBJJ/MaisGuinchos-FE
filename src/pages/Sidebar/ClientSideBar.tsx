@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import iconDestination from "../../assets/icons/detinIcon.png";
-import GuinchosResults from "../GuinchosResults";
+import GuinchosResults from "./GuinchosResults";
 import { api } from "../../services/api";
 import L from "leaflet";
 import defaultUserPng from "../../assets/defaultUser.png";
@@ -438,6 +438,8 @@ export function ClientSideBar(props: ClientBarProps) {
               className={`secondary fullwidth ${
                 props.requestStatus === "waitingDriver"
                   ? "waiting"
+                  : props.requestStatus === "negotiating"
+                  ? "waiting"
                   : props.routeG && props.route
                   ? "contact-enabled"
                   : ""
@@ -449,6 +451,8 @@ export function ClientSideBar(props: ClientBarProps) {
             >
               {props.requestStatus === "waitingDriver"
                 ? `Aguardando motorista${dots}`
+                : props.requestStatus === "negotiating"
+                ? "Contra Oferta recebida"
                 : props.requestStatus === "sending"
                 ? "Enviando..."
                 : "Solicitar Guincho"}
