@@ -65,6 +65,7 @@ type ClientBarProps = {
     React.SetStateAction<"idle" | "sending" | "waitingDriver" | "accepted">
   >;
   requestStatus: string;
+  hideDriverPhoto: boolean;
 };
 export function ClientSideBar(props: ClientBarProps) {
   const token = localStorage.getItem("token");
@@ -327,7 +328,9 @@ export function ClientSideBar(props: ClientBarProps) {
               </button>
               <div className="detail-top">
                 <img
-                  className={`detail-photo ${isDefault ? "default-photo" : ""}`}
+                  className={`detail-photo ${
+                    isDefault ? "default-photo" : ""
+                  } ${props.hideDriverPhoto ? "hide" : ""}`}
                   src={
                     isDefault ? defaultUserPng : `https://localhost:7120${foto}`
                   }

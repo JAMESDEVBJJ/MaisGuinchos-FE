@@ -225,6 +225,7 @@ export function DriverSideBar(props: DriverSideProps) {
             setShowCounterModal(false);
           }}
           towRequest={selectedTow}
+          setTowsReceived={setTowsReceive}
         />
       )}
     </>

@@ -43,6 +43,8 @@ export type SidebarProps = {
 };
 
 export function Sidebar(props: SidebarProps) {
+  const [hideDriverPhoto, setHideDriverPhoto] = useState(false);
+
   const { user } = useAuth();
 
   const [locationText, setLocationText] = useState("");
@@ -71,9 +73,14 @@ export function Sidebar(props: SidebarProps) {
     if (!isResizing) return;
 
     const newWidth = e.clientX;
-
     if (newWidth <= 280) return;
     if (newWidth >= 580) return;
+
+    if (props.selectedGuincho != null) {
+      if (newWidth <= 350) setHideDriverPhoto(true)
+      else setHideDriverPhoto(false);
+
+    } 
 
     setSideBarW(newWidth);
     setIsCompact(newWidth <= COMPACT_WIDTH);
@@ -94,6 +101,7 @@ export function Sidebar(props: SidebarProps) {
       sidebarW={sidebarW}
       isCompact={isCompact}
       setIsResizing={setIsResizing}
+      hideDriverPhoto={hideDriverPhoto}
     />
   ) : (
     <></>
