@@ -536,6 +536,10 @@ input {
   align-items: center;
 }
 
+.hide {
+  display: none;
+}
+
 .detail-photo {
   width: 120px;
   height: 120px;

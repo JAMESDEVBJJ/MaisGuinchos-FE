@@ -195,8 +195,10 @@ export function DriverSideBar(props: DriverSideProps) {
                 distanceKmG={selectedTow.totalDistanceKm}
                 durationMinG={selectedTow.durationMinutes}
                 priceEstimateG={selectedTow.suggestedPrice}
+                suggestedPrice={selectedTow.suggestedPrice}
                 routeG={null}
                 modelo={selectedTow.vehicleType}
+                totalDistanceKm={selectedTow.totalDistanceKm}
               />
             </div>
 
@@ -225,6 +227,7 @@ export function DriverSideBar(props: DriverSideProps) {
             setShowCounterModal(false);
           }}
           towRequest={selectedTow}
+          setTowsReceived={setTowsReceive}
         />
       )}
     </>
