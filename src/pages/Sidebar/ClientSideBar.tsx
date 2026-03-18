@@ -62,7 +62,9 @@ type ClientBarProps = {
   sidebarW: number;
   setIsResizing: React.Dispatch<React.SetStateAction<boolean>>;
   setRequestStatus: React.Dispatch<
-    React.SetStateAction<"idle" | "sending" | "waitingDriver" | "accepted" | "negotiating">
+    React.SetStateAction<
+      "idle" | "sending" | "waitingDriver" | "accepted" | "negotiating"
+    >
   >;
   requestStatus: string;
   hideDriverPhoto: boolean;
@@ -83,7 +85,9 @@ export function ClientSideBar(props: ClientBarProps) {
   const [vehicleIssue, setVehicleIssue] = useState("");
   const [notes, setNotes] = useState("");
 
-  const [towRequest, setTowRequest] = useState<CreateTowRequestDTO | null>(null);
+  const [towRequest, setTowRequest] = useState<CreateTowRequestDTO | null>(
+    null
+  );
   const [towRequestId, setTowRequestId] = useState<string | null>(null); //usar p mostra dai
 
   const foto = props.selectedGuincho?.motorista?.foto;
@@ -126,7 +130,7 @@ export function ClientSideBar(props: ClientBarProps) {
 
     connection.on("ReceiveCounterOffer", (data) => {
       props.setRequestStatus("negotiating");
-      console.dir(data)
+      console.dir(data);
     });
 
     return () => {
@@ -392,6 +396,8 @@ export function ClientSideBar(props: ClientBarProps) {
                 className={`secondary fullwidth ${
                   props.requestStatus === "waitingDriver"
                     ? "waiting"
+                    : props.requestStatus === "negotiating"
+                    ? "waiting"
                     : props.routeG && props.route
                     ? "contact-enabled"
                     : ""
@@ -405,6 +411,8 @@ export function ClientSideBar(props: ClientBarProps) {
                   ? `Aguardando motorista${dots}`
                   : props.requestStatus === "sending"
                   ? "Enviando..."
+                  : props.requestStatus === "negotiating"
+                  ? "Contra Oferta recebida"
                   : "Solicitar Guincho"}
               </button>
             </div>
