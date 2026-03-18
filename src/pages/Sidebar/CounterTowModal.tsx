@@ -71,6 +71,7 @@ export default function CounterOfferModal({
       }
 
       setReason(reasonString);
+      console.log(towRequest.id)
 
       const response = await api.put(
         `/towRequests/${towRequest.id}/counter-offer`,

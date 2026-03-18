@@ -11,6 +11,9 @@ type TowRequestDataProps = {
   routeG?: any;
 
   modelo: string | null;
+
+  totalDistanceKm: number | null;
+  suggestedPrice: number | null;
 };
 
 export function TowRequestData({
@@ -22,6 +25,8 @@ export function TowRequestData({
   priceEstimateG,
   routeG,
   modelo,
+  totalDistanceKm,
+  suggestedPrice
 }: TowRequestDataProps) {
   const [showDetails, setShowDetails] = useState(false);
 
@@ -35,7 +40,7 @@ export function TowRequestData({
     <div className="route-summary">
       <ul className="tow-info">
         <li>
-          <strong>Distância total:</strong> {totalDistance.toFixed(1)} Km
+          <strong>Distância total:</strong> {totalDistanceKm ? totalDistanceKm.toFixed(1) : totalDistance.toFixed(1)} Km
         </li>
 
         <li>
@@ -50,7 +55,7 @@ export function TowRequestData({
 
         {!showDetails && (
           <li>
-            <strong>Preço estimado:</strong> {totalPrice.toFixed(0)} R$
+            <strong>Preço estimado:</strong> {suggestedPrice ? suggestedPrice.toFixed(0) : totalPrice.toFixed(0)} R$
           </li>
         )}
       </ul>

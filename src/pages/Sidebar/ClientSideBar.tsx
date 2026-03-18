@@ -62,7 +62,7 @@ type ClientBarProps = {
   sidebarW: number;
   setIsResizing: React.Dispatch<React.SetStateAction<boolean>>;
   setRequestStatus: React.Dispatch<
-    React.SetStateAction<"idle" | "sending" | "waitingDriver" | "accepted">
+    React.SetStateAction<"idle" | "sending" | "waitingDriver" | "accepted" | "negotiating">
   >;
   requestStatus: string;
   hideDriverPhoto: boolean;
@@ -83,6 +83,7 @@ export function ClientSideBar(props: ClientBarProps) {
   const [vehicleIssue, setVehicleIssue] = useState("");
   const [notes, setNotes] = useState("");
 
+  const [towRequest, setTowRequest] = useState<CreateTowRequestDTO | null>(null);
   const [towRequestId, setTowRequestId] = useState<string | null>(null); //usar p mostra dai
 
   const foto = props.selectedGuincho?.motorista?.foto;
@@ -121,6 +122,11 @@ export function ClientSideBar(props: ClientBarProps) {
           return g;
         })
       );
+    });
+
+    connection.on("ReceiveCounterOffer", (data) => {
+      props.setRequestStatus("negotiating");
+      console.dir(data)
     });
 
     return () => {
@@ -246,6 +252,8 @@ export function ClientSideBar(props: ClientBarProps) {
       vehicleIssue: vehicleIssue,
       notes: notes,
     };
+
+    setTowRequest(towRequestDto);
 
     try {
       const response = await api.post("/towrequests", towRequestDto);
@@ -374,8 +382,10 @@ export function ClientSideBar(props: ClientBarProps) {
                     distanceKmG={props.distanceKmG}
                     durationMinG={props.durationMinG}
                     priceEstimateG={props.priceEstimateG}
+                    suggestedPrice={null}
                     routeG={props.routeG}
                     modelo={null}
+                    totalDistanceKm={null}
                   />
                 )}
               <button
