@@ -9,6 +9,7 @@ import type { PutTowCounterOfferDTO } from "../../dtos/CounterOfferDTO";
 import { InputLocation } from "./InputLocation";
 import * as signalR from "@microsoft/signalr";
 import { TowRequestData } from "./TowRequestData";
+import ReceiveCounterTowModal from "./ReceiveCounterTowModal";
 
 interface CoordinateDto {
   lat: number;
@@ -16,7 +17,7 @@ interface CoordinateDto {
 }
 
 interface CreateTowRequestDTO {
-  id?: string; 
+  id?: string;
   clientId?: string;
   clientName?: string;
   driverId?: string;
@@ -37,7 +38,6 @@ interface CreateTowRequestDTO {
   vehicleType: string;
   vehicleIssue: string;
   notes?: string;
-
 }
 
 type ClientBarProps = {
@@ -101,9 +101,10 @@ export function ClientSideBar(props: ClientBarProps) {
     null
   );
 
-  const [counterOffer, setCounterOffer] = useState<PutTowCounterOfferDTO | null>(
-    null
-  );
+  const [counterOffer, setCounterOffer] =
+    useState<PutTowCounterOfferDTO | null>(null);
+
+  const [showGetCounterModal, setShowGetCounterModal] = useState(false);
 
   const foto = props.selectedGuincho?.motorista?.foto;
   const isDefault = !foto || foto.trim() === "";
@@ -145,7 +146,7 @@ export function ClientSideBar(props: ClientBarProps) {
 
     connection.on("ReceiveCounterOffer", (data: PutTowCounterOfferDTO) => {
       props.setRequestStatus("negotiating");
-    
+
       setTowRequest(data);
     });
 
@@ -271,7 +272,6 @@ export function ClientSideBar(props: ClientBarProps) {
       vehicleType: vehicleType,
       vehicleIssue: vehicleIssue,
       notes: notes,
-
     };
 
     try {
@@ -410,16 +410,20 @@ export function ClientSideBar(props: ClientBarProps) {
                 className={`secondary fullwidth ${
                   props.requestStatus === "waitingDriver"
                     ? "waiting"
-                    : props.requestStatus === "negotiating"
-                    ? "waiting"
                     : props.routeG && props.route
                     ? "contact-enabled"
+                    : props.requestStatus === "negotiating"
+                    ? "waiting contact-enabled"
                     : ""
                 }`}
                 disabled={
                   serviceIsDisabled || props.requestStatus === "waitingDriver"
                 }
-                onClick={() => setShowModal(true)}
+                onClick={
+                  props.requestStatus === "negotiating"
+                    ? () => setShowGetCounterModal(true)
+                    : () => setShowModal(true)
+                }
               >
                 {props.requestStatus === "waitingDriver"
                   ? `Aguardando motorista${dots}`
@@ -494,6 +498,12 @@ export function ClientSideBar(props: ClientBarProps) {
             </button>
           </div>
         </div>
+      )}
+      {showGetCounterModal && (
+        <ReceiveCounterTowModal
+          onClose={() => setShowGetCounterModal(false)}
+          towCounterReceived={towRequest}
+        />
       )}
     </>
   );
