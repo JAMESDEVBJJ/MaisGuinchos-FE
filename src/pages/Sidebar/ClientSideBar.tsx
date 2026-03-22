@@ -5,6 +5,7 @@ import { api } from "../../services/api";
 import L from "leaflet";
 import defaultUserPng from "../../assets/defaultUser.png";
 import type { GuinchosDto, Position } from "../../dtos/MapPropsDTO";
+import type { PutTowCounterOfferDTO } from "../../dtos/CounterOfferDTO";
 import { InputLocation } from "./InputLocation";
 import * as signalR from "@microsoft/signalr";
 import { TowRequestData } from "./TowRequestData";
@@ -15,7 +16,17 @@ interface CoordinateDto {
 }
 
 interface CreateTowRequestDTO {
-  driverId: string;
+  id?: string; 
+  clientId?: string;
+  clientName?: string;
+  driverId?: string;
+  driverName?: string;
+  counterOfferPrice?: number;
+  counterReason?: string;
+  counterOfferPercent?: number;
+  counterOfferAt?: number;
+  status?: number;
+  createdAt?: number;
   pickupLat: number;
   pickupLon: number;
   dropoffLat: number;
@@ -26,6 +37,7 @@ interface CreateTowRequestDTO {
   vehicleType: string;
   vehicleIssue: string;
   notes?: string;
+
 }
 
 type ClientBarProps = {
@@ -85,10 +97,13 @@ export function ClientSideBar(props: ClientBarProps) {
   const [vehicleIssue, setVehicleIssue] = useState("");
   const [notes, setNotes] = useState("");
 
-  const [towRequest, setTowRequest] = useState<CreateTowRequestDTO | null>(
+  const [towRequest, setTowRequest] = useState<PutTowCounterOfferDTO | null>(
     null
   );
-  const [towRequestId, setTowRequestId] = useState<string | null>(null); //usar p mostra dai
+
+  const [counterOffer, setCounterOffer] = useState<PutTowCounterOfferDTO | null>(
+    null
+  );
 
   const foto = props.selectedGuincho?.motorista?.foto;
   const isDefault = !foto || foto.trim() === "";
@@ -128,9 +143,10 @@ export function ClientSideBar(props: ClientBarProps) {
       );
     });
 
-    connection.on("ReceiveCounterOffer", (data) => {
+    connection.on("ReceiveCounterOffer", (data: PutTowCounterOfferDTO) => {
       props.setRequestStatus("negotiating");
-      console.dir(data);
+    
+      setTowRequest(data);
     });
 
     return () => {
@@ -255,15 +271,13 @@ export function ClientSideBar(props: ClientBarProps) {
       vehicleType: vehicleType,
       vehicleIssue: vehicleIssue,
       notes: notes,
-    };
 
-    setTowRequest(towRequestDto);
+    };
 
     try {
       const response = await api.post("/towrequests", towRequestDto);
 
       props.setRequestStatus("waitingDriver");
-      setTowRequestId(response.data.id);
 
       setShowModal(false);
 
