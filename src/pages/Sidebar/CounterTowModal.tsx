@@ -178,10 +178,15 @@ export default function CounterOfferModal({
 
         <button
           className={`sendButton ${
-            towRequest.counterStatus !== "CounterOfferSent" && statusSubmit
-          } ${towRequest.counterStatus === "CounterOfferSent" && "success"}`}
+            towRequest.counterStatus !== "CounterOfferSent"
+              ? statusSubmit
+              : "success"
+          }`}
           onClick={submit}
-          disabled={statusSubmit !== "idle" || towRequest.counterStatus === "CounterOfferSent"}
+          disabled={
+            statusSubmit !== "idle" ||
+            towRequest.counterStatus === "CounterOfferSent"
+          }
         >
           {statusSubmit === "idle" &&
             towRequest.counterStatus !== "CounterOfferSent" &&

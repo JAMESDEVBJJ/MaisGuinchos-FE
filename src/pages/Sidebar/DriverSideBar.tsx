@@ -209,7 +209,9 @@ export function DriverSideBar(props: DriverSideProps) {
               <p>Notas: {selectedTow.notes}</p>
             </div>
 
-            <button className="accept-btn">Aceitar</button>
+            {selectedTow.counterStatus !== "CounterOfferSent" && (
+              <button className="accept-btn">Aceitar</button>
+            )}
 
             <button
               className={`counter-btn sendButton ${
