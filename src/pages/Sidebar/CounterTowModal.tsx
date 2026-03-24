@@ -19,6 +19,9 @@ type CounterOfferModalProps = {
   onClose: () => void;
   towRequest: TowRequestReceiveDto;
   setTowsReceived: React.Dispatch<React.SetStateAction<TowRequestReceiveDto[]>>;
+  setSelectedTow: React.Dispatch<
+    React.SetStateAction<TowRequestReceiveDto | null>
+  >;
 };
 
 export interface TowRequestCounterOfferDto {
@@ -33,12 +36,15 @@ export default function CounterOfferModal({
   price,
   onClose,
   towRequest,
+  setSelectedTow,
   setTowsReceived,
 }: CounterOfferModalProps) {
   const [percent, setPercent] = useState(5);
   const [reason, setReason] = useState("");
   const [customReason, setCustomReason] = useState("");
   const [reasonsSelected, setReasonsSelected] = useState<string[]>([]);
+
+  const [statusSubmit, setStatus] = useState("idle");
 
   const newPrice = price * (1 + percent / 100);
 
@@ -51,6 +57,8 @@ export default function CounterOfferModal({
   }
 
   async function submit() {
+    setStatus("loading");
+
     try {
       let finalReasons = [...reasonsSelected];
 
@@ -71,7 +79,6 @@ export default function CounterOfferModal({
       }
 
       setReason(reasonString);
-      console.log(towRequest.id);
 
       const response = await api.put(
         `/towRequests/${towRequest.id}/counter-offer`,
@@ -85,12 +92,18 @@ export default function CounterOfferModal({
 
       const updatedTow = response.data;
 
+      updatedTow.counterStatus = "CounterOfferSent";
+      setSelectedTow({ ...towRequest, counterStatus: "CounterOfferSent" });
+
       setTowsReceived((prev) =>
         prev.map((t) => (t.id === updatedTow.id ? updatedTow : t))
       );
+
+      setStatus("success");
     } catch (error) {
       console.error("Erro ao enviar contra oferta:", error);
       alert("Erro ao enviar contra oferta");
+      setStatus("idle");
     }
   }
 
@@ -163,8 +176,22 @@ export default function CounterOfferModal({
           </div>
         )}
 
-        <button className="sendButton" onClick={submit}>
-          Enviar contraproposta
+        <button
+          className={`sendButton ${
+            towRequest.counterStatus !== "CounterOfferSent" && statusSubmit
+          } ${towRequest.counterStatus === "CounterOfferSent" && "success"}`}
+          onClick={submit}
+          disabled={statusSubmit !== "idle" || towRequest.counterStatus === "CounterOfferSent"}
+        >
+          {statusSubmit === "idle" &&
+            towRequest.counterStatus !== "CounterOfferSent" &&
+            "Enviar contraproposta"}
+          {statusSubmit === "loading" &&
+            towRequest.counterStatus !== "CounterOfferSent" &&
+            "Enviando..."}
+          {(statusSubmit === "success" ||
+            towRequest.counterStatus === "CounterOfferSent") &&
+            "Contraproposta enviada!"}
         </button>
       </div>
     </div>
