@@ -47,7 +47,7 @@ export default function ReceiveCounterTowModal({
 
         <div className="field">
           <input
-            className="customReason"
+            className="customReason" //vo coda agora fiz esse commit 4 min antes d vira o dia p sequencia
             placeholder="Descreva o motivo"
             value={props.towCounterReceived?.counterOfferReason}
           />
