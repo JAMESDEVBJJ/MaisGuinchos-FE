@@ -58,7 +58,6 @@ export function DriverSideBar(props: DriverSideProps) {
 
   const handleNewTow = (novoTow: TowRequestReceiveDto) => {
     setTowsReceive((prev) => [...prev, novoTow]);
-    console.dir(towsReceive);
   };
 
   useEffect(() => {
@@ -208,13 +207,20 @@ export function DriverSideBar(props: DriverSideProps) {
               <p>Notas: {selectedTow.notes}</p>
             </div>
 
-            <button className="accept-btn">Aceitar</button>
+            {selectedTow.counterStatus !== "CounterOfferSent" && (
+              <button className="accept-btn">Aceitar</button>
+            )}
 
             <button
-              className="counter-btn"
+              className={`counter-btn sendButton ${
+                selectedTow.counterStatus === "CounterOfferSent" && "success"
+              }`}
               onClick={() => setShowCounterModal(!showCounterModal)}
+              disabled={selectedTow.counterStatus === "CounterOfferSent"}
             >
-              Enviar contraproposta
+              {selectedTow.counterStatus !== "CounterOfferSent"
+                ? "Enviar contraproposta"
+                : "Contraproposta enviada!"}
             </button>
           </div>
         )}
@@ -226,6 +232,7 @@ export function DriverSideBar(props: DriverSideProps) {
           onClose={() => {
             setShowCounterModal(false);
           }}
+          setSelectedTow={setSelectedTow}
           towRequest={selectedTow}
           setTowsReceived={setTowsReceive}
         />

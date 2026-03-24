@@ -5,9 +5,11 @@ import { api } from "../../services/api";
 import L from "leaflet";
 import defaultUserPng from "../../assets/defaultUser.png";
 import type { GuinchosDto, Position } from "../../dtos/MapPropsDTO";
+import type { PutTowCounterOfferDTO } from "../../dtos/CounterOfferDTO";
 import { InputLocation } from "./InputLocation";
 import * as signalR from "@microsoft/signalr";
 import { TowRequestData } from "./TowRequestData";
+import ReceiveCounterTowModal from "./ReceiveCounterTowModal";
 
 interface CoordinateDto {
   lat: number;
@@ -15,7 +17,17 @@ interface CoordinateDto {
 }
 
 interface CreateTowRequestDTO {
-  driverId: string;
+  id?: string;
+  clientId?: string;
+  clientName?: string;
+  driverId?: string;
+  driverName?: string;
+  counterOfferPrice?: number;
+  counterReason?: string;
+  counterOfferPercent?: number;
+  counterOfferAt?: number;
+  status?: number;
+  createdAt?: number;
   pickupLat: number;
   pickupLon: number;
   dropoffLat: number;
@@ -62,7 +74,9 @@ type ClientBarProps = {
   sidebarW: number;
   setIsResizing: React.Dispatch<React.SetStateAction<boolean>>;
   setRequestStatus: React.Dispatch<
-    React.SetStateAction<"idle" | "sending" | "waitingDriver" | "accepted" | "negotiating">
+    React.SetStateAction<
+      "idle" | "sending" | "waitingDriver" | "accepted" | "negotiating"
+    >
   >;
   requestStatus: string;
   hideDriverPhoto: boolean;
@@ -83,8 +97,14 @@ export function ClientSideBar(props: ClientBarProps) {
   const [vehicleIssue, setVehicleIssue] = useState("");
   const [notes, setNotes] = useState("");
 
-  const [towRequest, setTowRequest] = useState<CreateTowRequestDTO | null>(null);
-  const [towRequestId, setTowRequestId] = useState<string | null>(null); //usar p mostra dai
+  const [towRequest, setTowRequest] = useState<PutTowCounterOfferDTO | null>(
+    null
+  );
+
+  const [counterOffer, setCounterOffer] =
+    useState<PutTowCounterOfferDTO | null>(null);
+
+  const [showGetCounterModal, setShowGetCounterModal] = useState(false);
 
   const foto = props.selectedGuincho?.motorista?.foto;
   const isDefault = !foto || foto.trim() === "";
@@ -124,9 +144,10 @@ export function ClientSideBar(props: ClientBarProps) {
       );
     });
 
-    connection.on("ReceiveCounterOffer", (data) => {
+    connection.on("ReceiveCounterOffer", (data: PutTowCounterOfferDTO) => {
       props.setRequestStatus("negotiating");
-      console.dir(data)
+
+      setTowRequest(data);
     });
 
     return () => {
@@ -253,13 +274,10 @@ export function ClientSideBar(props: ClientBarProps) {
       notes: notes,
     };
 
-    setTowRequest(towRequestDto);
-
     try {
       const response = await api.post("/towrequests", towRequestDto);
 
       props.setRequestStatus("waitingDriver");
-      setTowRequestId(response.data.id);
 
       setShowModal(false);
 
@@ -394,17 +412,25 @@ export function ClientSideBar(props: ClientBarProps) {
                     ? "waiting"
                     : props.routeG && props.route
                     ? "contact-enabled"
+                    : props.requestStatus === "negotiating"
+                    ? "waiting contact-enabled"
                     : ""
                 }`}
                 disabled={
                   serviceIsDisabled || props.requestStatus === "waitingDriver"
                 }
-                onClick={() => setShowModal(true)}
+                onClick={
+                  props.requestStatus === "negotiating"
+                    ? () => setShowGetCounterModal(true)
+                    : () => setShowModal(true)
+                }
               >
                 {props.requestStatus === "waitingDriver"
                   ? `Aguardando motorista${dots}`
                   : props.requestStatus === "sending"
                   ? "Enviando..."
+                  : props.requestStatus === "negotiating"
+                  ? "Contra Oferta recebida"
                   : "Solicitar Guincho"}
               </button>
             </div>
@@ -472,6 +498,12 @@ export function ClientSideBar(props: ClientBarProps) {
             </button>
           </div>
         </div>
+      )}
+      {showGetCounterModal && (
+        <ReceiveCounterTowModal
+          onClose={() => setShowGetCounterModal(false)}
+          towCounterReceived={towRequest}
+        />
       )}
     </>
   );

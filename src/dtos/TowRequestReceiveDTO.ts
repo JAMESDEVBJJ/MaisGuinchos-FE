@@ -14,4 +14,5 @@ export interface TowRequestReceiveDto {
   notes?: string | null;
   createdAt: number;
   status: number;
+  counterStatus: string;
 }
