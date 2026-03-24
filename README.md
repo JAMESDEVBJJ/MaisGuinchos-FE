@@ -52,17 +52,21 @@ src/
 ### 1. Instalar dependências
 ```bash
 npm install
+```
 
 ### 2. Rodar em ambiente de desenvolvimento
+```
 npm run dev
+```
 
 A aplicação ficará disponível em:
-
+```
 http://localhost:5173
+```
 
-🔗 Backend
+## 🔗 Backend
 
-Este frontend depende do backend do projeto MaisGuinchos.
+### Este frontend depende do backend do projeto MaisGuinchos.
 
 API em ASP.NET
 
@@ -72,7 +76,7 @@ Endpoints REST
 
 Certifique-se de que o backend esteja rodando antes de utilizar as funcionalidades de login e cadastro.
 
-📌 Observações
+## 📌 Observações
 
 O layout está em evolução
 
@@ -80,7 +84,7 @@ Validações avançadas ainda serão implementadas
 
 Fluxos de motorista/guincho estão em construção
 
-👤 Autor
+# 👤 Autor
 
-Desenvolvido por James
-Projeto de estudo e portfólio.
+## Desenvolvido por James
+## Projeto de estudo e portfólio.
