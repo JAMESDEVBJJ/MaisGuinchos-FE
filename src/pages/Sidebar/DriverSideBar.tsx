@@ -58,8 +58,6 @@ export function DriverSideBar(props: DriverSideProps) {
 
   const handleNewTow = (novoTow: TowRequestReceiveDto) => {
     setTowsReceive((prev) => [...prev, novoTow]);
-    console.log("Tows REcebeidos ");
-    console.dir(towsReceive);
   };
 
   useEffect(() => {
