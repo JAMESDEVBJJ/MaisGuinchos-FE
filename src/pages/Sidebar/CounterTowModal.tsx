@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "../../styles/CounterTowModalCss.css";
+import "../../styles/ConterOfferModals/CounterTowModalCss.css";
 import type { TowRequestReceiveDto } from "../../dtos/TowRequestReceiveDTO";
 import { api } from "../../services/api";
 
@@ -71,7 +71,7 @@ export default function CounterOfferModal({
       }
 
       setReason(reasonString);
-      console.log(towRequest.id)
+      console.log(towRequest.id);
 
       const response = await api.put(
         `/towRequests/${towRequest.id}/counter-offer`,
@@ -88,7 +88,6 @@ export default function CounterOfferModal({
       setTowsReceived((prev) =>
         prev.map((t) => (t.id === updatedTow.id ? updatedTow : t))
       );
-
     } catch (error) {
       console.error("Erro ao enviar contra oferta:", error);
       alert("Erro ao enviar contra oferta");
@@ -155,10 +154,10 @@ export default function CounterOfferModal({
 
         {reasonsSelected.includes("Outro") && (
           <div className="field">
-            <input
+            <textarea
               className="customReason"
-              placeholder="Descreva o motivo"
               value={customReason}
+              placeholder="Descreva o motivo"
               onChange={(e) => setCustomReason(e.target.value)}
             />
           </div>

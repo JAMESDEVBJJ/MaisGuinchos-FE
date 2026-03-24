@@ -1,4 +1,5 @@
 import type { PutTowCounterOfferDTO } from "../../dtos/CounterOfferDTO";
+import "../../styles/ConterOfferModals/ReceiveCounterTowModal.css";
 
 type GetCounterOfferModalProps = {
   onClose: () => void;
@@ -37,20 +38,12 @@ export default function ReceiveCounterTowModal({
               }
             )}
           </h2>
-          <span className="percent">
-            +{props.towCounterReceived?.counterOfferPercent}%
-          </span>
         </div>
         <div className="reasons">
-          <p className="label">Motivo:</p>
+          <p className="label motivo-client">Motivo:</p>
         </div>
-
         <div className="field">
-          <input
-            className="customReason" //vo coda agora fiz esse commit 4 min antes d vira o dia p sequencia
-            placeholder="Descreva o motivo"
-            value={props.towCounterReceived?.counterOfferReason}
-          />
+          <textarea value={props.towCounterReceived?.counterOfferReason} />
         </div>
 
         <button
