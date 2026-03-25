@@ -75,7 +75,7 @@ type ClientBarProps = {
   setIsResizing: React.Dispatch<React.SetStateAction<boolean>>;
   setRequestStatus: React.Dispatch<
     React.SetStateAction<
-      "idle" | "sending" | "waitingDriver" | "accepted" | "negotiating"
+      "idle" | "sending" | "waitingDriver" | "accepted" | "counterOfferReceived"
     >
   >;
   requestStatus: string;
@@ -145,7 +145,7 @@ export function ClientSideBar(props: ClientBarProps) {
     });
 
     connection.on("ReceiveCounterOffer", (data: PutTowCounterOfferDTO) => {
-      props.setRequestStatus("negotiating");
+      props.setRequestStatus("counterOfferReceived");
 
       setTowRequest(data);
     });
@@ -278,6 +278,7 @@ export function ClientSideBar(props: ClientBarProps) {
       const response = await api.post("/towrequests", towRequestDto);
 
       props.setRequestStatus("waitingDriver");
+
 
       setShowModal(false);
 
@@ -412,7 +413,7 @@ export function ClientSideBar(props: ClientBarProps) {
                     ? "waiting"
                     : props.routeG && props.route
                     ? "contact-enabled"
-                    : props.requestStatus === "negotiating"
+                    : props.requestStatus === "counterOfferReceived"
                     ? "waiting contact-enabled"
                     : ""
                 }`}
@@ -420,7 +421,7 @@ export function ClientSideBar(props: ClientBarProps) {
                   serviceIsDisabled || props.requestStatus === "waitingDriver"
                 }
                 onClick={
-                  props.requestStatus === "negotiating"
+                  props.requestStatus === "counterOfferReceived"
                     ? () => setShowGetCounterModal(true)
                     : () => setShowModal(true)
                 }
@@ -429,7 +430,7 @@ export function ClientSideBar(props: ClientBarProps) {
                   ? `Aguardando motorista${dots}`
                   : props.requestStatus === "sending"
                   ? "Enviando..."
-                  : props.requestStatus === "negotiating"
+                  : props.requestStatus === "counterOfferReceived"
                   ? "Contra Oferta recebida"
                   : "Solicitar Guincho"}
               </button>
@@ -477,7 +478,7 @@ export function ClientSideBar(props: ClientBarProps) {
               className={`secondary fullwidth ${
                 props.requestStatus === "waitingDriver"
                   ? "waiting"
-                  : props.requestStatus === "negotiating"
+                  : props.requestStatus === "counterOfferReceived"
                   ? "waiting"
                   : props.routeG && props.route
                   ? "contact-enabled"
@@ -490,7 +491,7 @@ export function ClientSideBar(props: ClientBarProps) {
             >
               {props.requestStatus === "waitingDriver"
                 ? `Aguardando motorista${dots}`
-                : props.requestStatus === "negotiating"
+                : props.requestStatus === "counterOfferReceived"
                 ? "Contra Oferta recebida"
                 : props.requestStatus === "sending"
                 ? "Enviando..."

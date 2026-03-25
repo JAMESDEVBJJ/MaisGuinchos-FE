@@ -46,7 +46,7 @@ const HomePage = () => {
   const [hoveredGuinchoId, setHoveredGuinchoId] = useState<string | null>(null);
   
   const [requestStatus, setRequestStatus] = useState<
-    "idle" | "sending" | "waitingDriver" | "accepted"
+    "idle" | "sending" | "waitingDriver" | "accepted" | "counterOfferReceived"
   >("idle");
 
   const mapRef = useRef<L.Map | null>(null);

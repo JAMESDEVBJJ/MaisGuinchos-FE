@@ -207,18 +207,18 @@ export function DriverSideBar(props: DriverSideProps) {
               <p>Notas: {selectedTow.notes}</p>
             </div>
 
-            {selectedTow.counterStatus !== "CounterOfferSent" && (
+            {selectedTow.status !== 2 && (
               <button className="accept-btn">Aceitar</button>
             )}
 
             <button
               className={`counter-btn sendButton ${
-                selectedTow.counterStatus === "CounterOfferSent" && "success"
+                selectedTow.status === 2 && "success"
               }`}
               onClick={() => setShowCounterModal(!showCounterModal)}
-              disabled={selectedTow.counterStatus === "CounterOfferSent"}
+              disabled={selectedTow.status === 2}
             >
-              {selectedTow.counterStatus !== "CounterOfferSent"
+              {selectedTow.status !== 2
                 ? "Enviar contraproposta"
                 : "Contraproposta enviada!"}
             </button>

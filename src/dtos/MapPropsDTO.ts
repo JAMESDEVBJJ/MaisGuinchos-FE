@@ -43,7 +43,7 @@ export type MapProps = {
   setRouteG: React.Dispatch<React.SetStateAction<[number, number][] | null>>;
   setHoveredGuinchoId: React.Dispatch<React.SetStateAction<string | null>>;
   setRequestStatus: React.Dispatch<
-    React.SetStateAction<"idle" | "sending" | "waitingDriver" | "accepted" | "negotiating">
+    React.SetStateAction<"idle" | "sending" | "waitingDriver" | "accepted" | "counterOfferSent">
   >;
   requestStatus: string;
   route: [number, number][] | null;

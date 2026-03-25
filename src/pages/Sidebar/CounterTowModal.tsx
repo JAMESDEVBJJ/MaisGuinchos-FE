@@ -57,6 +57,7 @@ export default function CounterOfferModal({
   }
 
   async function submit() {
+
     setStatus("loading");
 
     try {
@@ -92,8 +93,9 @@ export default function CounterOfferModal({
 
       const updatedTow = response.data;
 
-      updatedTow.counterStatus = "CounterOfferSent";
-      setSelectedTow({ ...towRequest, counterStatus: "CounterOfferSent" });
+      updatedTow.status = 2;
+
+      setSelectedTow({ ...towRequest, status: 2 });
 
       setTowsReceived((prev) =>
         prev.map((t) => (t.id === updatedTow.id ? updatedTow : t))
@@ -178,24 +180,18 @@ export default function CounterOfferModal({
 
         <button
           className={`sendButton ${
-            towRequest.counterStatus !== "CounterOfferSent"
-              ? statusSubmit
-              : "success"
+            towRequest.status !== 2 ? statusSubmit : "success"
           }`}
           onClick={submit}
-          disabled={
-            statusSubmit !== "idle" ||
-            towRequest.counterStatus === "CounterOfferSent"
-          }
+          disabled={statusSubmit !== "idle" || towRequest.status === 2}
         >
           {statusSubmit === "idle" &&
-            towRequest.counterStatus !== "CounterOfferSent" &&
+            towRequest.status !== 2 &&
             "Enviar contraproposta"}
           {statusSubmit === "loading" &&
-            towRequest.counterStatus !== "CounterOfferSent" &&
+            towRequest.status !== 2 &&
             "Enviando..."}
-          {(statusSubmit === "success" ||
-            towRequest.counterStatus === "CounterOfferSent") &&
+          {(statusSubmit === "success" || towRequest.status === 2) &&
             "Contraproposta enviada!"}
         </button>
       </div>
