@@ -1,4 +1,5 @@
 import type { PutTowCounterOfferDTO } from "../../dtos/CounterOfferDTO";
+import { api } from "../../services/api";
 import "../../styles/ConterOfferModals/ReceiveCounterTowModal.css";
 
 type GetCounterOfferModalProps = {
@@ -11,7 +12,33 @@ export default function ReceiveCounterTowModal({
 }: GetCounterOfferModalProps) {
   function submit() {}
 
-  function cancel() {}
+  async function cancel() {
+    try {
+      if (!props.towCounterReceived?.id) return;
+
+      const response = await api.put(
+        `/towRequests/${props.towCounterReceived.id}/reject-counter-offer`
+      );
+
+      const { status } = response.data;
+
+      console.log(status)
+
+      //setTow((prev) => ({ continuar e puxar o set
+      //  ...prev,
+      //  status
+      //}));
+
+      //setOpen(false);
+      console.log("envio e termino");
+    } catch (error) {
+      const message = "Erro ao rejeitar contraproposta.";
+
+      console.error(message, error);
+
+      alert(message);
+    }
+  }
 
   return (
     <div className="modalOverlay">
