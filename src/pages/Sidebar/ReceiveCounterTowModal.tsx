@@ -5,6 +5,7 @@ import "../../styles/ConterOfferModals/ReceiveCounterTowModal.css";
 type GetCounterOfferModalProps = {
   onClose: () => void;
   towCounterReceived: PutTowCounterOfferDTO | null;
+  setShowGetCounterModal: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function ReceiveCounterTowModal({
@@ -22,14 +23,10 @@ export default function ReceiveCounterTowModal({
 
       const { status } = response.data;
 
-      console.log(status)
+      console.log(status);
 
-      //setTow((prev) => ({ continuar e puxar o set
-      //  ...prev,
-      //  status
-      //}));
+      props.setShowGetCounterModal(false);
 
-      //setOpen(false);
       console.log("envio e termino");
     } catch (error) {
       const message = "Erro ao rejeitar contraproposta.";

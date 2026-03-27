@@ -504,6 +504,7 @@ export function ClientSideBar(props: ClientBarProps) {
         <ReceiveCounterTowModal
           onClose={() => setShowGetCounterModal(false)}
           towCounterReceived={towRequest}
+          setShowGetCounterModal={setShowGetCounterModal}
         />
       )}
     </>
