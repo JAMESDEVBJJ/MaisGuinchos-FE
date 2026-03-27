@@ -106,6 +106,14 @@ export function DriverSideBar(props: DriverSideProps) {
       setTowReceived(true);
     });
 
+    connection.on("CounterOfferRecused", (data: TowRequestReceiveDto) => {
+      setTowsReceive((prev) =>
+        prev.map((t) =>
+          t.id === data.id ? { ...t, counterOfferRecused: true } : t
+        )
+      );
+    });
+
     return () => {
       connection.stop();
     };
