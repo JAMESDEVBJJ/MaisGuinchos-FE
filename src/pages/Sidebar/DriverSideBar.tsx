@@ -24,6 +24,7 @@ export function DriverSideBar(props: DriverSideProps) {
   const [towReceived, setTowReceived] = useState<boolean>(false);
 
   const [isAvailable, setIsAvailable] = useState(false);
+  console.dir(towsReceive);
 
   const [show, setShow] = useState(false);
   const [showCounterModal, setShowCounterModal] = useState(false);
@@ -118,6 +119,21 @@ export function DriverSideBar(props: DriverSideProps) {
       connection.stop();
     };
   }, []);
+
+  const buttonCounterText = () => {
+    if(selectedTow?.counterOfferRecused) {
+      return "Contra oferta recusada."
+    }
+    
+  };
+  
+  const buttonCounterClass = () => {
+    if (selectedTow?.counterOfferRecused)
+      return "secondary fullwidth counter-offer-rejected";
+  
+    return "secondary fullwidth";
+  };
+  
 
   return (
     <>
@@ -226,9 +242,13 @@ export function DriverSideBar(props: DriverSideProps) {
               onClick={() => setShowCounterModal(!showCounterModal)}
               disabled={selectedTow.status === 2}
             >
-              {selectedTow.status !== 2
+              {selectedTow.counterOfferRecused
+                ? "Countra proposta recusada!"
+                : selectedTow.status !== 2
                 ? "Enviar contraproposta"
-                : "Contraproposta enviada!"}
+                : selectedTow.status === 2
+                ? "Contraproposta enviada!"
+                : ""}
             </button>
           </div>
         )}

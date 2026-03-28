@@ -6,6 +6,16 @@ type GetCounterOfferModalProps = {
   onClose: () => void;
   towCounterReceived: PutTowCounterOfferDTO | null;
   setShowGetCounterModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setRequestStatus: React.Dispatch<
+    React.SetStateAction<
+      | "idle"
+      | "sending"
+      | "waitingDriver"
+      | "accepted"
+      | "counterOfferReceived"
+      | "counterOfferRejected"
+    >
+  >;
 };
 
 export default function ReceiveCounterTowModal({
@@ -26,6 +36,7 @@ export default function ReceiveCounterTowModal({
       console.log(status);
 
       props.setShowGetCounterModal(false);
+      props.setRequestStatus("counterOfferRejected")
 
       console.log("envio e termino");
     } catch (error) {

@@ -75,7 +75,12 @@ type ClientBarProps = {
   setIsResizing: React.Dispatch<React.SetStateAction<boolean>>;
   setRequestStatus: React.Dispatch<
     React.SetStateAction<
-      "idle" | "sending" | "waitingDriver" | "accepted" | "counterOfferReceived"
+      | "idle"
+      | "sending"
+      | "waitingDriver"
+      | "accepted"
+      | "counterOfferReceived"
+      | "counterOfferRejected"
     >
   >;
   requestStatus: string;
@@ -279,7 +284,6 @@ export function ClientSideBar(props: ClientBarProps) {
 
       props.setRequestStatus("waitingDriver");
 
-
       setShowModal(false);
 
       setVehicleType("");
@@ -290,6 +294,33 @@ export function ClientSideBar(props: ClientBarProps) {
       alert("Erro ao solicitar guincho.");
     }
   }
+
+
+  const buttonCounterText = () => {
+    switch (props.requestStatus) {
+      case "waitingDriver" || "counterOfferRejected":
+        return `Aguardando motorista${dots}`;
+      case "sending":
+        return "Enviando...";
+      case "counterOfferReceived":
+        return "Contra oferta recebida";
+      default:
+        return "Solicitar Guincho";
+    }
+  };
+
+  const buttonCounterClass = () => {
+    if (props.requestStatus === "waitingDriver") return "secondary fullwidth waiting";
+  
+    if (props.requestStatus === "counterOfferReceived")
+      return "secondary fullwidth waiting contact-enabled";
+  
+    if (props.routeG && props.route)
+      return "secondary fullwidth contact-enabled";
+  
+    return "secondary fullwidth";
+  };
+
 
   return (
     <>
@@ -408,17 +439,9 @@ export function ClientSideBar(props: ClientBarProps) {
                   />
                 )}
               <button
-                className={`secondary fullwidth ${
-                  props.requestStatus === "waitingDriver"
-                    ? "waiting"
-                    : props.routeG && props.route
-                    ? "contact-enabled"
-                    : props.requestStatus === "counterOfferReceived"
-                    ? "waiting contact-enabled"
-                    : ""
-                }`}
+                className={buttonCounterClass()}
                 disabled={
-                  serviceIsDisabled || props.requestStatus === "waitingDriver"
+                  serviceIsDisabled || props.requestStatus === "waitingDriver" || props.requestStatus === "counterOfferRejected"
                 }
                 onClick={
                   props.requestStatus === "counterOfferReceived"
@@ -426,13 +449,7 @@ export function ClientSideBar(props: ClientBarProps) {
                     : () => setShowModal(true)
                 }
               >
-                {props.requestStatus === "waitingDriver"
-                  ? `Aguardando motorista${dots}`
-                  : props.requestStatus === "sending"
-                  ? "Enviando..."
-                  : props.requestStatus === "counterOfferReceived"
-                  ? "Contra Oferta recebida"
-                  : "Solicitar Guincho"}
+                {buttonCounterText()}
               </button>
             </div>
           </>
@@ -505,6 +522,7 @@ export function ClientSideBar(props: ClientBarProps) {
           onClose={() => setShowGetCounterModal(false)}
           towCounterReceived={towRequest}
           setShowGetCounterModal={setShowGetCounterModal}
+          setRequestStatus={props.setRequestStatus}
         />
       )}
     </>
