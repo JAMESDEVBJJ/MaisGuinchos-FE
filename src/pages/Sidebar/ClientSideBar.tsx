@@ -75,7 +75,12 @@ type ClientBarProps = {
   setIsResizing: React.Dispatch<React.SetStateAction<boolean>>;
   setRequestStatus: React.Dispatch<
     React.SetStateAction<
-      "idle" | "sending" | "waitingDriver" | "accepted" | "negotiating"
+      | "idle"
+      | "sending"
+      | "waitingDriver"
+      | "accepted"
+      | "counterOfferReceived"
+      | "counterOfferRejected"
     >
   >;
   requestStatus: string;
@@ -145,7 +150,7 @@ export function ClientSideBar(props: ClientBarProps) {
     });
 
     connection.on("ReceiveCounterOffer", (data: PutTowCounterOfferDTO) => {
-      props.setRequestStatus("negotiating");
+      props.setRequestStatus("counterOfferReceived");
 
       setTowRequest(data);
     });
@@ -290,6 +295,32 @@ export function ClientSideBar(props: ClientBarProps) {
     }
   }
 
+  const buttonCounterText = () => {
+    switch (props.requestStatus) {
+      case "waitingDriver" || "counterOfferRejected":
+        return `Aguardando motorista${dots}`;
+      case "sending":
+        return "Enviando...";
+      case "counterOfferReceived":
+        return "Contraproposta recebida";
+      default:
+        return "Solicitar Guincho";
+    }
+  };
+
+  const buttonCounterClass = () => {
+    if (props.requestStatus === "waitingDriver")
+      return "secondary fullwidth waiting";
+
+    if (props.requestStatus === "counterOfferReceived")
+      return "secondary fullwidth contact-enabled";
+
+    if (props.routeG && props.route)
+      return "secondary fullwidth contact-enabled";
+
+    return "secondary fullwidth";
+  };
+
   return (
     <>
       <aside className="sidebar" style={{ width: props.sidebarW }}>
@@ -407,31 +438,19 @@ export function ClientSideBar(props: ClientBarProps) {
                   />
                 )}
               <button
-                className={`secondary fullwidth ${
-                  props.requestStatus === "waitingDriver"
-                    ? "waiting"
-                    : props.routeG && props.route
-                    ? "contact-enabled"
-                    : props.requestStatus === "negotiating"
-                    ? "waiting contact-enabled"
-                    : ""
-                }`}
+                className={buttonCounterClass()}
                 disabled={
-                  serviceIsDisabled || props.requestStatus === "waitingDriver"
+                  serviceIsDisabled ||
+                  props.requestStatus === "waitingDriver" ||
+                  props.requestStatus === "counterOfferRejected"
                 }
                 onClick={
-                  props.requestStatus === "negotiating"
+                  props.requestStatus === "counterOfferReceived"
                     ? () => setShowGetCounterModal(true)
                     : () => setShowModal(true)
                 }
               >
-                {props.requestStatus === "waitingDriver"
-                  ? `Aguardando motorista${dots}`
-                  : props.requestStatus === "sending"
-                  ? "Enviando..."
-                  : props.requestStatus === "negotiating"
-                  ? "Contra Oferta recebida"
-                  : "Solicitar Guincho"}
+                {buttonCounterText()}
               </button>
             </div>
           </>
@@ -477,8 +496,6 @@ export function ClientSideBar(props: ClientBarProps) {
               className={`secondary fullwidth ${
                 props.requestStatus === "waitingDriver"
                   ? "waiting"
-                  : props.requestStatus === "negotiating"
-                  ? "waiting"
                   : props.routeG && props.route
                   ? "contact-enabled"
                   : ""
@@ -490,8 +507,8 @@ export function ClientSideBar(props: ClientBarProps) {
             >
               {props.requestStatus === "waitingDriver"
                 ? `Aguardando motorista${dots}`
-                : props.requestStatus === "negotiating"
-                ? "Contra Oferta recebida"
+                : props.requestStatus === "counterOfferReceived"
+                ? "Contraproposta recebida!"
                 : props.requestStatus === "sending"
                 ? "Enviando..."
                 : "Solicitar Guincho"}
@@ -503,6 +520,8 @@ export function ClientSideBar(props: ClientBarProps) {
         <ReceiveCounterTowModal
           onClose={() => setShowGetCounterModal(false)}
           towCounterReceived={towRequest}
+          setShowGetCounterModal={setShowGetCounterModal}
+          setRequestStatus={props.setRequestStatus}
         />
       )}
     </>

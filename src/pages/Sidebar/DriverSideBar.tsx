@@ -24,6 +24,7 @@ export function DriverSideBar(props: DriverSideProps) {
   const [towReceived, setTowReceived] = useState<boolean>(false);
 
   const [isAvailable, setIsAvailable] = useState(false);
+  console.dir(towsReceive);
 
   const [show, setShow] = useState(false);
   const [showCounterModal, setShowCounterModal] = useState(false);
@@ -106,10 +107,33 @@ export function DriverSideBar(props: DriverSideProps) {
       setTowReceived(true);
     });
 
+    connection.on("CounterOfferRejected", (data: TowRequestReceiveDto) => {
+      setTowsReceive((prev) =>
+        prev.map((t) =>
+          t.id === data.id ? { ...t, counterOfferRecused: true } : t
+        )
+      );
+    });
+
     return () => {
       connection.stop();
     };
   }, []);
+
+  const buttonCounterText = () => {
+    if (selectedTow?.counterOfferRecused) {
+      return "Contraproposta recusada.";
+    }
+  };
+
+  const buttonCounterClass = () => {
+    if (selectedTow?.counterOfferRecused)
+      return "secondary fullwidth disabled";
+
+    return `counter-btn sendButton  fullwidth  ${
+      selectedTow?.status === 2 && "success"
+    }`;
+  };
 
   return (
     <>
@@ -207,20 +231,22 @@ export function DriverSideBar(props: DriverSideProps) {
               <p>Notas: {selectedTow.notes}</p>
             </div>
 
-            {selectedTow.counterStatus !== "CounterOfferSent" && (
+            {selectedTow.status !== 2 || selectedTow.counterOfferRecused && (
               <button className="accept-btn">Aceitar</button>
             )}
 
             <button
-              className={`counter-btn sendButton ${
-                selectedTow.counterStatus === "CounterOfferSent" && "success"
-              }`}
+              className={buttonCounterClass()}
               onClick={() => setShowCounterModal(!showCounterModal)}
-              disabled={selectedTow.counterStatus === "CounterOfferSent"}
+              disabled={selectedTow.status === 2 || selectedTow.counterOfferRecused}
             >
-              {selectedTow.counterStatus !== "CounterOfferSent"
+              {selectedTow.counterOfferRecused
+                ? "Countra proposta recusada!"
+                : selectedTow.status !== 2
                 ? "Enviar contraproposta"
-                : "Contraproposta enviada!"}
+                : selectedTow.status === 2
+                ? "Contraproposta enviada!"
+                : ""}
             </button>
           </div>
         )}
