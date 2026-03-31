@@ -295,7 +295,6 @@ export function ClientSideBar(props: ClientBarProps) {
     }
   }
 
-
   const buttonCounterText = () => {
     switch (props.requestStatus) {
       case "waitingDriver" || "counterOfferRejected":
@@ -303,24 +302,24 @@ export function ClientSideBar(props: ClientBarProps) {
       case "sending":
         return "Enviando...";
       case "counterOfferReceived":
-        return "Contra oferta recebida";
+        return "Contraproposta recebida";
       default:
         return "Solicitar Guincho";
     }
   };
 
   const buttonCounterClass = () => {
-    if (props.requestStatus === "waitingDriver") return "secondary fullwidth waiting";
-  
+    if (props.requestStatus === "waitingDriver")
+      return "secondary fullwidth waiting";
+
     if (props.requestStatus === "counterOfferReceived")
-      return "secondary fullwidth waiting contact-enabled";
-  
+      return "secondary fullwidth contact-enabled";
+
     if (props.routeG && props.route)
       return "secondary fullwidth contact-enabled";
-  
+
     return "secondary fullwidth";
   };
-
 
   return (
     <>
@@ -441,7 +440,9 @@ export function ClientSideBar(props: ClientBarProps) {
               <button
                 className={buttonCounterClass()}
                 disabled={
-                  serviceIsDisabled || props.requestStatus === "waitingDriver" || props.requestStatus === "counterOfferRejected"
+                  serviceIsDisabled ||
+                  props.requestStatus === "waitingDriver" ||
+                  props.requestStatus === "counterOfferRejected"
                 }
                 onClick={
                   props.requestStatus === "counterOfferReceived"
@@ -495,8 +496,6 @@ export function ClientSideBar(props: ClientBarProps) {
               className={`secondary fullwidth ${
                 props.requestStatus === "waitingDriver"
                   ? "waiting"
-                  : props.requestStatus === "counterOfferReceived"
-                  ? "waiting"
                   : props.routeG && props.route
                   ? "contact-enabled"
                   : ""
@@ -509,7 +508,7 @@ export function ClientSideBar(props: ClientBarProps) {
               {props.requestStatus === "waitingDriver"
                 ? `Aguardando motorista${dots}`
                 : props.requestStatus === "counterOfferReceived"
-                ? "Contra Oferta recebida"
+                ? "Contraproposta recebida!"
                 : props.requestStatus === "sending"
                 ? "Enviando..."
                 : "Solicitar Guincho"}

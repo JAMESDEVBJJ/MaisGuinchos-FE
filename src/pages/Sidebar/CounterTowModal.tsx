@@ -103,8 +103,8 @@ export default function CounterOfferModal({
 
       setStatus("success");
     } catch (error) {
-      console.error("Erro ao enviar contra oferta:", error);
-      alert("Erro ao enviar contra oferta");
+      console.error("Erro ao enviar contraproposta:", error);
+      alert("Erro ao enviar contraproposta");
       setStatus("idle");
     }
   }
