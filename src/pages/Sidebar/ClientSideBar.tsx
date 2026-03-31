@@ -161,9 +161,11 @@ export function ClientSideBar(props: ClientBarProps) {
   }, []);
 
   useEffect(() => {
-    if (props.requestStatus !== "waitingDriver") {
-      setDots("");
-      return;
+    if (props.requestStatus !== "waitingDriver" ) {
+      if (props.requestStatus !== "counterOfferRejected") {
+        setDots("");
+        return;
+      }    
     }
 
     const interval = setInterval(() => {
@@ -295,21 +297,23 @@ export function ClientSideBar(props: ClientBarProps) {
     }
   }
 
-  const buttonCounterText = () => {
+  const buttonCounterAndSubmitText = () => {
     switch (props.requestStatus) {
-      case "waitingDriver" || "counterOfferRejected":
+      case "waitingDriver":
         return `Aguardando motorista${dots}`;
       case "sending":
         return "Enviando...";
       case "counterOfferReceived":
-        return "Contraproposta recebida";
+        return "Contraproposta recebida!";
+      case "counterOfferRejected":
+        return `Aguardando motorista${dots}`;
       default:
         return "Solicitar Guincho";
     }
   };
 
   const buttonCounterClass = () => {
-    if (props.requestStatus === "waitingDriver")
+    if (props.requestStatus === "waitingDriver" || props.requestStatus === "counterOfferRejected")
       return "secondary fullwidth waiting";
 
     if (props.requestStatus === "counterOfferReceived")
@@ -450,7 +454,7 @@ export function ClientSideBar(props: ClientBarProps) {
                     : () => setShowModal(true)
                 }
               >
-                {buttonCounterText()}
+                {buttonCounterAndSubmitText()}
               </button>
             </div>
           </>
@@ -505,7 +509,8 @@ export function ClientSideBar(props: ClientBarProps) {
               }
               onClick={handleConfirmSend}
             >
-              {props.requestStatus === "waitingDriver"
+              {props.requestStatus === "waitingDriver" ||
+              props.requestStatus === "counterOfferRejected"
                 ? `Aguardando motorista${dots}`
                 : props.requestStatus === "counterOfferReceived"
                 ? "Contraproposta recebida!"

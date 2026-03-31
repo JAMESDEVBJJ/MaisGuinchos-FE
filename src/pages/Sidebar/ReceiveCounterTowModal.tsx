@@ -36,7 +36,7 @@ export default function ReceiveCounterTowModal({
       console.log(status);
 
       props.setShowGetCounterModal(false);
-      props.setRequestStatus("counterOfferRejected")
+      props.setRequestStatus("counterOfferRejected"); 
 
       console.log("envio e termino");
     } catch (error) {
