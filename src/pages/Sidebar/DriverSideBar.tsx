@@ -113,6 +113,10 @@ export function DriverSideBar(props: DriverSideProps) {
           t.id === data.id ? { ...t, counterOfferRecused: true } : t
         )
       );
+      setSelectedTow((prev) => {
+        if (!prev || prev.id !== data.id) return prev;
+        return { ...prev, counterOfferRecused: true };
+      });
     });
 
     return () => {
@@ -127,8 +131,7 @@ export function DriverSideBar(props: DriverSideProps) {
   };
 
   const buttonCounterClass = () => {
-    if (selectedTow?.counterOfferRecused)
-      return "secondary fullwidth disabled";
+    if (selectedTow?.counterOfferRecused) return "secondary fullwidth disabled";
 
     return `counter-btn sendButton  fullwidth  ${
       selectedTow?.status === 2 && "success"
@@ -238,7 +241,9 @@ export function DriverSideBar(props: DriverSideProps) {
             <button
               className={buttonCounterClass()}
               onClick={() => setShowCounterModal(!showCounterModal)}
-              disabled={selectedTow.status === 2 || selectedTow.counterOfferRecused}
+              disabled={
+                selectedTow.status === 2 || selectedTow.counterOfferRecused
+              }
             >
               {selectedTow.counterOfferRecused
                 ? "Countra proposta recusada!"
@@ -252,17 +257,19 @@ export function DriverSideBar(props: DriverSideProps) {
         )}
         <div className="resize-handle" onMouseDown={handleMouseDown} />
       </aside>
-      {showCounterModal && selectedTow !== null && (
-        <CounterOfferModal
-          price={selectedTow.suggestedPrice}
-          onClose={() => {
-            setShowCounterModal(false);
-          }}
-          setSelectedTow={setSelectedTow}
-          towRequest={selectedTow}
-          setTowsReceived={setTowsReceive}
-        />
-      )}
+      {selectedTow !== null &&
+        !selectedTow.counterOfferRecused &&
+        showCounterModal && (
+          <CounterOfferModal
+            price={selectedTow.suggestedPrice}
+            onClose={() => {
+              setShowCounterModal(false);
+            }}
+            setSelectedTow={setSelectedTow}
+            towRequest={selectedTow}
+            setTowsReceived={setTowsReceive}
+          />
+        )}
     </>
   );
 }
