@@ -21,7 +21,24 @@ type GetCounterOfferModalProps = {
 export default function ReceiveCounterTowModal({
   ...props
 }: GetCounterOfferModalProps) {
-  function submit() {}
+  async function submit() {
+    try {
+      if (!props.towCounterReceived?.id) return;
+
+      const response = await api.post(
+        `towrequests/${props.towCounterReceived.id}/accept-counter-offer`
+      );
+      
+      props.setRequestStatus("accepted");
+
+    } catch (error) {
+      const message = "Erro ao aceitar contraproposta.";
+
+      console.error(message, error);
+
+      alert(message);
+    }
+  }
 
   async function cancel() {
     try {
@@ -36,7 +53,7 @@ export default function ReceiveCounterTowModal({
       console.log(status);
 
       props.setShowGetCounterModal(false);
-      props.setRequestStatus("counterOfferRejected"); 
+      props.setRequestStatus("counterOfferRejected");
 
       console.log("envio e termino");
     } catch (error) {

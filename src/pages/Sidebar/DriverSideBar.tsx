@@ -119,6 +119,18 @@ export function DriverSideBar(props: DriverSideProps) {
       });
     });
 
+    connection.on("CounterOfferAccepted", (data: any) => {
+      setSelectedTow((prev) => {
+        if (!prev || prev.id !== data.towRequestId) return prev;
+
+        return { ...prev, status: 4 };
+      });
+      setTowsReceive((prev) =>
+        prev.map((p) => (p.id === data.towRequestId ? { ...p, status: 4 } : p))
+      );
+      console.dir(data);
+    });
+
     return () => {
       connection.stop();
     };
@@ -137,6 +149,26 @@ export function DriverSideBar(props: DriverSideProps) {
       selectedTow?.status === 2 && "success"
     }`;
   };
+
+  async function acceptTowRequest() {
+    if (selectedTow) {
+      const response = await api.post(
+        `towrequests/${selectedTow.id}/accept-tow`
+      );
+
+      setSelectedTow((prev) => {
+        if (!prev || prev.id !== response.data.towRequestId) return prev;
+
+        return { ...prev, status: 4 };
+      });
+      setTowsReceive((prev) =>
+        prev.map((p) =>
+          p.id === response.data.towRequestId ? { ...p, status: 4 } : p
+        )
+      );
+      console.dir(response.data);
+    }
+  }
 
   return (
     <>
@@ -235,24 +267,36 @@ export function DriverSideBar(props: DriverSideProps) {
             </div>
 
             {(selectedTow.status !== 2 || selectedTow.counterOfferRecused) && (
-              <button className="accept-btn">Aceitar</button>
+              <button
+                className={`accept-btn secondary contact-enabled ${
+                  selectedTow.status === 4 && "accepted"
+                }`}
+                onClick={() => acceptTowRequest()}
+                disabled={selectedTow.status === 4}
+              >
+                {selectedTow.status === 4 ? "Solicitação aceita!" : "Aceitar"}
+              </button>
             )}
 
-            <button
-              className={buttonCounterClass()}
-              onClick={() => setShowCounterModal(!showCounterModal)}
-              disabled={
-                selectedTow.status === 2 || selectedTow.counterOfferRecused
-              }
-            >
-              {selectedTow.counterOfferRecused
-                ? "Countra proposta recusada!"
-                : selectedTow.status !== 2
-                ? "Enviar contraproposta"
-                : selectedTow.status === 2
-                ? "Contraproposta enviada!"
-                : ""}
-            </button>
+            {selectedTow.status != 4 && (
+              <button
+                className={buttonCounterClass()}
+                onClick={() => setShowCounterModal(!showCounterModal)}
+                disabled={
+                  selectedTow.status === 2 || selectedTow.counterOfferRecused
+                }
+              >
+                {selectedTow.counterOfferRecused
+                  ? "Countra proposta recusada!"
+                  : selectedTow.status !== 2
+                  ? "Enviar contraproposta"
+                  : selectedTow.status === 2
+                  ? "Contraproposta enviada!"
+                  : selectedTow.status === 4
+                  ? "Contra proposta aceita!"
+                  : ""}
+              </button>
+            )}
           </div>
         )}
         <div className="resize-handle" onMouseDown={handleMouseDown} />

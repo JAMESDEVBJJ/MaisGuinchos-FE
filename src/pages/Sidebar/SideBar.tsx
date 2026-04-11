@@ -37,7 +37,7 @@ export type SidebarProps = {
   destination: Position | null;
   durationMinTotal: number;
   setRequestStatus: React.Dispatch<
-    React.SetStateAction<"idle" | "sending" | "waitingDriver" | "accepted" | "counterOfferReceived">
+    React.SetStateAction<"idle" | "sending" | "waitingDriver" | "accepted" | "counterOfferReceived" | "counterOfferRejected">
   >;
   requestStatus: string;
 };

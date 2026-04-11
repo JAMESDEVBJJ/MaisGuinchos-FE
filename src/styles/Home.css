@@ -641,6 +641,11 @@ button.secondary.contact-enabled:hover {
   cursor: pointer;
 }
 
+button.secondary.contact-enabled.accepted:hover {
+  background: linear-gradient(135deg, #16a34a, #16a34a);
+  cursor: default;
+}
+
 button.contact-enabled {
   background: linear-gradient(135deg, #1ead52, #16a34a);
   border: none;

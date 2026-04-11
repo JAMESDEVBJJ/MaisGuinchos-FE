@@ -9,7 +9,7 @@ import type { PutTowCounterOfferDTO } from "../../dtos/CounterOfferDTO";
 import { InputLocation } from "./InputLocation";
 import * as signalR from "@microsoft/signalr";
 import { TowRequestData } from "./TowRequestData";
-import ReceiveCounterTowModal from "./ReceiveCounterTowModal";
+import ReceiveCounterTowModal from './ReceiveCounterTowModal';
 
 interface CoordinateDto {
   lat: number;
@@ -114,7 +114,12 @@ export function ClientSideBar(props: ClientBarProps) {
   const foto = props.selectedGuincho?.motorista?.foto;
   const isDefault = !foto || foto.trim() === "";
 
-  const serviceIsDisabled = !props.routeG || !props.route;
+  const serviceIsDisabled =
+    !props.routeG ||
+    !props.route ||
+    props.requestStatus === "waitingDriver" ||
+    props.requestStatus === "counterOfferRejected" ||
+    props.requestStatus === "accepted";
 
   const [dots, setDots] = useState("");
 
@@ -149,6 +154,11 @@ export function ClientSideBar(props: ClientBarProps) {
       );
     });
 
+    connection.on("TowRequestAccepted", (data: any) => {
+      props.setRequestStatus("accepted");
+      console.dir(data);
+    });
+
     connection.on("ReceiveCounterOffer", (data: PutTowCounterOfferDTO) => {
       props.setRequestStatus("counterOfferReceived");
 
@@ -161,11 +171,11 @@ export function ClientSideBar(props: ClientBarProps) {
   }, []);
 
   useEffect(() => {
-    if (props.requestStatus !== "waitingDriver" ) {
+    if (props.requestStatus !== "waitingDriver") {
       if (props.requestStatus !== "counterOfferRejected") {
         setDots("");
         return;
-      }    
+      }
     }
 
     const interval = setInterval(() => {
@@ -244,6 +254,7 @@ export function ClientSideBar(props: ClientBarProps) {
     props.setDistanceKmG(null);
     props.setDurationMinG(null);
     props.setRequestStatus("idle");
+    setShowGetCounterModal(false);
   }
 
   async function handleConfirmSend() {
@@ -307,17 +318,26 @@ export function ClientSideBar(props: ClientBarProps) {
         return "Contraproposta recebida!";
       case "counterOfferRejected":
         return `Aguardando motorista${dots}`;
+      case "accepted":
+        return "Solitação aceita!";
       default:
         return "Solicitar Guincho";
     }
   };
 
   const buttonCounterClass = () => {
-    if (props.requestStatus === "waitingDriver" || props.requestStatus === "counterOfferRejected")
+    if (
+      props.requestStatus === "waitingDriver" ||
+      props.requestStatus === "counterOfferRejected"
+    )
       return "secondary fullwidth waiting";
 
     if (props.requestStatus === "counterOfferReceived")
-      return "secondary fullwidth contact-enabled";
+      return "secondary fullwidth contact-enabled ";
+
+    if (props.requestStatus === "accepted") {
+      return "secondary contact-enabled accepted fullwidth";
+    }
 
     if (props.routeG && props.route)
       return "secondary fullwidth contact-enabled";
@@ -443,11 +463,7 @@ export function ClientSideBar(props: ClientBarProps) {
                 )}
               <button
                 className={buttonCounterClass()}
-                disabled={
-                  serviceIsDisabled ||
-                  props.requestStatus === "waitingDriver" ||
-                  props.requestStatus === "counterOfferRejected"
-                }
+                disabled={serviceIsDisabled}
                 onClick={
                   props.requestStatus === "counterOfferReceived"
                     ? () => setShowGetCounterModal(true)
@@ -521,7 +537,7 @@ export function ClientSideBar(props: ClientBarProps) {
           </div>
         </div>
       )}
-      {showGetCounterModal && (
+      {(showGetCounterModal && props.requestStatus !== "accepted") && (
         <ReceiveCounterTowModal
           onClose={() => setShowGetCounterModal(false)}
           towCounterReceived={towRequest}
