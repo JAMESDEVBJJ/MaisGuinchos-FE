@@ -22,6 +22,7 @@ export type SidebarProps = {
   handleUpdateDestination: () => Promise<void>;
   setRouteG: React.Dispatch<React.SetStateAction<[number, number][] | null>>;
   routeG: [number, number][] | null;
+  setRoute: React.Dispatch<React.SetStateAction<[number, number][] | null>>;
   route: [number, number][] | null;
   mapRef: React.RefObject<L.Map | null>;
   loading: boolean;
@@ -37,7 +38,14 @@ export type SidebarProps = {
   destination: Position | null;
   durationMinTotal: number;
   setRequestStatus: React.Dispatch<
-    React.SetStateAction<"idle" | "sending" | "waitingDriver" | "accepted" | "counterOfferReceived" | "counterOfferRejected">
+    React.SetStateAction<
+      | "idle"
+      | "sending"
+      | "waitingDriver"
+      | "accepted"
+      | "counterOfferReceived"
+      | "counterOfferRejected"
+    >
   >;
   requestStatus: string;
 };
@@ -77,10 +85,9 @@ export function Sidebar(props: SidebarProps) {
     if (newWidth >= 580) return;
 
     if (props.selectedGuincho != null) {
-      if (newWidth <= 350) setHideDriverPhoto(true)
+      if (newWidth <= 350) setHideDriverPhoto(true);
       else setHideDriverPhoto(false);
-
-    } 
+    }
 
     setSideBarW(newWidth);
     setIsCompact(newWidth <= COMPACT_WIDTH);
@@ -92,8 +99,10 @@ export function Sidebar(props: SidebarProps) {
       setLocationText={setLocationText}
       setUserLocation={props.setUserLocation}
       setRouteG={props.setRouteG}
+      setRoute={props.setRoute}
       sideBarW={sidebarW}
       setIsResizing={setIsResizing}
+      mapRef={props.mapRef}
     />
   ) : user?.isClient ? (
     <ClientSideBar

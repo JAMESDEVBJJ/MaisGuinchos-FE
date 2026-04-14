@@ -6,14 +6,18 @@ import * as signalR from "@microsoft/signalr";
 import { api } from "../../services/api";
 import { TowRequestData } from "./TowRequestData";
 import CounterOfferModal from "./CounterTowModal";
+import type { AcceptTowRequestResponseDTO } from "../../dtos/AcceptTowRequestResponseDTO";
+import L from "leaflet";
 
 type DriverSideProps = {
   locationText: string;
   setLocationText: React.Dispatch<React.SetStateAction<string>>;
   setUserLocation: React.Dispatch<React.SetStateAction<Position | null>>;
   setRouteG: React.Dispatch<React.SetStateAction<[number, number][] | null>>;
+  setRoute: React.Dispatch<React.SetStateAction<[number, number][] | null>>;
   sideBarW: number;
   setIsResizing: React.Dispatch<React.SetStateAction<boolean>>;
+  mapRef: React.RefObject<L.Map | null>;
 };
 
 export function DriverSideBar(props: DriverSideProps) {
@@ -119,17 +123,25 @@ export function DriverSideBar(props: DriverSideProps) {
       });
     });
 
-    connection.on("CounterOfferAccepted", (data: any) => {
-      setSelectedTow((prev) => {
-        if (!prev || prev.id !== data.towRequestId) return prev;
+    connection.on(
+      "CounterOfferAccepted",
+      (data: AcceptTowRequestResponseDTO) => {
+        setSelectedTow((prev) => {
+          if (!prev || prev.id !== data.towRequestId) return prev;
 
-        return { ...prev, status: 4 };
-      });
-      setTowsReceive((prev) =>
-        prev.map((p) => (p.id === data.towRequestId ? { ...p, status: 4 } : p))
-      );
-      console.dir(data);
-    });
+          return { ...prev, status: 4 };
+        });
+        setTowsReceive((prev) =>
+          prev.map((p) =>
+            p.id === data.towRequestId ? { ...p, status: 4 } : p
+          )
+        );
+
+        console.dir(data);
+
+        calcularRotaTowTravel(data);
+      }
+    );
 
     return () => {
       connection.stop();
@@ -168,6 +180,65 @@ export function DriverSideBar(props: DriverSideProps) {
       );
       console.dir(response.data);
     }
+  }
+
+  async function calcularRotaDestino(origin: Position, destination: Position) {
+    const response = await api.post("/maps/route", {
+      originLat: origin.lat,
+      originLon: origin.lon,
+      destLat: destination.lat,
+      destLon: destination.lon,
+    });
+
+    const route = response.data;
+
+    const routePositions = route.polyline.map((p: any) => [p.lat, p.lon]);
+
+    props.setRoute(routePositions);
+
+    const maps = props.mapRef.current;
+    if (!maps) return;
+
+    const poly = L.polyline(routePositions, { weight: 4, opacity: 0.6 });
+    maps.fitBounds(poly.getBounds(), { padding: [60, 60] });
+  }
+
+  async function calcularRotaTowTravel(towData: AcceptTowRequestResponseDTO) {
+    const maps = props.mapRef.current;
+    console.log("rota");
+    if (!maps) return;
+
+    const responseToPickup = await api.post("/maps/route/calculate/driver", {
+      originLat: towData.pickupLat,
+      originLon: towData.pickupLon,
+      driverLat: towData.driverLat,
+      driverLon: towData.driverLon,
+    });
+
+    const routeDriverToPickup = responseToPickup.data;
+
+    const routeDriverToPickupPositions = routeDriverToPickup.polyline.map(
+      (p: any) => [p.lat, p.lon]
+    );
+
+    const poly = L.polyline(routeDriverToPickupPositions, {
+      weight: 4,
+      opacity: 0.6,
+    });
+
+    maps.fitBounds(poly.getBounds(), { padding: [60, 60] });
+
+    const origin: Position = {
+      lat: towData.pickupLat,
+      lon: towData.pickupLon,
+    };
+
+    const destination: Position = {
+      lat: towData.destinationLat,
+      lon: towData.destinationLon,
+    };
+    console.log(".i.");
+    await calcularRotaDestino(origin, destination);
   }
 
   return (
