@@ -66,6 +66,7 @@ const HomePage = () => {
     handleUpdateDestination: handleUpdateDestination,
     setRouteG: setRouteG,
     routeG: routeG,
+    setRoute: setRoute,
     route: route,
     loading: loading,
     priceEstimate: priceEstimate,

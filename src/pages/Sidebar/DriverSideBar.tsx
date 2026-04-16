@@ -168,6 +168,10 @@ export function DriverSideBar(props: DriverSideProps) {
         `towrequests/${selectedTow.id}/accept-tow`
       );
 
+      const data : AcceptTowRequestResponseDTO = response.data;
+
+      console.dir(data)
+
       setSelectedTow((prev) => {
         if (!prev || prev.id !== response.data.towRequestId) return prev;
 
@@ -178,12 +182,21 @@ export function DriverSideBar(props: DriverSideProps) {
           p.id === response.data.towRequestId ? { ...p, status: 4 } : p
         )
       );
-      console.dir(response.data);
+
+
+      calcularRotaTowTravel(data);
     }
   }
 
   async function calcularRotaDestino(origin: Position, destination: Position) {
-    const response = await api.post("/maps/route", {
+    const response = await api.post("/maps/route/calculate", {
+      originLat: origin.lat,
+      originLon: origin.lon,
+      destinationLat: destination.lat,
+      destinationLon: destination.lon,
+    });
+
+    console.dir({
       originLat: origin.lat,
       originLon: origin.lon,
       destLat: destination.lat,
@@ -197,8 +210,10 @@ export function DriverSideBar(props: DriverSideProps) {
     props.setRoute(routePositions);
 
     const maps = props.mapRef.current;
+
     if (!maps) return;
 
+    console.log("tem maps ref");
     const poly = L.polyline(routePositions, { weight: 4, opacity: 0.6 });
     maps.fitBounds(poly.getBounds(), { padding: [60, 60] });
   }
@@ -237,7 +252,10 @@ export function DriverSideBar(props: DriverSideProps) {
       lat: towData.destinationLat,
       lon: towData.destinationLon,
     };
-    console.log(".i.");
+    console.log("routeDriverToPickupPositions:")
+    console.dir(routeDriverToPickupPositions);
+    props.setRouteG(routeDriverToPickupPositions)
+
     await calcularRotaDestino(origin, destination);
   }
 
