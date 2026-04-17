@@ -9,6 +9,8 @@ import CounterOfferModal from "./CounterTowModal";
 import type { AcceptTowRequestResponseDTO } from "../../dtos/AcceptTowRequestResponseDTO";
 import L from "leaflet";
 
+import iconClient from "../../assets/icons/iconUser.png"; 
+
 type DriverSideProps = {
   locationText: string;
   setLocationText: React.Dispatch<React.SetStateAction<string>>;
@@ -37,11 +39,12 @@ export function DriverSideBar(props: DriverSideProps) {
     null
   );
 
-  const userIcon = L.icon({
-    iconUrl: "/icons/user-location.png", 
+  const userIcon = new L.Icon({
+    iconUrl: iconClient, 
     iconSize: [32, 32],
-    iconAnchor: [16, 32], 
+    iconAnchor: [16, 32]
   });
+  
 
   const initials = selectedTow?.clientName
     .split(" ")
@@ -330,7 +333,11 @@ export function DriverSideBar(props: DriverSideProps) {
         )}
         {selectedTow && (
           <div className="tow-details">
-            <button className="back" onClick={() => setSelectedTow(null)}>
+            <button className="back" onClick={() => {
+              setSelectedTow(null);
+              props.setRoute(null);
+              props.setRouteG(null);
+            }}>
               ⬅
             </button>
 
