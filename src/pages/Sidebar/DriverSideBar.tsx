@@ -37,6 +37,12 @@ export function DriverSideBar(props: DriverSideProps) {
     null
   );
 
+  const userIcon = L.icon({
+    iconUrl: "/icons/user-location.png", 
+    iconSize: [32, 32],
+    iconAnchor: [16, 32], 
+  });
+
   const initials = selectedTow?.clientName
     .split(" ")
     .map((n) => n[0])
@@ -242,6 +248,10 @@ export function DriverSideBar(props: DriverSideProps) {
     });
 
     maps.fitBounds(poly.getBounds(), { padding: [60, 60] });
+
+    L.marker([towData.pickupLat, towData.pickupLon], {
+      icon: userIcon,
+    }).addTo(maps);
 
     const origin: Position = {
       lat: towData.pickupLat,
