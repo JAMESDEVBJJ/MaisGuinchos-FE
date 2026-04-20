@@ -1,13 +1,16 @@
 import { createContext, useContext, useState } from "react";
-import type { ReactNode } from 'react';
+import type { ReactNode } from "react";
 
 import type { AcceptTowRequestResponseDTO } from "../dtos/AcceptTowRequestResponseDTO";
+import { TowTravelStatus } from "../utils/enums/TowTravelStatus";
 
 type TowTravel = AcceptTowRequestResponseDTO;
 
 type TowTravelContextType = {
   towTravel: TowTravel | null;
   setTowTravel: React.Dispatch<React.SetStateAction<TowTravel | null>>;
+  towTravelStatus: TowTravelStatus | null;
+  setTowTravelStatus: React.Dispatch<React.SetStateAction<TowTravelStatus | null>>;
   clearTowTravel: () => void;
 };
 
@@ -17,13 +20,23 @@ const TowTravelContext = createContext<TowTravelContextType | undefined>(
 
 export function TowTravelProvider({ children }: { children: ReactNode }) {
   const [towTravel, setTowTravel] = useState<TowTravel | null>(null);
+  const [towTravelStatus, setTowTravelStatus] =
+    useState<TowTravelStatus | null>(null);
 
   function clearTowTravel() {
     setTowTravel(null);
   }
 
   return (
-    <TowTravelContext.Provider value={{ towTravel, setTowTravel, clearTowTravel }}>
+    <TowTravelContext.Provider
+      value={{
+        towTravel,
+        setTowTravel,
+        towTravelStatus,
+        setTowTravelStatus,
+        clearTowTravel
+      }}
+    >
       {children}
     </TowTravelContext.Provider>
   );
