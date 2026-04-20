@@ -9,7 +9,9 @@ import type { PutTowCounterOfferDTO } from "../../dtos/CounterOfferDTO";
 import { InputLocation } from "./InputLocation";
 import * as signalR from "@microsoft/signalr";
 import { TowRequestData } from "./TowRequestData";
-import ReceiveCounterTowModal from './ReceiveCounterTowModal';
+import ReceiveCounterTowModal from "./ReceiveCounterTowModal";
+import { useTowTravel } from "../../contexts/TowTravelContext";
+import type { AcceptTowRequestResponseDTO } from "../../dtos/AcceptTowRequestResponseDTO";
 
 interface CoordinateDto {
   lat: number;
@@ -111,6 +113,8 @@ export function ClientSideBar(props: ClientBarProps) {
 
   const [showGetCounterModal, setShowGetCounterModal] = useState(false);
 
+  const { towTravel, setTowTravel, clearTowTravel } = useTowTravel();
+
   const foto = props.selectedGuincho?.motorista?.foto;
   const isDefault = !foto || foto.trim() === "";
 
@@ -154,9 +158,9 @@ export function ClientSideBar(props: ClientBarProps) {
       );
     });
 
-    connection.on("TowRequestAccepted", (data: any) => {
+    connection.on("TowRequestAccepted", (data: AcceptTowRequestResponseDTO) => {
       props.setRequestStatus("accepted");
-      console.dir(data);
+      setTowTravel(data);
     });
 
     connection.on("ReceiveCounterOffer", (data: PutTowCounterOfferDTO) => {
@@ -537,7 +541,7 @@ export function ClientSideBar(props: ClientBarProps) {
           </div>
         </div>
       )}
-      {(showGetCounterModal && props.requestStatus !== "accepted") && (
+      {showGetCounterModal && props.requestStatus !== "accepted" && (
         <ReceiveCounterTowModal
           onClose={() => setShowGetCounterModal(false)}
           towCounterReceived={towRequest}
