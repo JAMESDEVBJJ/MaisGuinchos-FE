@@ -207,8 +207,8 @@ export function ClientSideBar(props: ClientBarProps) {
     const response = await api.post("/maps/route/calculate/driver", {
       originLat: origemLat,
       originLon: origemLon,
-      driverLat: destino?.lat,
-      driverLon: destino?.lon,
+      destinationLat: destino?.lat,
+      destinationLon: destino?.lon,
     });
 
     const route = response.data;
@@ -249,6 +249,7 @@ export function ClientSideBar(props: ClientBarProps) {
       routeLayerRef.current = null;
     }
 
+    clearTowTravel();
     props.setPriceG(null);
     props.setDistanceKmG(null);
     props.setDurationMinG(null);

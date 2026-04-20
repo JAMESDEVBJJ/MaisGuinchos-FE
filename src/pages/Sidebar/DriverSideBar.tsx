@@ -233,10 +233,10 @@ export function DriverSideBar(props: DriverSideProps) {
     if (!maps) return;
 
     const responseToPickup = await api.post("/maps/route/calculate/driver", {
-      originLat: towData.pickupLat,
-      originLon: towData.pickupLon,
-      driverLat: towData.driverLat,
-      driverLon: towData.driverLon,
+      originLat: towData.driverLat,
+      originLon: towData.driverLon,
+      DestinationLat: towData.pickupLat,
+      DestinationLon: towData.pickupLon,
     });
 
     const routeDriverToPickup = responseToPickup.data;
