@@ -9,7 +9,9 @@ import CounterOfferModal from "./CounterTowModal";
 import type { AcceptTowRequestResponseDTO } from "../../dtos/AcceptTowRequestResponseDTO";
 import L from "leaflet";
 
-import iconClient from "../../assets/icons/iconUser.png"; 
+import iconClient from "../../assets/icons/iconUser.png";
+import { TowTravelStatus } from "../../utils/enums/TowTravelStatus";
+import { useTowTravel } from "../../contexts/TowTravelContext";
 
 type DriverSideProps = {
   locationText: string;
@@ -39,12 +41,14 @@ export function DriverSideBar(props: DriverSideProps) {
     null
   );
 
+  const { setTowTravel, towTravel, setTowTravelStatus, towTravelStatus } =
+    useTowTravel();
+
   const userIcon = new L.Icon({
-    iconUrl: iconClient, 
+    iconUrl: iconClient,
     iconSize: [32, 32],
-    iconAnchor: [16, 32]
+    iconAnchor: [16, 32],
   });
-  
 
   const initials = selectedTow?.clientName
     .split(" ")
@@ -148,6 +152,9 @@ export function DriverSideBar(props: DriverSideProps) {
 
         console.dir(data);
 
+        setTowTravel(data);
+        setTowTravelStatus(TowTravelStatus.GoingToClient);
+
         calcularRotaTowTravel(data);
       }
     );
@@ -177,9 +184,9 @@ export function DriverSideBar(props: DriverSideProps) {
         `towrequests/${selectedTow.id}/accept-tow`
       );
 
-      const data : AcceptTowRequestResponseDTO = response.data;
+      const data: AcceptTowRequestResponseDTO = response.data;
 
-      console.dir(data)
+      console.dir(data);
 
       setSelectedTow((prev) => {
         if (!prev || prev.id !== response.data.towRequestId) return prev;
@@ -191,7 +198,6 @@ export function DriverSideBar(props: DriverSideProps) {
           p.id === response.data.towRequestId ? { ...p, status: 4 } : p
         )
       );
-
 
       calcularRotaTowTravel(data);
     }
@@ -265,9 +271,9 @@ export function DriverSideBar(props: DriverSideProps) {
       lat: towData.destinationLat,
       lon: towData.destinationLon,
     };
-    console.log("routeDriverToPickupPositions:")
+    console.log("routeDriverToPickupPositions:");
     console.dir(routeDriverToPickupPositions);
-    props.setRouteG(routeDriverToPickupPositions)
+    props.setRouteG(routeDriverToPickupPositions);
 
     await calcularRotaDestino(origin, destination);
   }
@@ -333,11 +339,14 @@ export function DriverSideBar(props: DriverSideProps) {
         )}
         {selectedTow && (
           <div className="tow-details">
-            <button className="back" onClick={() => {
-              setSelectedTow(null);
-              props.setRoute(null);
-              props.setRouteG(null);
-            }}>
+            <button
+              className="back"
+              onClick={() => {
+                setSelectedTow(null);
+                props.setRoute(null);
+                props.setRouteG(null);
+              }}
+            >
               ⬅
             </button>
 

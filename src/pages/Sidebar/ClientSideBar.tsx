@@ -12,6 +12,7 @@ import { TowRequestData } from "./TowRequestData";
 import ReceiveCounterTowModal from "./ReceiveCounterTowModal";
 import { useTowTravel } from "../../contexts/TowTravelContext";
 import type { AcceptTowRequestResponseDTO } from "../../dtos/AcceptTowRequestResponseDTO";
+import { TowTravelStatus } from "../../utils/enums/TowTravelStatus";
 
 interface CoordinateDto {
   lat: number;
@@ -113,7 +114,13 @@ export function ClientSideBar(props: ClientBarProps) {
 
   const [showGetCounterModal, setShowGetCounterModal] = useState(false);
 
-  const { towTravel, setTowTravel, clearTowTravel } = useTowTravel();
+  const {
+    towTravel,
+    setTowTravel,
+    clearTowTravel,
+    setTowTravelStatus,
+    towTravelStatus,
+  } = useTowTravel();
 
   const foto = props.selectedGuincho?.motorista?.foto;
   const isDefault = !foto || foto.trim() === "";
@@ -161,6 +168,7 @@ export function ClientSideBar(props: ClientBarProps) {
     connection.on("TowRequestAccepted", (data: AcceptTowRequestResponseDTO) => {
       props.setRequestStatus("accepted");
       setTowTravel(data);
+      setTowTravelStatus(TowTravelStatus.GoingToClient);
     });
 
     connection.on("ReceiveCounterOffer", (data: PutTowCounterOfferDTO) => {
@@ -409,9 +417,13 @@ export function ClientSideBar(props: ClientBarProps) {
         ) : (
           <>
             <div className="detail">
-              <button className="back" onClick={handleBackToList}>
-                ⬅
-              </button>
+              {(!towTravel ||
+                towTravelStatus === TowTravelStatus.Cancelled ||
+                towTravelStatus === TowTravelStatus.Finished) && (
+                <button className="back" onClick={handleBackToList}>
+                  ⬅
+                </button>
+              )}
               <div className="detail-top">
                 <img
                   className={`detail-photo ${
@@ -422,32 +434,55 @@ export function ClientSideBar(props: ClientBarProps) {
                   }
                   alt={props.selectedGuincho?.motorista?.name}
                 />
+
                 <div className="detail-info">
-                  <h3>{props.selectedGuincho?.motorista.name}</h3>
-                  <div className="rating-row">
-                    {renderStars(props.selectedGuincho?.stars)}{" "}
-                    <span className="rating-number">
-                      {props.selectedGuincho?.stars.toFixed(1)}
-                    </span>
-                  </div>
+                  {towTravelStatus === TowTravelStatus.GoingToClient ? (
+                    <h3>
+                      {props.selectedGuincho?.motorista.name} está indo até
+                      você.
+                    </h3>
+                  ) : towTravelStatus === TowTravelStatus.Arrived ? (
+                    <h3>
+                      {props.selectedGuincho?.motorista.name} chegou até você.
+                    </h3>
+                  ) : towTravelStatus === TowTravelStatus.InProgress ? (
+                    <h3>
+                      {props.selectedGuincho?.motorista.name} está indo até o
+                      destino.
+                    </h3>
+                  ) : (
+                    <h3>{props.selectedGuincho?.motorista.name}</h3>
+                  )}
+
+                  {!towTravel && (
+                    <div className="rating-row">
+                      {renderStars(props.selectedGuincho?.stars)}{" "}
+                      <span className="rating-number">
+                        {props.selectedGuincho?.stars.toFixed(1)}
+                      </span>
+                    </div>
+                  )}
+
                   <div className="driver-data">
                     <span className="phone">
                       {props.selectedGuincho?.motorista.number}
                     </span>
+
                     <div>Modelo: {props.selectedGuincho?.model}</div>
                     <div>Placa: {props.selectedGuincho?.motorista.placa}</div>
                     <div>Cor: {props.selectedGuincho?.color}</div>
                   </div>
                 </div>
               </div>
-
               <div className="detail-actions">
-                <button
-                  className="primary fullwidth"
-                  onClick={calcularRotaComGuincho}
-                >
-                  Calcular rota com guincho
-                </button>
+                {!towTravel && (
+                  <button
+                    className="primary fullwidth"
+                    onClick={calcularRotaComGuincho}
+                  >
+                    Calcular rota com guincho
+                  </button>
+                )}
               </div>
               {props.routeG &&
                 props.distanceKmG != null &&

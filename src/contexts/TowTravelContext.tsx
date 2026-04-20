@@ -10,7 +10,13 @@ type TowTravelContextType = {
   towTravel: TowTravel | null;
   setTowTravel: React.Dispatch<React.SetStateAction<TowTravel | null>>;
   towTravelStatus: TowTravelStatus | null;
-  setTowTravelStatus: React.Dispatch<React.SetStateAction<TowTravelStatus | null>>;
+  setTowTravelStatus: React.Dispatch<
+    React.SetStateAction<TowTravelStatus | null>
+  >;
+  remainingDistance: number | null;
+  setRemainingDistance: React.Dispatch<React.SetStateAction<number | null>>;
+  remainingTime: number | null;
+  setRemainingTime: React.Dispatch<React.SetStateAction<number | null>>;
   clearTowTravel: () => void;
 };
 
@@ -23,6 +29,11 @@ export function TowTravelProvider({ children }: { children: ReactNode }) {
   const [towTravelStatus, setTowTravelStatus] =
     useState<TowTravelStatus | null>(null);
 
+  const [remainingTime, setRemainingTime] = useState<number | null>(null);
+  const [remainingDistance, setRemainingDistance] = useState<number | null>(
+    null
+  );
+
   function clearTowTravel() {
     setTowTravel(null);
   }
@@ -34,7 +45,11 @@ export function TowTravelProvider({ children }: { children: ReactNode }) {
         setTowTravel,
         towTravelStatus,
         setTowTravelStatus,
-        clearTowTravel
+        clearTowTravel,
+        remainingTime,
+        setRemainingTime,
+        remainingDistance,
+        setRemainingDistance,
       }}
     >
       {children}
