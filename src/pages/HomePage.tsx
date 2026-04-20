@@ -44,9 +44,14 @@ const HomePage = () => {
   const [durationMin, setDurationMin] = useState<number>(0);
 
   const [hoveredGuinchoId, setHoveredGuinchoId] = useState<string | null>(null);
-  
+
   const [requestStatus, setRequestStatus] = useState<
-    "idle" | "sending" | "waitingDriver" | "accepted" | "counterOfferReceived"
+    | "idle"
+    | "sending"
+    | "waitingDriver"
+    | "accepted"
+    | "counterOfferReceived"
+    | "counterOfferRejected"
   >("idle");
 
   const mapRef = useRef<L.Map | null>(null);
@@ -66,6 +71,7 @@ const HomePage = () => {
     handleUpdateDestination: handleUpdateDestination,
     setRouteG: setRouteG,
     routeG: routeG,
+    setRoute: setRoute,
     route: route,
     loading: loading,
     priceEstimate: priceEstimate,
@@ -82,7 +88,7 @@ const HomePage = () => {
     durationMinTotal: durationMin,
     setRequestStatus: setRequestStatus,
     requestStatus: requestStatus,
-    setGuinchos: setGuinchos
+    setGuinchos: setGuinchos,
   };
 
   const mapsProps: MapProps = {

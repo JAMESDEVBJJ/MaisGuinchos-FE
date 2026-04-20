@@ -14,6 +14,9 @@ import iconGuinchoHover from "../assets/icons/guinchomarkupHoverr.png";
 import destinationIcon from "../assets/icons/destinationMarkup.png";
 import L from "leaflet";
 import { Sun, Moon } from "lucide-react";
+import { useTowTravel } from "../contexts/TowTravelContext";
+import { flyToTarget } from "../utils/mapUtils";
+import { useAuth } from "../contexts/AuthContext";
 
 function MapController({ mapRef }: { mapRef: React.RefObject<L.Map | null> }) {
   const map = useMap();
@@ -37,6 +40,7 @@ export function Maps({
   setHoveredGuinchoId,
   setPriceG,
   setRequestStatus,
+  requestStatus,
   setRouteG,
   route,
   routeG,
@@ -49,7 +53,11 @@ export function Maps({
 }: MapProps) {
   const lastUserPosRef = useRef<[number, number] | null>(null);
 
+  const { user } = useAuth();
+
   const [isRoutePanelOpen, setIsRoutePanelOpen] = useState(false);
+
+  const { towTravel, setTowTravel, clearTowTravel } = useTowTravel();
 
   const [isDarkTheme, setIsDark] = useState(true);
 
@@ -121,58 +129,69 @@ export function Maps({
               <Moon size={27} fill="black" />
             )}
           </button>
-          {motoristasPosition.map((m) => {
-            const motorista = m.motorista;
+          {!towTravel &&
+            motoristasPosition.map((m) => {
+              const motorista = m.motorista;
 
-            if (
-              (motorista.lat === 0 && motorista.lon === 0) ||
-              motorista.lon == undefined ||
-              motorista.lat == undefined
-            ) {
-              return null;
-            }
+              if (
+                (motorista.lat === 0 && motorista.lon === 0) ||
+                motorista.lon == undefined ||
+                motorista.lat == undefined
+              ) {
+                return null;
+              }
 
-            hoveredGuinchoId = selectedGuincho ? null : hoveredGuinchoId;
-            const isHovered =
-              hoveredGuinchoId === m.motorista.userId
-                ? true
-                : selectedGuincho?.motorista.userId === m.motorista.userId
-                ? true
-                : false;
+              const isHovered =
+                hoveredGuinchoId === motorista.userId ||
+                selectedGuincho?.motorista.userId === motorista.userId;
 
-            return (
-              <Marker
-                key={motorista.userId}
-                position={[motorista.lat, motorista.lon]}
-                icon={isHovered ? guinchoHoverIcon : guinchoIcon}
-                eventHandlers={{
-                  click: () => {
-                    setSelectedGuincho(m);
-                    setPriceG(null);
-                    setDistanceKmG(null);
-                    setDurationMinG(null);
-                    setRouteG(null);
-                    setHoveredGuinchoId(null);
-                    setDistanceKmG(null);
-                    setDurationMinG(null);
-                    setRequestStatus("idle");
+              return (
+                <Marker
+                  key={motorista.userId}
+                  position={[motorista.lat, motorista.lon]}
+                  icon={isHovered ? guinchoHoverIcon : guinchoIcon}
+                  eventHandlers={{
+                    click: () => {
+                      setSelectedGuincho(m);
+                      setPriceG(null);
+                      setDistanceKmG(null);
+                      setDurationMinG(null);
+                      setRouteG(null);
+                      setHoveredGuinchoId(null);
+                      setRequestStatus("idle");
 
-                    flyToTarget(
-                      mapRef.current,
-                      motorista.lat,
-                      motorista.lon,
-                      null
-                    );
-                  },
-                }}
-              ></Marker>
-            );
-          })}
-          ;
-          <Marker
-            position={[userPosition.lat, userPosition.lon]}
-            icon={userIcon}
-          ></Marker>
+                      flyToTarget(
+                        mapRef.current,
+                        motorista.lat,
+                        motorista.lon,
+                        null
+                      );
+                    },
+                  }}
+                />
+              );
+            })}
+
+          {towTravel && towTravel.driverLat && towTravel.driverLon && (
+            <Marker
+              key={towTravel.towTravelId}
+              position={[towTravel.driverLat, towTravel.driverLon]}
+              icon={guinchoIcon}
+            />
+          )}
+
+          {user?.isDriver ? (
+            <Marker
+              position={[userPosition.lat, userPosition.lon]}
+              icon={guinchoIcon}
+            ></Marker>
+          ) : (
+            <Marker
+              position={[userPosition.lat, userPosition.lon]}
+              icon={userIcon}
+            ></Marker>
+          )}
+
           {route && (
             <>
               <Polyline
@@ -247,31 +266,4 @@ export function Maps({
       )}
     </div>
   );
-}
-
-export function flyToTarget(
-  map: L.Map | null,
-  lat: number,
-  lon: number,
-  boost: number | null
-) {
-  if (!map) return;
-
-  const currentZoom = map.getZoom();
-  const maxZoom = 10;
-
-  if (!boost) {
-    boost = 0.7;
-  }
-
-  const targetZoom =
-    currentZoom < maxZoom ? Math.min(currentZoom + boost, 16) : currentZoom;
-
-  const duration = 0.5 + (currentZoom / 5);
-
-  map.flyTo([lat, lon], targetZoom, {
-    animate: true,
-    duration,
-    easeLinearity: 0.25,
-  });
 }

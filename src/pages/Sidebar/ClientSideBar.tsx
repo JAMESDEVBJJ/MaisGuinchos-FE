@@ -10,6 +10,9 @@ import { InputLocation } from "./InputLocation";
 import * as signalR from "@microsoft/signalr";
 import { TowRequestData } from "./TowRequestData";
 import ReceiveCounterTowModal from "./ReceiveCounterTowModal";
+import { useTowTravel } from "../../contexts/TowTravelContext";
+import type { AcceptTowRequestResponseDTO } from "../../dtos/AcceptTowRequestResponseDTO";
+import { TowTravelStatus } from "../../utils/enums/TowTravelStatus";
 
 interface CoordinateDto {
   lat: number;
@@ -111,10 +114,23 @@ export function ClientSideBar(props: ClientBarProps) {
 
   const [showGetCounterModal, setShowGetCounterModal] = useState(false);
 
+  const {
+    towTravel,
+    setTowTravel,
+    clearTowTravel,
+    setTowTravelStatus,
+    towTravelStatus,
+  } = useTowTravel();
+
   const foto = props.selectedGuincho?.motorista?.foto;
   const isDefault = !foto || foto.trim() === "";
 
-  const serviceIsDisabled = !props.routeG || !props.route;
+  const serviceIsDisabled =
+    !props.routeG ||
+    !props.route ||
+    props.requestStatus === "waitingDriver" ||
+    props.requestStatus === "counterOfferRejected" ||
+    props.requestStatus === "accepted";
 
   const [dots, setDots] = useState("");
 
@@ -149,6 +165,12 @@ export function ClientSideBar(props: ClientBarProps) {
       );
     });
 
+    connection.on("TowRequestAccepted", (data: AcceptTowRequestResponseDTO) => {
+      props.setRequestStatus("accepted");
+      setTowTravel(data);
+      setTowTravelStatus(TowTravelStatus.GoingToClient);
+    });
+
     connection.on("ReceiveCounterOffer", (data: PutTowCounterOfferDTO) => {
       props.setRequestStatus("counterOfferReceived");
 
@@ -162,8 +184,10 @@ export function ClientSideBar(props: ClientBarProps) {
 
   useEffect(() => {
     if (props.requestStatus !== "waitingDriver") {
-      setDots("");
-      return;
+      if (props.requestStatus !== "counterOfferRejected") {
+        setDots("");
+        return;
+      }
     }
 
     const interval = setInterval(() => {
@@ -191,8 +215,8 @@ export function ClientSideBar(props: ClientBarProps) {
     const response = await api.post("/maps/route/calculate/driver", {
       originLat: origemLat,
       originLon: origemLon,
-      driverLat: destino?.lat,
-      driverLon: destino?.lon,
+      destinationLat: destino?.lat,
+      destinationLon: destino?.lon,
     });
 
     const route = response.data;
@@ -233,6 +257,7 @@ export function ClientSideBar(props: ClientBarProps) {
       routeLayerRef.current = null;
     }
 
+    clearTowTravel();
     props.setPriceG(null);
     props.setDistanceKmG(null);
     props.setDurationMinG(null);
@@ -242,6 +267,7 @@ export function ClientSideBar(props: ClientBarProps) {
     props.setDistanceKmG(null);
     props.setDurationMinG(null);
     props.setRequestStatus("idle");
+    setShowGetCounterModal(false);
   }
 
   async function handleConfirmSend() {
@@ -295,25 +321,36 @@ export function ClientSideBar(props: ClientBarProps) {
     }
   }
 
-  const buttonCounterText = () => {
+  const buttonCounterAndSubmitText = () => {
     switch (props.requestStatus) {
-      case "waitingDriver" || "counterOfferRejected":
+      case "waitingDriver":
         return `Aguardando motorista${dots}`;
       case "sending":
         return "Enviando...";
       case "counterOfferReceived":
-        return "Contraproposta recebida";
+        return "Contraproposta recebida!";
+      case "counterOfferRejected":
+        return `Aguardando motorista${dots}`;
+      case "accepted":
+        return "Solitação aceita!";
       default:
         return "Solicitar Guincho";
     }
   };
 
   const buttonCounterClass = () => {
-    if (props.requestStatus === "waitingDriver")
+    if (
+      props.requestStatus === "waitingDriver" ||
+      props.requestStatus === "counterOfferRejected"
+    )
       return "secondary fullwidth waiting";
 
     if (props.requestStatus === "counterOfferReceived")
-      return "secondary fullwidth contact-enabled";
+      return "secondary fullwidth contact-enabled ";
+
+    if (props.requestStatus === "accepted") {
+      return "secondary contact-enabled accepted fullwidth";
+    }
 
     if (props.routeG && props.route)
       return "secondary fullwidth contact-enabled";
@@ -380,9 +417,13 @@ export function ClientSideBar(props: ClientBarProps) {
         ) : (
           <>
             <div className="detail">
-              <button className="back" onClick={handleBackToList}>
-                ⬅
-              </button>
+              {(!towTravel ||
+                towTravelStatus === TowTravelStatus.Cancelled ||
+                towTravelStatus === TowTravelStatus.Finished) && (
+                <button className="back" onClick={handleBackToList}>
+                  ⬅
+                </button>
+              )}
               <div className="detail-top">
                 <img
                   className={`detail-photo ${
@@ -393,32 +434,55 @@ export function ClientSideBar(props: ClientBarProps) {
                   }
                   alt={props.selectedGuincho?.motorista?.name}
                 />
+
                 <div className="detail-info">
-                  <h3>{props.selectedGuincho?.motorista.name}</h3>
-                  <div className="rating-row">
-                    {renderStars(props.selectedGuincho?.stars)}{" "}
-                    <span className="rating-number">
-                      {props.selectedGuincho?.stars.toFixed(1)}
-                    </span>
-                  </div>
+                  {towTravelStatus === TowTravelStatus.GoingToClient ? (
+                    <h3>
+                      {props.selectedGuincho?.motorista.name} está indo até
+                      você.
+                    </h3>
+                  ) : towTravelStatus === TowTravelStatus.Arrived ? (
+                    <h3>
+                      {props.selectedGuincho?.motorista.name} chegou até você.
+                    </h3>
+                  ) : towTravelStatus === TowTravelStatus.InProgress ? (
+                    <h3>
+                      {props.selectedGuincho?.motorista.name} está indo até o
+                      destino.
+                    </h3>
+                  ) : (
+                    <h3>{props.selectedGuincho?.motorista.name}</h3>
+                  )}
+
+                  {!towTravel && (
+                    <div className="rating-row">
+                      {renderStars(props.selectedGuincho?.stars)}{" "}
+                      <span className="rating-number">
+                        {props.selectedGuincho?.stars.toFixed(1)}
+                      </span>
+                    </div>
+                  )}
+
                   <div className="driver-data">
                     <span className="phone">
                       {props.selectedGuincho?.motorista.number}
                     </span>
+
                     <div>Modelo: {props.selectedGuincho?.model}</div>
                     <div>Placa: {props.selectedGuincho?.motorista.placa}</div>
                     <div>Cor: {props.selectedGuincho?.color}</div>
                   </div>
                 </div>
               </div>
-
               <div className="detail-actions">
-                <button
-                  className="primary fullwidth"
-                  onClick={calcularRotaComGuincho}
-                >
-                  Calcular rota com guincho
-                </button>
+                {!towTravel && (
+                  <button
+                    className="primary fullwidth"
+                    onClick={calcularRotaComGuincho}
+                  >
+                    Calcular rota com guincho
+                  </button>
+                )}
               </div>
               {props.routeG &&
                 props.distanceKmG != null &&
@@ -439,18 +503,14 @@ export function ClientSideBar(props: ClientBarProps) {
                 )}
               <button
                 className={buttonCounterClass()}
-                disabled={
-                  serviceIsDisabled ||
-                  props.requestStatus === "waitingDriver" ||
-                  props.requestStatus === "counterOfferRejected"
-                }
+                disabled={serviceIsDisabled}
                 onClick={
                   props.requestStatus === "counterOfferReceived"
                     ? () => setShowGetCounterModal(true)
                     : () => setShowModal(true)
                 }
               >
-                {buttonCounterText()}
+                {buttonCounterAndSubmitText()}
               </button>
             </div>
           </>
@@ -505,7 +565,8 @@ export function ClientSideBar(props: ClientBarProps) {
               }
               onClick={handleConfirmSend}
             >
-              {props.requestStatus === "waitingDriver"
+              {props.requestStatus === "waitingDriver" ||
+              props.requestStatus === "counterOfferRejected"
                 ? `Aguardando motorista${dots}`
                 : props.requestStatus === "counterOfferReceived"
                 ? "Contraproposta recebida!"
@@ -516,7 +577,7 @@ export function ClientSideBar(props: ClientBarProps) {
           </div>
         </div>
       )}
-      {showGetCounterModal && (
+      {showGetCounterModal && props.requestStatus !== "accepted" && (
         <ReceiveCounterTowModal
           onClose={() => setShowGetCounterModal(false)}
           towCounterReceived={towRequest}

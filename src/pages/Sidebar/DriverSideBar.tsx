@@ -6,14 +6,22 @@ import * as signalR from "@microsoft/signalr";
 import { api } from "../../services/api";
 import { TowRequestData } from "./TowRequestData";
 import CounterOfferModal from "./CounterTowModal";
+import type { AcceptTowRequestResponseDTO } from "../../dtos/AcceptTowRequestResponseDTO";
+import L from "leaflet";
+
+import iconClient from "../../assets/icons/iconUser.png";
+import { TowTravelStatus } from "../../utils/enums/TowTravelStatus";
+import { useTowTravel } from "../../contexts/TowTravelContext";
 
 type DriverSideProps = {
   locationText: string;
   setLocationText: React.Dispatch<React.SetStateAction<string>>;
   setUserLocation: React.Dispatch<React.SetStateAction<Position | null>>;
   setRouteG: React.Dispatch<React.SetStateAction<[number, number][] | null>>;
+  setRoute: React.Dispatch<React.SetStateAction<[number, number][] | null>>;
   sideBarW: number;
   setIsResizing: React.Dispatch<React.SetStateAction<boolean>>;
+  mapRef: React.RefObject<L.Map | null>;
 };
 
 export function DriverSideBar(props: DriverSideProps) {
@@ -32,6 +40,15 @@ export function DriverSideBar(props: DriverSideProps) {
   const [selectedTow, setSelectedTow] = useState<TowRequestReceiveDto | null>(
     null
   );
+
+  const { setTowTravel, towTravel, setTowTravelStatus, towTravelStatus } =
+    useTowTravel();
+
+  const userIcon = new L.Icon({
+    iconUrl: iconClient,
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+  });
 
   const initials = selectedTow?.clientName
     .split(" ")
@@ -113,7 +130,34 @@ export function DriverSideBar(props: DriverSideProps) {
           t.id === data.id ? { ...t, counterOfferRecused: true } : t
         )
       );
+      setSelectedTow((prev) => {
+        if (!prev || prev.id !== data.id) return prev;
+        return { ...prev, counterOfferRecused: true };
+      });
     });
+
+    connection.on(
+      "CounterOfferAccepted",
+      (data: AcceptTowRequestResponseDTO) => {
+        setSelectedTow((prev) => {
+          if (!prev || prev.id !== data.towRequestId) return prev;
+
+          return { ...prev, status: 4 };
+        });
+        setTowsReceive((prev) =>
+          prev.map((p) =>
+            p.id === data.towRequestId ? { ...p, status: 4 } : p
+          )
+        );
+
+        console.dir(data);
+
+        setTowTravel(data);
+        setTowTravelStatus(TowTravelStatus.GoingToClient);
+
+        calcularRotaTowTravel(data);
+      }
+    );
 
     return () => {
       connection.stop();
@@ -127,13 +171,112 @@ export function DriverSideBar(props: DriverSideProps) {
   };
 
   const buttonCounterClass = () => {
-    if (selectedTow?.counterOfferRecused)
-      return "secondary fullwidth disabled";
+    if (selectedTow?.counterOfferRecused) return "secondary fullwidth disabled";
 
     return `counter-btn sendButton  fullwidth  ${
       selectedTow?.status === 2 && "success"
     }`;
   };
+
+  async function acceptTowRequest() {
+    if (selectedTow) {
+      const response = await api.post(
+        `towrequests/${selectedTow.id}/accept-tow`
+      );
+
+      const data: AcceptTowRequestResponseDTO = response.data;
+
+      console.dir(data);
+
+      setSelectedTow((prev) => {
+        if (!prev || prev.id !== response.data.towRequestId) return prev;
+
+        return { ...prev, status: 4 };
+      });
+      setTowsReceive((prev) =>
+        prev.map((p) =>
+          p.id === response.data.towRequestId ? { ...p, status: 4 } : p
+        )
+      );
+
+      calcularRotaTowTravel(data);
+    }
+  }
+
+  async function calcularRotaDestino(origin: Position, destination: Position) {
+    const response = await api.post("/maps/route/calculate", {
+      originLat: origin.lat,
+      originLon: origin.lon,
+      destinationLat: destination.lat,
+      destinationLon: destination.lon,
+    });
+
+    console.dir({
+      originLat: origin.lat,
+      originLon: origin.lon,
+      destLat: destination.lat,
+      destLon: destination.lon,
+    });
+
+    const route = response.data;
+
+    const routePositions = route.polyline.map((p: any) => [p.lat, p.lon]);
+
+    props.setRoute(routePositions);
+
+    const maps = props.mapRef.current;
+
+    if (!maps) return;
+
+    console.log("tem maps ref");
+    const poly = L.polyline(routePositions, { weight: 4, opacity: 0.6 });
+    maps.fitBounds(poly.getBounds(), { padding: [60, 60] });
+  }
+
+  async function calcularRotaTowTravel(towData: AcceptTowRequestResponseDTO) {
+    const maps = props.mapRef.current;
+    console.log("rota");
+    if (!maps) return;
+
+    const responseToPickup = await api.post("/maps/route/calculate/driver", {
+      originLat: towData.driverLat,
+      originLon: towData.driverLon,
+      DestinationLat: towData.pickupLat,
+      DestinationLon: towData.pickupLon,
+    });
+
+    const routeDriverToPickup = responseToPickup.data;
+
+    const routeDriverToPickupPositions = routeDriverToPickup.polyline.map(
+      (p: any) => [p.lat, p.lon]
+    );
+
+    const poly = L.polyline(routeDriverToPickupPositions, {
+      weight: 4,
+      opacity: 0.6,
+    });
+
+    maps.fitBounds(poly.getBounds(), { padding: [60, 60] });
+
+    L.marker([towData.pickupLat, towData.pickupLon], {
+      icon: userIcon,
+    }).addTo(maps);
+
+    const origin: Position = {
+      lat: towData.pickupLat,
+      lon: towData.pickupLon,
+    };
+
+    const destination: Position = {
+      lat: towData.destinationLat,
+      lon: towData.destinationLon,
+    };
+    console.log("routeDriverToPickupPositions:");
+    console.dir(routeDriverToPickupPositions);
+    props.setRouteG(routeDriverToPickupPositions);
+
+    await calcularRotaDestino(origin, destination);
+  }
 
   return (
     <>
@@ -196,7 +339,14 @@ export function DriverSideBar(props: DriverSideProps) {
         )}
         {selectedTow && (
           <div className="tow-details">
-            <button className="back" onClick={() => setSelectedTow(null)}>
+            <button
+              className="back"
+              onClick={() => {
+                setSelectedTow(null);
+                props.setRoute(null);
+                props.setRouteG(null);
+              }}
+            >
               ⬅
             </button>
 
@@ -231,38 +381,54 @@ export function DriverSideBar(props: DriverSideProps) {
               <p>Notas: {selectedTow.notes}</p>
             </div>
 
-            {selectedTow.status !== 2 || selectedTow.counterOfferRecused && (
-              <button className="accept-btn">Aceitar</button>
+            {(selectedTow.status !== 2 || selectedTow.counterOfferRecused) && (
+              <button
+                className={`accept-btn secondary contact-enabled ${
+                  selectedTow.status === 4 && "accepted"
+                }`}
+                onClick={() => acceptTowRequest()}
+                disabled={selectedTow.status === 4}
+              >
+                {selectedTow.status === 4 ? "Solicitação aceita!" : "Aceitar"}
+              </button>
             )}
 
-            <button
-              className={buttonCounterClass()}
-              onClick={() => setShowCounterModal(!showCounterModal)}
-              disabled={selectedTow.status === 2 || selectedTow.counterOfferRecused}
-            >
-              {selectedTow.counterOfferRecused
-                ? "Countra proposta recusada!"
-                : selectedTow.status !== 2
-                ? "Enviar contraproposta"
-                : selectedTow.status === 2
-                ? "Contraproposta enviada!"
-                : ""}
-            </button>
+            {selectedTow.status != 4 && (
+              <button
+                className={buttonCounterClass()}
+                onClick={() => setShowCounterModal(!showCounterModal)}
+                disabled={
+                  selectedTow.status === 2 || selectedTow.counterOfferRecused
+                }
+              >
+                {selectedTow.counterOfferRecused
+                  ? "Countra proposta recusada!"
+                  : selectedTow.status !== 2
+                  ? "Enviar contraproposta"
+                  : selectedTow.status === 2
+                  ? "Contraproposta enviada!"
+                  : selectedTow.status === 4
+                  ? "Contra proposta aceita!"
+                  : ""}
+              </button>
+            )}
           </div>
         )}
         <div className="resize-handle" onMouseDown={handleMouseDown} />
       </aside>
-      {showCounterModal && selectedTow !== null && (
-        <CounterOfferModal
-          price={selectedTow.suggestedPrice}
-          onClose={() => {
-            setShowCounterModal(false);
-          }}
-          setSelectedTow={setSelectedTow}
-          towRequest={selectedTow}
-          setTowsReceived={setTowsReceive}
-        />
-      )}
+      {selectedTow !== null &&
+        !selectedTow.counterOfferRecused &&
+        showCounterModal && (
+          <CounterOfferModal
+            price={selectedTow.suggestedPrice}
+            onClose={() => {
+              setShowCounterModal(false);
+            }}
+            setSelectedTow={setSelectedTow}
+            towRequest={selectedTow}
+            setTowsReceived={setTowsReceive}
+          />
+        )}
     </>
   );
 }

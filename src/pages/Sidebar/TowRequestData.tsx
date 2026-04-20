@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTowTravel } from "../../contexts/TowTravelContext";
 type TowRequestDataProps = {
   distanceKm: number;
   durationMin: number;
@@ -26,7 +27,7 @@ export function TowRequestData({
   routeG,
   modelo,
   totalDistanceKm,
-  suggestedPrice
+  suggestedPrice,
 }: TowRequestDataProps) {
   const [showDetails, setShowDetails] = useState(false);
 
@@ -36,26 +37,45 @@ export function TowRequestData({
   const totalDuration = durationMin + durationMinG;
   const totalPrice = priceEstimate + priceEstimateG;
 
+  const {towTravel, towTravelStatus, remainingTime, remainingDistance} = useTowTravel();
+
   return (
     <div className="route-summary">
       <ul className="tow-info">
-        <li>
-          <strong>Distância total:</strong> {totalDistanceKm ? totalDistanceKm.toFixed(1) : totalDistance.toFixed(1)} Km
-        </li>
+        {!towTravel ? (
+          <>
+            <li>
+              <strong>Distância total:</strong>{" "}
+              {totalDistanceKm
+                ? totalDistanceKm.toFixed(1)
+                : totalDistance.toFixed(1)}{" "}
+              Km
+            </li>
 
-        <li>
-          <strong>Tempo médio:</strong> {(totalDuration / 60).toFixed(1)} h
-        </li>
+            <li>
+              <strong>Tempo médio:</strong> {(totalDuration / 60).toFixed(1)} h
+            </li>
+          </>
+        ) : (
+          <>
+            <li>
+              <strong>Distância restante: </strong>{" "}
+              {remainingDistance
+                ? remainingDistance.toFixed(1) : "sem distancia faltante"}{" "}
+              Km
+            </li>
 
-        {modelo && (
-          <li>
-            <strong>Modelo:</strong> {modelo} 
-          </li>
+            <li>
+              <strong>Tempo médio restante: </strong> {remainingTime ? (remainingTime / 60).toFixed(1) : "tbm"} h
+            </li>
+          </>
         )}
 
         {!showDetails && (
           <li>
-            <strong>Preço estimado:</strong> {suggestedPrice ? suggestedPrice.toFixed(0) : totalPrice.toFixed(0)} R$
+            <strong>Preço estimado:</strong>{" "}
+            {suggestedPrice ? suggestedPrice.toFixed(0) : totalPrice.toFixed(0)}{" "}
+            R$
           </li>
         )}
       </ul>
