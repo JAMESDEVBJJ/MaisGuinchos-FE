@@ -16,6 +16,7 @@ import L from "leaflet";
 import { Sun, Moon } from "lucide-react";
 import { useTowTravel } from "../contexts/TowTravelContext";
 import { flyToTarget } from "../utils/mapUtils";
+import { useAuth } from "../contexts/AuthContext";
 
 function MapController({ mapRef }: { mapRef: React.RefObject<L.Map | null> }) {
   const map = useMap();
@@ -51,6 +52,8 @@ export function Maps({
   durationMinG,
 }: MapProps) {
   const lastUserPosRef = useRef<[number, number] | null>(null);
+
+  const { user } = useAuth();
 
   const [isRoutePanelOpen, setIsRoutePanelOpen] = useState(false);
 
@@ -176,10 +179,19 @@ export function Maps({
               icon={guinchoIcon}
             />
           )}
-          <Marker
-            position={[userPosition.lat, userPosition.lon]}
-            icon={userIcon}
-          ></Marker>
+
+          {user?.isDriver ? (
+            <Marker
+              position={[userPosition.lat, userPosition.lon]}
+              icon={guinchoIcon}
+            ></Marker>
+          ) : (
+            <Marker
+              position={[userPosition.lat, userPosition.lon]}
+              icon={userIcon}
+            ></Marker>
+          )}
+
           {route && (
             <>
               <Polyline
