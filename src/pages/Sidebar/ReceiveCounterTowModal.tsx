@@ -1,3 +1,5 @@
+import { useTowTravel } from "../../contexts/TowTravelContext";
+import type { AcceptTowRequestResponseDTO } from "../../dtos/AcceptTowRequestResponseDTO";
 import type { PutTowCounterOfferDTO } from "../../dtos/CounterOfferDTO";
 import { api } from "../../services/api";
 import "../../styles/ConterOfferModals/ReceiveCounterTowModal.css";
@@ -21,6 +23,8 @@ type GetCounterOfferModalProps = {
 export default function ReceiveCounterTowModal({
   ...props
 }: GetCounterOfferModalProps) {
+  const {setTowTravel} = useTowTravel();
+
   async function submit() {
     try {
       if (!props.towCounterReceived?.id) return;
@@ -28,8 +32,13 @@ export default function ReceiveCounterTowModal({
       const response = await api.post(
         `towrequests/${props.towCounterReceived.id}/accept-counter-offer`
       );
-      
+
+      const data : AcceptTowRequestResponseDTO = response.data;
+      setTowTravel(data);
       props.setRequestStatus("accepted");
+
+
+      //setar
 
     } catch (error) {
       const message = "Erro ao aceitar contraproposta.";
