@@ -13,6 +13,7 @@ import ReceiveCounterTowModal from "./ReceiveCounterTowModal";
 import { useTowTravel } from "../../contexts/TowTravelContext";
 import type { AcceptTowRequestResponseDTO } from "../../dtos/AcceptTowRequestResponseDTO";
 import { TowTravelStatus } from "../../utils/enums/TowTravelStatus";
+import type { RouteRealtimeDTO } from "../../dtos/RouteRealtimeDTO";
 
 interface CoordinateDto {
   lat: number;
@@ -175,6 +176,10 @@ export function ClientSideBar(props: ClientBarProps) {
       props.setRequestStatus("counterOfferReceived");
 
       setTowRequest(data);
+    });
+
+    connection.on("driverLocationUpdated", (data: RouteRealtimeDTO) => {
+      console.dir(data);
     });
 
     return () => {
@@ -485,7 +490,7 @@ export function ClientSideBar(props: ClientBarProps) {
                 )}
               </div>
               {props.routeG &&
-                props.distanceKmG != null &&
+                props.distanceKmG != null &&  
                 props.durationMinG != null &&
                 props.priceEstimateG != null && (
                   <TowRequestData

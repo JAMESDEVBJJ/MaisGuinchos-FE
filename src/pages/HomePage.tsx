@@ -10,11 +10,7 @@ import {
 import { useRef } from "react";
 import L from "leaflet";
 import { Sidebar, type SidebarProps } from "./Sidebar/SideBar";
-
-interface CoordinateDto {
-  lat: number;
-  lon: number;
-}
+import type { CoordinateDto } from "../dtos/CoordinateDTO";
 
 const HomePage = () => {
   const [priceEstimateG, setPriceG] = useState<number | null>(0);
