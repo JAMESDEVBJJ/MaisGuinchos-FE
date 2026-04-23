@@ -172,14 +172,6 @@ export function Maps({
               );
             })}
 
-          {towTravel && towTravel.driverLat && towTravel.driverLon && (
-            <Marker
-              key={towTravel.towTravelId}
-              position={[towTravel.driverLat, towTravel.driverLon]}
-              icon={guinchoIcon}
-            />
-          )}
-
           {user?.isDriver ? (
             <Marker
               position={[userPosition.lat, userPosition.lon]}

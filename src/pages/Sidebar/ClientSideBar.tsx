@@ -14,6 +14,7 @@ import { useTowTravel } from "../../contexts/TowTravelContext";
 import type { AcceptTowRequestResponseDTO } from "../../dtos/AcceptTowRequestResponseDTO";
 import { TowTravelStatus } from "../../utils/enums/TowTravelStatus";
 import type { RouteRealtimeDTO } from "../../dtos/RouteRealtimeDTO";
+import iconGuincho from "../../assets/icons/guinchoMarkup.png";
 
 interface CoordinateDto {
   lat: number;
@@ -135,6 +136,15 @@ export function ClientSideBar(props: ClientBarProps) {
 
   const [dots, setDots] = useState("");
 
+  const driverMarkerRef = useRef<L.Marker | null>(null);
+
+  const guinchoIcon = new L.Icon({
+    iconUrl: iconGuincho,
+    iconSize: [36, 36],
+    iconAnchor: [18, 36],
+    popupAnchor: [0, -36],
+  });
+
   useEffect(() => {
     if (!token) return;
 
@@ -170,6 +180,22 @@ export function ClientSideBar(props: ClientBarProps) {
       props.setRequestStatus("accepted");
       setTowTravel(data);
       setTowTravelStatus(TowTravelStatus.GoingToClient);
+
+      const maps = props.mapRef.current;
+      if (!maps) return;
+      if (!driverMarkerRef.current) {
+        driverMarkerRef.current = L.marker(
+          [data.driverLat, data.driverLon] as [number, number],
+          {
+            icon: guinchoIcon,
+          }
+        ).addTo(maps);
+      } else {
+        driverMarkerRef.current.setLatLng([data.driverLat, data.driverLon] as [
+          number,
+          number
+        ]);
+      }
     });
 
     connection.on("ReceiveCounterOffer", (data: PutTowCounterOfferDTO) => {
@@ -178,8 +204,34 @@ export function ClientSideBar(props: ClientBarProps) {
       setTowRequest(data);
     });
 
-    connection.on("driverLocationUpdated", (data: RouteRealtimeDTO) => {
+    connection.on("DriverLocationUpdated", (data: RouteRealtimeDTO) => {
+      console.log("aopa");
       console.dir(data);
+      const route = data.polyline.map(
+        (c) => [c.lat, c.lon] as [number, number]
+      );
+      console.dir(route);
+      if (data.type === 0) {
+        const maps = props.mapRef.current;
+        if (!maps) return;
+
+        const newLatLng: [number, number] = [data.origin.lat, data.origin.lon];
+
+        if (!driverMarkerRef.current) {
+          console.log("nn tem ainda");
+          driverMarkerRef.current = L.marker(newLatLng, {
+            icon: guinchoIcon,
+          }).addTo(maps);
+        } else {
+          console.log("temmmm");
+
+          driverMarkerRef.current.setLatLng(newLatLng);
+        }
+
+        props.setRouteG(route);
+      } else {
+        console.log("nn é to pickup");
+      }
     });
 
     return () => {
@@ -490,7 +542,7 @@ export function ClientSideBar(props: ClientBarProps) {
                 )}
               </div>
               {props.routeG &&
-                props.distanceKmG != null &&  
+                props.distanceKmG != null &&
                 props.durationMinG != null &&
                 props.priceEstimateG != null && (
                   <TowRequestData
