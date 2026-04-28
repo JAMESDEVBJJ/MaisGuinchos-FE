@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { InputLocation } from "./InputLocation";
 import type { Position } from "../../dtos/MapPropsDTO";
 import type { TowRequestReceiveDto } from "../../dtos/TowRequestReceiveDTO";
@@ -13,6 +13,8 @@ import iconClient from "../../assets/icons/iconUser.png";
 import { TowTravelStatus } from "../../utils/enums/TowTravelStatus";
 import { useTowTravel } from "../../contexts/TowTravelContext";
 import type { TowTravelDTO } from "../../dtos/TowTravelDTO";
+import type { RouteRealtimeDTO } from "../../dtos/RouteRealtimeDTO";
+import iconGuincho from "../../assets/icons/guinchoMarkup.png";
 
 type DriverSideProps = {
   locationText: string;
@@ -44,6 +46,15 @@ export function DriverSideBar(props: DriverSideProps) {
 
   const { setTowTravel, towTravel, setTowTravelStatus, towTravelStatus } =
     useTowTravel();
+
+  const driverMarkerRef = useRef<L.Marker | null>(null);
+
+  const guinchoIcon = new L.Icon({
+    iconUrl: iconGuincho,
+    iconSize: [36, 36],
+    iconAnchor: [18, 36],
+    popupAnchor: [0, -36],
+  });
 
   const userIcon = new L.Icon({
     iconUrl: iconClient,
@@ -145,8 +156,10 @@ export function DriverSideBar(props: DriverSideProps) {
           id: data.towTravelId,
           driverId: data.towDriverId,
           finalPrice: data.finalPrice,
-          estimatedArrivalTime: data.estimatedArrivalTime,
-          distanceKm: data.distanceKm,
+          timeToDestinationMin: data.durationMinToDestination,
+          timeToPickupMin: data.durationMinToPickup,
+          distanceToDestinationKm: data.distanceToDestinationKm,
+          distanceToPickupKm: data.distanceToPickupKm,
           status: 0,
         };
 
@@ -169,6 +182,52 @@ export function DriverSideBar(props: DriverSideProps) {
         calcularRotaTowTravel(data);
       }
     );
+
+    connection.on("DriverLocationUpdated", (data: RouteRealtimeDTO) => {
+      const route = data.polyline.map(
+        (c) => [c.lat, c.lon] as [number, number]
+      );
+
+      if (data.type === 0) {
+        setTowTravel((prev) => {
+          if (!prev) {
+            return null;
+          }
+          return {
+            ...prev,
+            distanceToPickupKm: data.distanceKm,
+            timeToPickupMin: data.durationMinutes,
+          };
+        });
+
+        const maps = props.mapRef.current;
+        if (!maps) return;
+
+        const newLatLng: [number, number] = [data.origin.lat, data.origin.lon];
+
+        if (!driverMarkerRef.current) {
+          driverMarkerRef.current = L.marker(newLatLng, {
+            icon: guinchoIcon,
+          }).addTo(maps);
+        } else {
+          driverMarkerRef.current.setLatLng(newLatLng);
+        }
+
+        props.setRouteG(route);
+      } else {
+        setTowTravel((prev) => {
+          if (!prev) {
+            return null;
+          }
+          return {
+            ...prev,
+            distanceToDestinationKm: data.distanceKm,
+            timeToDestinationMin: data.durationMinutes,
+          };
+        });
+        console.log("nn é to pickup");
+      }
+    });
 
     return () => {
       connection.stop();
@@ -197,6 +256,18 @@ export function DriverSideBar(props: DriverSideProps) {
 
       const data: AcceptTowRequestResponseDTO = response.data;
 
+      const towTravel: TowTravelDTO = {
+        towRequestId: data.towRequestId,
+        id: data.towTravelId,
+        driverId: data.towDriverId,
+        finalPrice: data.finalPrice,
+        timeToDestinationMin: data.durationMinToDestination,
+        timeToPickupMin: data.durationMinToPickup,
+        distanceToDestinationKm: data.distanceToDestinationKm,
+        distanceToPickupKm: data.distanceToPickupKm,
+        status: 0,
+      };
+
       console.dir(data);
 
       setSelectedTow((prev) => {
@@ -209,6 +280,8 @@ export function DriverSideBar(props: DriverSideProps) {
           p.id === response.data.towRequestId ? { ...p, status: 4 } : p
         )
       );
+
+      setTowTravel(towTravel);
 
       calcularRotaTowTravel(data);
     }
@@ -372,16 +445,15 @@ export function DriverSideBar(props: DriverSideProps) {
               </div>
             </div>
 
-
             <div className="detail">
-            {towTravel && (
-              <InputLocation
-                locationText={props.locationText}
-                setLocationText={props.setLocationText}
-                setRouteG={props.setRouteG}
-                setUserLocation={props.setUserLocation}
-              />
-            )}
+              {towTravel && (
+                <InputLocation
+                  locationText={props.locationText}
+                  setLocationText={props.setLocationText}
+                  setRouteG={props.setRouteG}
+                  setUserLocation={props.setUserLocation}
+                />
+              )}
               <TowRequestData
                 distanceKm={selectedTow.totalDistanceKm}
                 durationMin={selectedTow.durationMinutes}

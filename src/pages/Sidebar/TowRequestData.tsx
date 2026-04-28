@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTowTravel } from "../../contexts/TowTravelContext";
+import { useAuth } from "../../contexts/AuthContext";
 type TowRequestDataProps = {
   distanceKm: number;
   durationMin: number;
@@ -31,6 +32,8 @@ export function TowRequestData({
 }: TowRequestDataProps) {
   const [showDetails, setShowDetails] = useState(false);
 
+  const { user } = useAuth();
+
   //if (!routeG) return null;
 
   const totalDistance = distanceKm + distanceKmG;
@@ -45,11 +48,6 @@ export function TowRequestData({
   const totalDistanceTravel = towTravel
     ? towTravel?.distanceToDestinationKm + towTravel?.distanceToPickupKm
     : 0;
-
-  console.dir({
-    destinationMin: towTravel?.timeToDestinationMin,
-    distanceToPickup: towTravel?.distanceToPickupKm,
-  });
 
   return (
     <div className="route-summary">
@@ -97,7 +95,7 @@ export function TowRequestData({
         )}
       </ul>
 
-      {showDetails && (
+      {showDetails && user?.isClient && (
         <div className="route-breakdown">
           <p>
             <strong>
@@ -118,13 +116,14 @@ export function TowRequestData({
           </p>
         </div>
       )}
-
-      <span
-        className="more-details"
-        onClick={() => setShowDetails(!showDetails)}
-      >
-        {showDetails ? "Menos detalhes" : "Mais detalhes"}
-      </span>
+      {user?.isClient && (
+        <span
+          className="more-details"
+          onClick={() => setShowDetails(!showDetails)}
+        >
+          {showDetails ? "Menos detalhes" : "Mais detalhes"}
+        </span>
+      )}
     </div>
   );
 }

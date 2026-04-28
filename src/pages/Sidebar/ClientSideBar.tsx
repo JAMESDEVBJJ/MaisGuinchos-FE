@@ -231,25 +231,18 @@ export function ClientSideBar(props: ClientBarProps) {
         (c) => [c.lat, c.lon] as [number, number]
       );
 
-      const towTravel = {
-        estimatedArrivalTime: data.durationMinutes,
-        distanceKm: data.distanceKm,
-      };
-
-      console.dir(towTravel);
-      console.log("ué");
-      setTowTravel((prev) => {
-        if (!prev) {
-          return null;
-        }
-        return {
-          ...prev,
-          estimatedArrivalTime: data.durationMinutes,
-          distanceKm: data.distanceKm,
-        };
-      });
-
       if (data.type === 0) {
+        setTowTravel((prev) => {
+          if (!prev) {
+            return null;
+          }
+          return {
+            ...prev,
+            distanceToPickupKm: data.distanceKm,
+            timeToPickupMin: data.durationMinutes,
+          };
+        });
+
         const maps = props.mapRef.current;
         if (!maps) return;
 
@@ -265,6 +258,16 @@ export function ClientSideBar(props: ClientBarProps) {
 
         props.setRouteG(route);
       } else {
+        setTowTravel((prev) => {
+          if (!prev) {
+            return null;
+          }
+          return {
+            ...prev,
+            distanceToDestinationKm:data.distanceKm,
+            timeToDestinationMin: data.durationMinutes,
+          };
+        });
         console.log("nn é to pickup");
       }
     });
