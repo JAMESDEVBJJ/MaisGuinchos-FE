@@ -12,6 +12,7 @@ import L from "leaflet";
 import iconClient from "../../assets/icons/iconUser.png";
 import { TowTravelStatus } from "../../utils/enums/TowTravelStatus";
 import { useTowTravel } from "../../contexts/TowTravelContext";
+import type { TowTravelDTO } from "../../dtos/TowTravelDTO";
 
 type DriverSideProps = {
   locationText: string;
@@ -139,6 +140,16 @@ export function DriverSideBar(props: DriverSideProps) {
     connection.on(
       "CounterOfferAccepted",
       (data: AcceptTowRequestResponseDTO) => {
+        const towTravel: TowTravelDTO = {
+          towRequestId: data.towRequestId,
+          id: data.towTravelId,
+          driverId: data.towDriverId,
+          finalPrice: data.finalPrice,
+          estimatedArrivalTime: data.estimatedArrivalTime,
+          distanceKm: data.distanceKm,
+          status: 0,
+        };
+
         setSelectedTow((prev) => {
           if (!prev || prev.id !== data.towRequestId) return prev;
 
@@ -152,7 +163,7 @@ export function DriverSideBar(props: DriverSideProps) {
 
         console.dir(data);
 
-        setTowTravel(data);
+        setTowTravel(towTravel);
         setTowTravelStatus(TowTravelStatus.GoingToClient);
 
         calcularRotaTowTravel(data);
@@ -360,7 +371,17 @@ export function DriverSideBar(props: DriverSideProps) {
                 </div>
               </div>
             </div>
+
+
             <div className="detail">
+            {towTravel && (
+              <InputLocation
+                locationText={props.locationText}
+                setLocationText={props.setLocationText}
+                setRouteG={props.setRouteG}
+                setUserLocation={props.setUserLocation}
+              />
+            )}
               <TowRequestData
                 distanceKm={selectedTow.totalDistanceKm}
                 durationMin={selectedTow.durationMinutes}

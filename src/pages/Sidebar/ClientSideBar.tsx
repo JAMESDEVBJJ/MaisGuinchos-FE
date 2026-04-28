@@ -15,6 +15,7 @@ import type { AcceptTowRequestResponseDTO } from "../../dtos/AcceptTowRequestRes
 import { TowTravelStatus } from "../../utils/enums/TowTravelStatus";
 import type { RouteRealtimeDTO } from "../../dtos/RouteRealtimeDTO";
 import iconGuincho from "../../assets/icons/guinchoMarkup.png";
+import type { TowTravelDTO } from "../../dtos/TowTravelDTO";
 
 interface CoordinateDto {
   lat: number;
@@ -38,7 +39,11 @@ interface CreateTowRequestDTO {
   dropoffLat: number;
   dropoffLon: number;
   totalDistanceKm: number;
+  distanceToPickupKm: number;
+  distanceToDestinationKm: number;
   durationMinutes: number;
+  durationToPickupMin: number;
+  durationToDestinationMin: number;
   suggestedPrice: number;
   vehicleType: string;
   vehicleIssue: string;
@@ -178,7 +183,24 @@ export function ClientSideBar(props: ClientBarProps) {
 
     connection.on("TowRequestAccepted", (data: AcceptTowRequestResponseDTO) => {
       props.setRequestStatus("accepted");
-      setTowTravel(data);
+
+      const towTravel: TowTravelDTO = {
+        towRequestId: data.towRequestId,
+        id: data.towTravelId,
+        driverId: data.towDriverId,
+        finalPrice: data.finalPrice,
+
+        distanceToPickupKm: data.distanceToPickupKm,
+        timeToPickupMin: data.durationMinToPickup,
+
+        distanceToDestinationKm: data.distanceToDestinationKm,
+        timeToDestinationMin: data.durationMinToDestination,
+        status: 0,
+      };
+
+      console.dir(towTravel);
+
+      setTowTravel(towTravel);
       setTowTravelStatus(TowTravelStatus.GoingToClient);
 
       const maps = props.mapRef.current;
@@ -205,12 +227,28 @@ export function ClientSideBar(props: ClientBarProps) {
     });
 
     connection.on("DriverLocationUpdated", (data: RouteRealtimeDTO) => {
-      console.log("aopa");
-      console.dir(data);
       const route = data.polyline.map(
         (c) => [c.lat, c.lon] as [number, number]
       );
-      console.dir(route);
+
+      const towTravel = {
+        estimatedArrivalTime: data.durationMinutes,
+        distanceKm: data.distanceKm,
+      };
+
+      console.dir(towTravel);
+      console.log("ué");
+      setTowTravel((prev) => {
+        if (!prev) {
+          return null;
+        }
+        return {
+          ...prev,
+          estimatedArrivalTime: data.durationMinutes,
+          distanceKm: data.distanceKm,
+        };
+      });
+
       if (data.type === 0) {
         const maps = props.mapRef.current;
         if (!maps) return;
@@ -218,13 +256,10 @@ export function ClientSideBar(props: ClientBarProps) {
         const newLatLng: [number, number] = [data.origin.lat, data.origin.lon];
 
         if (!driverMarkerRef.current) {
-          console.log("nn tem ainda");
           driverMarkerRef.current = L.marker(newLatLng, {
             icon: guinchoIcon,
           }).addTo(maps);
         } else {
-          console.log("temmmm");
-
           driverMarkerRef.current.setLatLng(newLatLng);
         }
 
@@ -343,6 +378,11 @@ export function ClientSideBar(props: ClientBarProps) {
       return;
     }
 
+    if (!props.distanceKmG || !props.durationMinG) {
+      alert("Dados da rota do até o usuário inválidos.");
+      return;
+    }
+
     const towRequestDto: CreateTowRequestDTO = {
       driverId: props.selectedGuincho.motorista.userId,
 
@@ -353,7 +393,12 @@ export function ClientSideBar(props: ClientBarProps) {
       dropoffLon: props.destination.lon,
 
       totalDistanceKm: distanceRouteTotal,
+      distanceToPickupKm: props.distanceKmG,
+      distanceToDestinationKm: props.distanceKm,
+
       durationMinutes: props.durationMinTotal,
+      durationToPickupMin: props.durationMinG,
+      durationToDestinationMin: props.duration,
 
       suggestedPrice: props.priceEstimate,
 

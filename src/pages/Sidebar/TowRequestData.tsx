@@ -37,7 +37,19 @@ export function TowRequestData({
   const totalDuration = durationMin + durationMinG;
   const totalPrice = priceEstimate + priceEstimateG;
 
-  const {towTravel, towTravelStatus, remainingTime, remainingDistance} = useTowTravel();
+  const { towTravel, towTravelStatus } = useTowTravel();
+
+  const totalTimeTravel = towTravel
+    ? towTravel?.timeToDestinationMin + towTravel?.timeToPickupMin
+    : 0;
+  const totalDistanceTravel = towTravel
+    ? towTravel?.distanceToDestinationKm + towTravel?.distanceToPickupKm
+    : 0;
+
+  console.dir({
+    destinationMin: towTravel?.timeToDestinationMin,
+    distanceToPickup: towTravel?.distanceToPickupKm,
+  });
 
   return (
     <div className="route-summary">
@@ -60,13 +72,18 @@ export function TowRequestData({
           <>
             <li>
               <strong>Distância restante: </strong>{" "}
-              {remainingDistance
-                ? remainingDistance.toFixed(1) : "sem distancia faltante"}{" "}
+              {totalDistanceTravel
+                ? totalDistanceTravel.toFixed(1)
+                : "não recebida"}{" "}
               Km
             </li>
 
             <li>
-              <strong>Tempo médio restante: </strong> {remainingTime ? (remainingTime / 60).toFixed(1) : "tbm"} h
+              <strong>Tempo restante estimado: </strong>{" "}
+              {totalTimeTravel
+                ? (totalTimeTravel / 60).toFixed(1)
+                : "não recebido"}{" "}
+              h
             </li>
           </>
         )}

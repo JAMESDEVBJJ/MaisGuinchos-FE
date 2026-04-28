@@ -26,7 +26,6 @@ const HomePage = () => {
   const [loading, setLoading] = useState(false);
 
   const [userLocation, setUserLocation] = useState<Position | null>(null);
-  console.log("Render", userLocation);
 
   const [locationText, setLocationText] = useState<string>("");
   const [destinationText, setDestinationText] = useState<string>("");
@@ -81,7 +80,7 @@ const HomePage = () => {
     durationMinG: durationMinG,
     setDurationMinG: setDurationMinG,
     destination: destinationPosition,
-    durationMinTotal: durationMin,
+    durationMinTotal: durationMin + (durationMinG ? durationMinG : 0),
     setRequestStatus: setRequestStatus,
     requestStatus: requestStatus,
     setGuinchos: setGuinchos,
