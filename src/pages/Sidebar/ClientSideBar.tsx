@@ -102,6 +102,10 @@ export function ClientSideBar(props: ClientBarProps) {
   const distanceRouteTotal =
     props.distanceKm + (props.distanceKmG ? props.distanceKmG : 0);
 
+  const priceRouteTotal = props.priceEstimateG
+    ? props.priceEstimate + props.priceEstimateG
+    : props.priceEstimate;
+
   const [showDetails, setShowDetails] = useState(false);
 
   const routeLayerRef = useRef<L.Layer | null>(null);
@@ -264,7 +268,7 @@ export function ClientSideBar(props: ClientBarProps) {
           }
           return {
             ...prev,
-            distanceToDestinationKm:data.distanceKm,
+            distanceToDestinationKm: data.distanceKm,
             timeToDestinationMin: data.durationMinutes,
           };
         });
@@ -403,7 +407,7 @@ export function ClientSideBar(props: ClientBarProps) {
       durationToPickupMin: props.durationMinG,
       durationToDestinationMin: props.duration,
 
-      suggestedPrice: props.priceEstimate,
+      suggestedPrice: priceRouteTotal,
 
       vehicleType: vehicleType,
       vehicleIssue: vehicleIssue,
