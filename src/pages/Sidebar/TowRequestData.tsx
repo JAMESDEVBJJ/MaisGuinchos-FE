@@ -85,8 +85,16 @@ export function TowRequestData({
             </li>
           </>
         )}
+        
+        {towTravel && (
+          <li>
+            <strong>Preço:</strong>{" "}
+            {towTravel.finalPrice.toFixed(0)}{" "}
+            R$
+          </li>
+        )}
 
-        {!showDetails && (
+        {(!showDetails && !towTravel) && (
           <li>
             <strong>Preço estimado:</strong>{" "}
             {suggestedPrice ? suggestedPrice.toFixed(0) : totalPrice.toFixed(0)}{" "}
