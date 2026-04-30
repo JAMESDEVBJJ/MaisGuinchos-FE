@@ -87,7 +87,11 @@ export function DriverSideBar(props: DriverSideProps) {
   }
 
   const handleNewTow = (novoTow: TowRequestReceiveDto) => {
-    setTowsReceive((prev) => [...prev, novoTow]);
+    setTowsReceive((prev) => {
+      const filtradas = prev.filter(tow => tow.clientId !== novoTow.clientId);
+      console.dir(filtradas)
+      return [novoTow, ...filtradas];
+    });
   };
 
   useEffect(() => {

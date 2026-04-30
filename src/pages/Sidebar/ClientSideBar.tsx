@@ -16,6 +16,7 @@ import { TowTravelStatus } from "../../utils/enums/TowTravelStatus";
 import type { RouteRealtimeDTO } from "../../dtos/RouteRealtimeDTO";
 import iconGuincho from "../../assets/icons/guinchoMarkup.png";
 import type { TowTravelDTO } from "../../dtos/TowTravelDTO";
+import type { TowRequestDTO } from "../../dtos/TowRequestDTO";
 
 interface CoordinateDto {
   lat: number;
@@ -116,12 +117,7 @@ export function ClientSideBar(props: ClientBarProps) {
   const [vehicleIssue, setVehicleIssue] = useState("");
   const [notes, setNotes] = useState("");
 
-  const [towRequest, setTowRequest] = useState<PutTowCounterOfferDTO | null>(
-    null
-  );
-
-  const [counterOffer, setCounterOffer] =
-    useState<PutTowCounterOfferDTO | null>(null);
+  const [towRequest, setTowRequest] = useState<TowRequestDTO | null>(null);
 
   const [showGetCounterModal, setShowGetCounterModal] = useState(false);
 
@@ -224,7 +220,7 @@ export function ClientSideBar(props: ClientBarProps) {
       }
     });
 
-    connection.on("ReceiveCounterOffer", (data: PutTowCounterOfferDTO) => {
+    connection.on("ReceiveCounterOffer", (data: TowRequestDTO) => {
       props.setRequestStatus("counterOfferReceived");
 
       setTowRequest(data);
