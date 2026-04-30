@@ -1,9 +1,7 @@
 import type { CoordinateDto } from "./CoordinateDTO";
 
-export type RouteType = "DriverToPickup" | "DriverToDestination";
-
 export interface RouteRealtimeDTO {
-  type: number;
+  type: RouteType;
 
   origin: CoordinateDto;
   destination: CoordinateDto;
@@ -13,4 +11,9 @@ export interface RouteRealtimeDTO {
   priceEstimate: number;
 
   polyline: CoordinateDto[];
+}
+
+export enum RouteType {
+  DriverToPickup = 0,
+  DriverToDestination = 1,
 }

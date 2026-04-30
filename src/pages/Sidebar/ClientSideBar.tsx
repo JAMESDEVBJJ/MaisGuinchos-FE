@@ -5,7 +5,6 @@ import { api } from "../../services/api";
 import L from "leaflet";
 import defaultUserPng from "../../assets/defaultUser.png";
 import type { GuinchosDto, Position } from "../../dtos/MapPropsDTO";
-import type { PutTowCounterOfferDTO } from "../../dtos/CounterOfferDTO";
 import { InputLocation } from "./InputLocation";
 import * as signalR from "@microsoft/signalr";
 import { TowRequestData } from "./TowRequestData";
@@ -13,7 +12,7 @@ import ReceiveCounterTowModal from "./ReceiveCounterTowModal";
 import { useTowTravel } from "../../contexts/TowTravelContext";
 import type { AcceptTowRequestResponseDTO } from "../../dtos/AcceptTowRequestResponseDTO";
 import { TowTravelStatus } from "../../utils/enums/TowTravelStatus";
-import type { RouteRealtimeDTO } from "../../dtos/RouteRealtimeDTO";
+import { RouteType, type RouteRealtimeDTO } from "../../dtos/RouteRealtimeDTO";
 import iconGuincho from "../../assets/icons/guinchoMarkup.png";
 import type { TowTravelDTO } from "../../dtos/TowTravelDTO";
 import type { TowRequestDTO } from "../../dtos/TowRequestDTO";
@@ -106,8 +105,6 @@ export function ClientSideBar(props: ClientBarProps) {
   const priceRouteTotal = props.priceEstimateG
     ? props.priceEstimate + props.priceEstimateG
     : props.priceEstimate;
-
-  const [showDetails, setShowDetails] = useState(false);
 
   const routeLayerRef = useRef<L.Layer | null>(null);
 
@@ -231,7 +228,7 @@ export function ClientSideBar(props: ClientBarProps) {
         (c) => [c.lat, c.lon] as [number, number]
       );
 
-      if (data.type === 0) {
+      if (data.type === RouteType.DriverToPickup) {
         setTowTravel((prev) => {
           if (!prev) {
             return null;
@@ -411,7 +408,7 @@ export function ClientSideBar(props: ClientBarProps) {
     };
 
     try {
-      const response = await api.post("/towrequests", towRequestDto);
+      await api.post("/towrequests", towRequestDto);
 
       props.setRequestStatus("waitingDriver");
 
@@ -541,7 +538,7 @@ export function ClientSideBar(props: ClientBarProps) {
                 />
 
                 <div className="detail-info">
-                  {towTravelStatus === TowTravelStatus.GoingToClient ? (
+                  {towTravel?.status === TowTravelStatus.GoingToClient ? (
                     <h3>
                       {props.selectedGuincho?.motorista.name} está indo até
                       você.

@@ -1,3 +1,5 @@
+import type { TowTravelStatus } from "../utils/enums/TowTravelStatus";
+
 export interface TowTravelDTO {
     id: string;
   
@@ -12,7 +14,7 @@ export interface TowTravelDTO {
     distanceToDestinationKm: number;
     timeToDestinationMin: number;
   
-    status: number;
+    status: TowTravelStatus;
   
     startedAt?: string;
     endedAt?: string;

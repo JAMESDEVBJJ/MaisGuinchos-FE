@@ -13,7 +13,7 @@ import iconClient from "../../assets/icons/iconUser.png";
 import { TowTravelStatus } from "../../utils/enums/TowTravelStatus";
 import { useTowTravel } from "../../contexts/TowTravelContext";
 import type { TowTravelDTO } from "../../dtos/TowTravelDTO";
-import type { RouteRealtimeDTO } from "../../dtos/RouteRealtimeDTO";
+import { RouteType, type RouteRealtimeDTO } from "../../dtos/RouteRealtimeDTO";
 import iconGuincho from "../../assets/icons/guinchoMarkup.png";
 
 type DriverSideProps = {
@@ -35,16 +35,14 @@ export function DriverSideBar(props: DriverSideProps) {
   const [towReceived, setTowReceived] = useState<boolean>(false);
 
   const [isAvailable, setIsAvailable] = useState(false);
-  console.dir(towsReceive);
 
-  const [show, setShow] = useState(false);
   const [showCounterModal, setShowCounterModal] = useState(false);
 
   const [selectedTow, setSelectedTow] = useState<TowRequestReceiveDto | null>(
     null
   );
 
-  const { setTowTravel, towTravel, setTowTravelStatus, towTravelStatus } =
+  const { setTowTravel, towTravel, setTowTravelStatus } =
     useTowTravel();
 
   const driverMarkerRef = useRef<L.Marker | null>(null);
@@ -61,12 +59,6 @@ export function DriverSideBar(props: DriverSideProps) {
     iconSize: [32, 32],
     iconAnchor: [16, 32],
   });
-
-  const initials = selectedTow?.clientName
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .slice(0, 2);
 
   const handleToggle = async () => {
     try {
@@ -192,7 +184,7 @@ export function DriverSideBar(props: DriverSideProps) {
         (c) => [c.lat, c.lon] as [number, number]
       );
 
-      if (data.type === 0) {
+      if (data.type === RouteType.DriverToPickup) {
         setTowTravel((prev) => {
           if (!prev) {
             return null;
@@ -237,12 +229,6 @@ export function DriverSideBar(props: DriverSideProps) {
       connection.stop();
     };
   }, []);
-
-  const buttonCounterText = () => {
-    if (selectedTow?.counterOfferRecused) {
-      return "Contraproposta recusada.";
-    }
-  };
 
   const buttonCounterClass = () => {
     if (selectedTow?.counterOfferRecused) return "secondary fullwidth disabled";
