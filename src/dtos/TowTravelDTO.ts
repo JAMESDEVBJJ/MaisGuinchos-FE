@@ -4,6 +4,10 @@ export interface TowTravelDTO {
     id: string;
 
     clientName?: string;
+    clientPhone?: string;
+    vehicleModel?: string;
+    notes?: string;  
+    questions?: string;
 
     driverName?: string;
     driverId: string;

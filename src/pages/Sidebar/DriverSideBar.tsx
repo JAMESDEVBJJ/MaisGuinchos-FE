@@ -471,9 +471,9 @@ export function DriverSideBar(props: DriverSideProps) {
                   />
 
                   <div className="tow-extra">
-                    <p>Questão: pegar qujestao</p>
+                    <p>Questão: {towTravel.questions ?? "Veículo sem questões."}</p>
 
-                    <p>Notas: pegar notas da towrequest passar pa towtravel</p>
+                    <p>Notas: {towTravel.notes ?? "Veículo sem notas."}</p>
                   </div>
                 </>
               )}

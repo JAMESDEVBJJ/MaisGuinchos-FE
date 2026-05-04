@@ -14,14 +14,18 @@ export interface LocationDTO {
   
     clientId: string;
     clientName: string;
+    clientPhone: string;
+    vehicleModel: string;
+    notes: string;  
+    questions: string;
   
     towRequestId: string;
-  
+
     finalPrice: number;
-  
+
     distanceToPickupKm: number;
     timeToPickupMin: number;
-  
+
     distanceToDestinationKm: number;
     timeToDestinationMin: number;
   

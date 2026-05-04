@@ -52,7 +52,7 @@ const HomePage = () => {
     | "counterOfferRejected"
   >("idle");
 
-  const {setTowTravel} = useTowTravel();
+  const { setTowTravel } = useTowTravel();
 
   const mapRef = useRef<L.Map | null>(null);
 
@@ -142,21 +142,26 @@ const HomePage = () => {
     const loadTow = async () => {
       const response = await api.get("/towTravel/pending");
 
-      const towPeding: TowTravelResponseDTO | null = response.data;
+      const towPending: TowTravelResponseDTO | null = response.data;
 
-      if (towPeding) {
-        
+      if (towPending) {
         const towTravel: TowTravelDTO = {
-          towRequestId: towPeding.towRequestId,
-          id: towPeding.id,
-          driverId: towPeding.driverId,
-          finalPrice: towPeding.finalPrice,
+          towRequestId: towPending.towRequestId,
+          id: towPending.id,
+          driverId: towPending.driverId,
+          clientName: towPending.clientName,
+          clientPhone: towPending.clientPhone,
+          questions: towPending.questions,
+          notes: towPending.notes,
+          vehicleModel: towPending.vehicleModel,
 
-          distanceToPickupKm: towPeding.distanceToPickupKm,
-          timeToPickupMin: towPeding.timeToPickupMin,
+          finalPrice: towPending.finalPrice,
 
-          distanceToDestinationKm: towPeding.distanceToDestinationKm,
-          timeToDestinationMin: towPeding.timeToDestinationMin,
+          distanceToPickupKm: towPending.distanceToPickupKm,
+          timeToPickupMin: towPending.timeToPickupMin,
+
+          distanceToDestinationKm: towPending.distanceToDestinationKm,
+          timeToDestinationMin: towPending.timeToDestinationMin,
           status: 0,
         };
 
