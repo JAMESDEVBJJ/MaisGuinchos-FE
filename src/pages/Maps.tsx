@@ -2,7 +2,6 @@ import {
   MapContainer,
   TileLayer,
   Marker,
-  Popup,
   Polyline,
   useMap,
 } from "react-leaflet";
@@ -40,7 +39,6 @@ export function Maps({
   setHoveredGuinchoId,
   setPriceG,
   setRequestStatus,
-  requestStatus,
   setRouteG,
   route,
   routeG,
@@ -57,7 +55,7 @@ export function Maps({
 
   const [isRoutePanelOpen, setIsRoutePanelOpen] = useState(false);
 
-  const { towTravel, setTowTravel, clearTowTravel } = useTowTravel();
+  const { towTravel } = useTowTravel();
 
   const [isDarkTheme, setIsDark] = useState(true);
 

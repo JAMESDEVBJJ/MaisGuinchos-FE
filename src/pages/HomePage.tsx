@@ -11,6 +11,9 @@ import { useRef } from "react";
 import L from "leaflet";
 import { Sidebar, type SidebarProps } from "./Sidebar/SideBar";
 import type { CoordinateDto } from "../dtos/CoordinateDTO";
+import { useTowTravel } from "../contexts/TowTravelContext";
+import type { TowTravelDTO } from "../dtos/TowTravelDTO";
+import type { TowTravelResponseDTO } from "../dtos/towTravel/TowTravelResponseDTO";
 
 const HomePage = () => {
   const [priceEstimateG, setPriceG] = useState<number | null>(0);
@@ -48,6 +51,8 @@ const HomePage = () => {
     | "counterOfferReceived"
     | "counterOfferRejected"
   >("idle");
+
+  const {setTowTravel} = useTowTravel();
 
   const mapRef = useRef<L.Map | null>(null);
 
@@ -131,6 +136,35 @@ const HomePage = () => {
     }
 
     loadLastLocation();
+  }, []);
+
+  useEffect(() => {
+    const loadTow = async () => {
+      const response = await api.get("/towTravel/pending");
+
+      const towPeding: TowTravelResponseDTO | null = response.data;
+
+      if (towPeding) {
+        
+        const towTravel: TowTravelDTO = {
+          towRequestId: towPeding.towRequestId,
+          id: towPeding.id,
+          driverId: towPeding.driverId,
+          finalPrice: towPeding.finalPrice,
+
+          distanceToPickupKm: towPeding.distanceToPickupKm,
+          timeToPickupMin: towPeding.timeToPickupMin,
+
+          distanceToDestinationKm: towPeding.distanceToDestinationKm,
+          timeToDestinationMin: towPeding.timeToDestinationMin,
+          status: 0,
+        };
+
+        setTowTravel(towTravel);
+      }
+    };
+
+    loadTow();
   }, []);
 
   useEffect(() => {

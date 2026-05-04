@@ -42,8 +42,7 @@ export function DriverSideBar(props: DriverSideProps) {
     null
   );
 
-  const { setTowTravel, towTravel, setTowTravelStatus } =
-    useTowTravel();
+  const { setTowTravel, towTravel, setTowTravelStatus } = useTowTravel();
 
   const driverMarkerRef = useRef<L.Marker | null>(null);
 
@@ -80,8 +79,8 @@ export function DriverSideBar(props: DriverSideProps) {
 
   const handleNewTow = (novoTow: TowRequestReceiveDto) => {
     setTowsReceive((prev) => {
-      const filtradas = prev.filter(tow => tow.clientId !== novoTow.clientId);
-      console.dir(filtradas)
+      const filtradas = prev.filter((tow) => tow.clientId !== novoTow.clientId);
+      console.dir(filtradas);
       return [novoTow, ...filtradas];
     });
   };
@@ -355,7 +354,7 @@ export function DriverSideBar(props: DriverSideProps) {
   return (
     <>
       <aside className="sidebar" style={{ width: props.sideBarW }}>
-        {!selectedTow && (
+        {(!selectedTow && !towTravel) && (
           <>
             <div className="sidebar-header">
               <span className="status-label">
@@ -411,7 +410,7 @@ export function DriverSideBar(props: DriverSideProps) {
             )}
           </>
         )}
-        {selectedTow && (
+        {(selectedTow || towTravel) && (
           <div className="tow-details">
             <button
               className="back"
@@ -427,7 +426,7 @@ export function DriverSideBar(props: DriverSideProps) {
             <h3 className="solicith3">Solicitação de serviço</h3>
 
             <div className="detail-top">
-              <h3>{selectedTow.clientName}</h3>
+              <h3>{towTravel?.clientName || selectedTow?.clientName}</h3>
               <div className="detail-info">
                 <div className="client-data">
                   <span className="phone">+55 48 9 8832-2133</span>
@@ -437,64 +436,105 @@ export function DriverSideBar(props: DriverSideProps) {
 
             <div className="detail">
               {towTravel && (
-                <InputLocation
-                  locationText={props.locationText}
-                  setLocationText={props.setLocationText}
-                  setRouteG={props.setRouteG}
-                  setUserLocation={props.setUserLocation}
-                />
+                <>
+                  <InputLocation
+                    locationText={props.locationText}
+                    setLocationText={props.setLocationText}
+                    setRouteG={props.setRouteG}
+                    setUserLocation={props.setUserLocation}
+                  />
+
+                  <TowRequestData
+                    distanceKm={
+                      towTravel.distanceToPickupKm +
+                      towTravel.distanceToDestinationKm
+                    }
+                    durationMin={
+                      towTravel.timeToDestinationMin + towTravel.timeToPickupMin
+                    }
+                    priceEstimate={towTravel.finalPrice}
+                    distanceKmG={
+                      towTravel.distanceToPickupKm +
+                      towTravel.distanceToDestinationKm
+                    }
+                    durationMinG={
+                      towTravel.timeToDestinationMin + towTravel.timeToPickupMin
+                    }
+                    priceEstimateG={towTravel.finalPrice}
+                    suggestedPrice={towTravel.finalPrice}
+                    routeG={null}
+                    modelo={null}
+                    totalDistanceKm={
+                      towTravel.distanceToPickupKm +
+                      towTravel.distanceToDestinationKm
+                    }
+                  />
+
+                  <div className="tow-extra">
+                    <p>Questão: pegar qujestao</p>
+
+                    <p>Notas: pegar notas da towrequest passar pa towtravel</p>
+                  </div>
+                </>
               )}
-              <TowRequestData
-                distanceKm={selectedTow.totalDistanceKm}
-                durationMin={selectedTow.durationMinutes}
-                priceEstimate={selectedTow.suggestedPrice}
-                distanceKmG={selectedTow.totalDistanceKm}
-                durationMinG={selectedTow.durationMinutes}
-                priceEstimateG={selectedTow.suggestedPrice}
-                suggestedPrice={selectedTow.suggestedPrice}
-                routeG={null}
-                modelo={selectedTow.vehicleType}
-                totalDistanceKm={selectedTow.totalDistanceKm}
-              />
+              {!towTravel && selectedTow !== null && (
+                <>
+                  <TowRequestData
+                    distanceKm={selectedTow.totalDistanceKm}
+                    durationMin={selectedTow.durationMinutes}
+                    priceEstimate={selectedTow.suggestedPrice}
+                    distanceKmG={selectedTow.totalDistanceKm}
+                    durationMinG={selectedTow.durationMinutes}
+                    priceEstimateG={selectedTow.suggestedPrice}
+                    suggestedPrice={selectedTow.suggestedPrice}
+                    modelo={selectedTow.vehicleType}
+                    totalDistanceKm={selectedTow.totalDistanceKm}
+                  />
+
+                  <div className="tow-extra">
+                    <p>Questão: {selectedTow.vehicleIssue}</p>
+
+                    <p>Notas: {selectedTow.notes}</p>
+                  </div>
+
+                  {(selectedTow.status !== 2 ||
+                    selectedTow.counterOfferRecused) && (
+                    <button
+                      className={`accept-btn secondary contact-enabled ${
+                        selectedTow!.status === 4 && "accepted"
+                      }`}
+                      onClick={() => acceptTowRequest()}
+                      disabled={selectedTow.status === 4}
+                    >
+                      {selectedTow.status === 4
+                        ? "Solicitação aceita!"
+                        : "Aceitar"}
+                    </button>
+                  )}
+
+                  {selectedTow.status != 4 && (
+                    <button
+                      className={buttonCounterClass()}
+                      onClick={() => setShowCounterModal(!showCounterModal)}
+                      disabled={
+                        selectedTow.status === 2 ||
+                        selectedTow.counterOfferRecused
+                      }
+                    >
+                      {selectedTow.counterOfferRecused
+                        ? "Countra proposta recusada!"
+                        : selectedTow.status !== 2
+                        ? "Enviar contraproposta"
+                        : selectedTow.status === 2
+                        ? "Contraproposta enviada!"
+                        : selectedTow.status === 4
+                        ? "Contra proposta aceita!"
+                        : ""}
+                    </button>
+                  )}
+                </>
+              )}
             </div>
-
-            <div className="tow-extra">
-              <p>Questão: {selectedTow.vehicleIssue}</p>
-
-              <p>Notas: {selectedTow.notes}</p>
-            </div>
-
-            {(selectedTow.status !== 2 || selectedTow.counterOfferRecused) && (
-              <button
-                className={`accept-btn secondary contact-enabled ${
-                  selectedTow.status === 4 && "accepted"
-                }`}
-                onClick={() => acceptTowRequest()}
-                disabled={selectedTow.status === 4}
-              >
-                {selectedTow.status === 4 ? "Solicitação aceita!" : "Aceitar"}
-              </button>
-            )}
-
-            {selectedTow.status != 4 && (
-              <button
-                className={buttonCounterClass()}
-                onClick={() => setShowCounterModal(!showCounterModal)}
-                disabled={
-                  selectedTow.status === 2 || selectedTow.counterOfferRecused
-                }
-              >
-                {selectedTow.counterOfferRecused
-                  ? "Countra proposta recusada!"
-                  : selectedTow.status !== 2
-                  ? "Enviar contraproposta"
-                  : selectedTow.status === 2
-                  ? "Contraproposta enviada!"
-                  : selectedTow.status === 4
-                  ? "Contra proposta aceita!"
-                  : ""}
-              </button>
-            )}
           </div>
         )}
         <div className="resize-handle" onMouseDown={handleMouseDown} />

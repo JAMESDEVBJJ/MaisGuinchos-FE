@@ -1,16 +1,24 @@
-import type { TowTravelStatus } from "../utils/enums/TowTravelStatus";
+import type { TowTravelStatus } from "../../utils/enums/TowTravelStatus";
 
-export interface TowTravelDTO {
+export interface LocationDTO {
+    latitude: number;
+    longitude: number;
+    address: string;
+  }
+  
+  export interface TowTravelResponseDTO {
     id: string;
-
-    clientName?: string;
-
-    driverName?: string;
+  
     driverId: string;
+    driverName: string;
+  
+    clientId: string;
+    clientName: string;
+  
     towRequestId: string;
   
     finalPrice: number;
-
+  
     distanceToPickupKm: number;
     timeToPickupMin: number;
   
@@ -23,4 +31,7 @@ export interface TowTravelDTO {
     endedAt?: string;
     canceledAt?: string;
     cancellationReason?: string;
+  
+    origin: LocationDTO;
+    destination: LocationDTO;
   }

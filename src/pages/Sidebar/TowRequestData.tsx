@@ -25,8 +25,7 @@ export function TowRequestData({
   distanceKmG,
   durationMinG,
   priceEstimateG,
-  routeG,
-  modelo,
+  modelo, //trazer e mostra
   totalDistanceKm,
   suggestedPrice,
 }: TowRequestDataProps) {
@@ -34,13 +33,11 @@ export function TowRequestData({
 
   const { user } = useAuth();
 
-  //if (!routeG) return null;
-
   const totalDistance = distanceKm + distanceKmG;
   const totalDuration = durationMin + durationMinG;
   const totalPrice = priceEstimate + priceEstimateG;
 
-  const { towTravel, towTravelStatus } = useTowTravel();
+  const { towTravel } = useTowTravel();
 
   const totalTimeTravel = towTravel
     ? towTravel?.timeToDestinationMin + towTravel?.timeToPickupMin
