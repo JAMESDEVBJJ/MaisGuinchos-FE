@@ -187,42 +187,37 @@ const HomePage = () => {
 
   useEffect(() => {
     if (!routes || !mapRef.current) return;
+
     const map = mapRef.current;
 
-    // limpar rotas antigas
-    // guardar referência das polylines depois
+    const allLatLngs: [number, number][] = [];
 
     if (routes.toPickup) {
       const latlngs = routes.toPickup.polyline.map(
         (coord: CoordinateDto) => [coord.lat, coord.lon] as [number, number]
       );
-      const poly = L.polyline(latlngs, {
-        weight: 4,
-        opacity: 0.6,
-      }).addTo(map);
 
-      map.fitBounds(poly.getBounds(), { padding: [60, 60] });
+      allLatLngs.push(...latlngs);
+
+      setRouteG(latlngs);
     }
 
     if (routes.toDestination) {
       const latlngs = routes.toDestination.polyline.map(
         (coord: CoordinateDto) => [coord.lat, coord.lon] as [number, number]
       );
-      const poly = L.polyline(latlngs, {
-        weight: 4,
-        opacity: 0.6,
-        color: "red",
-      }).addTo(map);
 
-      map.fitBounds(poly.getBounds(), { padding: [60, 60] });
+      allLatLngs.push(...latlngs);
+
+      setRoute(latlngs);
+    }
+
+    if (allLatLngs.length > 0) {
+      map.fitBounds(allLatLngs, {
+        padding: [60, 60],
+      });
     }
   }, [routes]);
-
-  useEffect(() => {
-    if (userLocation && destinationPosition) {
-      handleUpdateDestination();
-    }
-  }, [userLocation]);
 
   async function buscarGuinchos() {
     setLoading(true);
