@@ -1,30 +1,39 @@
 import type { TowTravelStatus } from "../utils/enums/TowTravelStatus";
+import type { LocationDTO } from "./towTravel/TowTravelResponseDTO";
 
 export interface TowTravelDTO {
-    id: string;
+  id: string;
 
-    clientName?: string;
-    clientPhone?: string;
-    vehicleModel?: string;
-    notes?: string;  
-    questions?: string;
+  clientName?: string;
+  clientPhone?: string;
+  vehicleModelClient?: string;
+  notes?: string;
+  questions?: string;
 
-    driverName?: string;
-    driverId: string;
-    towRequestId: string;
-  
-    finalPrice: number;
+  driverName?: string;
+  driverPhone?: string;
+  vehicleModelDriver?: string;
+  vehicleColorDriver?: string;
+  placaDriver?: string;
+  driverId: string;
+  towRequestId: string;
 
-    distanceToPickupKm: number;
-    timeToPickupMin: number;
-  
-    distanceToDestinationKm: number;
-    timeToDestinationMin: number;
-  
-    status: TowTravelStatus;
-  
-    startedAt?: string;
-    endedAt?: string;
-    canceledAt?: string;
-    cancellationReason?: string;
-  }
+  finalPrice: number;
+
+  distanceToPickupKm: number;
+  timeToPickupMin: number;
+
+  distanceToDestinationKm: number;
+  timeToDestinationMin: number;
+
+  origin: LocationDTO;
+  pickup: LocationDTO;
+  destination: LocationDTO;
+
+  status: TowTravelStatus;
+
+  startedAt?: string;
+  endedAt?: string;
+  canceledAt?: string;
+  cancellationReason?: string;
+}

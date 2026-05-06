@@ -8,7 +8,6 @@ import { TowRequestData } from "./TowRequestData";
 import CounterOfferModal from "./CounterTowModal";
 import type { AcceptTowRequestResponseDTO } from "../../dtos/AcceptTowRequestResponseDTO";
 import L from "leaflet";
-
 import iconClient from "../../assets/icons/iconUser.png";
 import { TowTravelStatus } from "../../utils/enums/TowTravelStatus";
 import { useTowTravel } from "../../contexts/TowTravelContext";
@@ -156,6 +155,9 @@ export function DriverSideBar(props: DriverSideProps) {
           distanceToDestinationKm: data.distanceToDestinationKm,
           distanceToPickupKm: data.distanceToPickupKm,
           status: 0,
+          origin: {latitude: data.driverLat, longitude: data.driverLon},
+          destination: {latitude: data.destinationLat, longitude: data.destinationLon},
+          pickup: {latitude: data.pickupLat, longitude: data.pickupLon}  
         };
 
         setSelectedTow((prev) => {
@@ -255,6 +257,9 @@ export function DriverSideBar(props: DriverSideProps) {
         distanceToDestinationKm: data.distanceToDestinationKm,
         distanceToPickupKm: data.distanceToPickupKm,
         status: 0,
+        origin: {latitude: data.driverLat, longitude: data.driverLon},
+        destination: {latitude: data.destinationLat, longitude: data.destinationLon},
+        pickup: {latitude: data.pickupLat, longitude: data.pickupLon}  
       };
 
       console.dir(data);

@@ -14,6 +14,7 @@ import type { CoordinateDto } from "../dtos/CoordinateDTO";
 import { useTowTravel } from "../contexts/TowTravelContext";
 import type { TowTravelDTO } from "../dtos/TowTravelDTO";
 import type { TowTravelResponseDTO } from "../dtos/towTravel/TowTravelResponseDTO";
+import { useTowRoutes } from "../utils/hooks/useTowRoutes";
 
 const HomePage = () => {
   const [priceEstimateG, setPriceG] = useState<number | null>(0);
@@ -52,7 +53,9 @@ const HomePage = () => {
     | "counterOfferRejected"
   >("idle");
 
-  const { setTowTravel } = useTowTravel();
+  const { setTowTravel, towTravel } = useTowTravel();
+
+  const { routes } = useTowRoutes(towTravel);
 
   const mapRef = useRef<L.Map | null>(null);
 
@@ -148,12 +151,18 @@ const HomePage = () => {
         const towTravel: TowTravelDTO = {
           towRequestId: towPending.towRequestId,
           id: towPending.id,
+
           driverId: towPending.driverId,
+          driverName: towPending.driverName,
+          driverPhone: towPending.driverPhone,
+          vehicleColorDriver: towPending.vehicleColorDriver,
+          placaDriver: towPending.placaDriver,
+
           clientName: towPending.clientName,
           clientPhone: towPending.clientPhone,
           questions: towPending.questions,
           notes: towPending.notes,
-          vehicleModel: towPending.vehicleModel,
+          vehicleModelClient: towPending.vehicleModelClient,
 
           finalPrice: towPending.finalPrice,
 
@@ -163,6 +172,10 @@ const HomePage = () => {
           distanceToDestinationKm: towPending.distanceToDestinationKm,
           timeToDestinationMin: towPending.timeToDestinationMin,
           status: 0,
+
+          origin: towPending.origin,
+          pickup: towPending.pickup,
+          destination: towPending.destination,
         };
 
         setTowTravel(towTravel);
@@ -171,6 +184,39 @@ const HomePage = () => {
 
     loadTow();
   }, []);
+
+  useEffect(() => {
+    if (!routes || !mapRef.current) return;
+    const map = mapRef.current;
+
+    // limpar rotas antigas
+    // guardar referência das polylines depois
+
+    if (routes.toPickup) {
+      const latlngs = routes.toPickup.polyline.map(
+        (coord: CoordinateDto) => [coord.lat, coord.lon] as [number, number]
+      );
+      const poly = L.polyline(latlngs, {
+        weight: 4,
+        opacity: 0.6,
+      }).addTo(map);
+
+      map.fitBounds(poly.getBounds(), { padding: [60, 60] });
+    }
+
+    if (routes.toDestination) {
+      const latlngs = routes.toDestination.polyline.map(
+        (coord: CoordinateDto) => [coord.lat, coord.lon] as [number, number]
+      );
+      const poly = L.polyline(latlngs, {
+        weight: 4,
+        opacity: 0.6,
+        color: "red",
+      }).addTo(map);
+
+      map.fitBounds(poly.getBounds(), { padding: [60, 60] });
+    }
+  }, [routes]);
 
   useEffect(() => {
     if (userLocation && destinationPosition) {

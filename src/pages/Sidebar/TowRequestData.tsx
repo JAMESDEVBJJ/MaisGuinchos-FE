@@ -100,7 +100,7 @@ export function TowRequestData({
         )}
       </ul>
 
-      {showDetails && user?.isClient && (
+      {showDetails && user?.isClient && ( //mostra da towTravel
         <div className="route-breakdown">
           <p>
             <strong>

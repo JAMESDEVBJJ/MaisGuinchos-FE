@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 import { TowTravelStatus } from "../utils/enums/TowTravelStatus";
 import type { TowTravelDTO } from "../dtos/TowTravelDTO";
+import type { RouteDTO } from "../dtos/RouteDTO";
 
 type TowTravel = TowTravelDTO;
 
@@ -14,6 +15,16 @@ type TowTravelContextType = {
     React.SetStateAction<TowTravelStatus | null>
   >;
   clearTowTravel: () => void;
+  routes: {
+    toPickup?: RouteDTO;
+    toDestination?: RouteDTO;
+  } | null;
+  setRoutes: React.Dispatch<
+    React.SetStateAction<{
+      toPickup?: RouteDTO;
+      toDestination?: RouteDTO;
+    } | null>
+  >;
 };
 
 const TowTravelContext = createContext<TowTravelContextType | undefined>(
@@ -24,6 +35,11 @@ export function TowTravelProvider({ children }: { children: ReactNode }) {
   const [towTravel, setTowTravel] = useState<TowTravel | null>(null);
   const [towTravelStatus, setTowTravelStatus] =
     useState<TowTravelStatus | null>(null);
+
+  const [routes, setRoutes] = useState<{
+    toPickup?: RouteDTO;
+    toDestination?: RouteDTO;
+  } | null>(null);
 
   function clearTowTravel() {
     setTowTravel(null);
@@ -37,6 +53,8 @@ export function TowTravelProvider({ children }: { children: ReactNode }) {
         towTravelStatus,
         setTowTravelStatus,
         clearTowTravel,
+        routes,
+        setRoutes,
       }}
     >
       {children}

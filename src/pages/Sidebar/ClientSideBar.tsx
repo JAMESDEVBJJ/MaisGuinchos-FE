@@ -193,6 +193,9 @@ export function ClientSideBar(props: ClientBarProps) {
         distanceToDestinationKm: data.distanceToDestinationKm,
         timeToDestinationMin: data.durationMinToDestination,
         status: 0,
+        origin: {latitude: data.driverLat, longitude: data.driverLon},
+        destination: {latitude: data.destinationLat, longitude: data.destinationLon},
+        pickup: {latitude: data.pickupLat, longitude: data.pickupLon} 
       };
 
       console.dir(towTravel);
@@ -463,7 +466,7 @@ export function ClientSideBar(props: ClientBarProps) {
   return (
     <>
       <aside className="sidebar" style={{ width: props.sidebarW }}>
-        {props.selectedGuincho == null ? (
+        {props.selectedGuincho == null && !towTravel ? (
           <>
             {props.selectedGuincho == null && (
               <div className="sidebar-1">
@@ -538,42 +541,50 @@ export function ClientSideBar(props: ClientBarProps) {
                 />
 
                 <div className="detail-info">
-                  {towTravel?.status === TowTravelStatus.GoingToClient ? (
-                    <h3>
-                      {props.selectedGuincho?.motorista.name} está indo até
-                      você.
-                    </h3>
-                  ) : towTravelStatus === TowTravelStatus.Arrived ? (
-                    <h3>
-                      {props.selectedGuincho?.motorista.name} chegou até você.
-                    </h3>
-                  ) : towTravelStatus === TowTravelStatus.InProgress ? (
-                    <h3>
-                      {props.selectedGuincho?.motorista.name} está indo até o
-                      destino.
-                    </h3>
+                  {towTravel ? (
+                    towTravel.status === TowTravelStatus.GoingToClient ? (
+                      <h3>{towTravel.driverName} está indo até o veículo.</h3>
+                    ) : towTravelStatus === TowTravelStatus.Arrived ? (
+                      <h3>{towTravel.driverName} chegou até o veículo.</h3>
+                    ) : towTravelStatus === TowTravelStatus.InProgress ? (
+                      <h3>{towTravel.driverName} está indo até o destino.</h3>
+                    ) : (
+                      <></>
+                    )
                   ) : (
                     <h3>{props.selectedGuincho?.motorista.name}</h3>
                   )}
 
-                  {!towTravel && (
-                    <div className="rating-row">
-                      {renderStars(props.selectedGuincho?.stars)}{" "}
-                      <span className="rating-number">
-                        {props.selectedGuincho?.stars.toFixed(1)}
-                      </span>
+                  {!towTravel ? (
+                    <>
+                      <div className="rating-row">
+                        {renderStars(props.selectedGuincho?.stars)}{" "}
+                        <span className="rating-number">
+                          {props.selectedGuincho?.stars.toFixed(1)}
+                        </span>
+                      </div>
+
+                      <div className="driver-data">
+                        <span className="phone">
+                          {props.selectedGuincho?.motorista.number}
+                        </span>
+
+                        <div>Modelo: {props.selectedGuincho?.model}</div>
+                        <div>
+                          Placa: {props.selectedGuincho?.motorista.placa}
+                        </div>
+                        <div>Cor: {props.selectedGuincho?.color}</div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="driver-data">
+                      <span className="phone">{towTravel.driverPhone}</span>
+
+                      <div>Modelo: {towTravel.vehicleModelDriver}</div>
+                      <div>Placa: {towTravel.placaDriver}</div>
+                      <div>Cor: {towTravel.vehicleColorDriver}</div>
                     </div>
                   )}
-
-                  <div className="driver-data">
-                    <span className="phone">
-                      {props.selectedGuincho?.motorista.number}
-                    </span>
-
-                    <div>Modelo: {props.selectedGuincho?.model}</div>
-                    <div>Placa: {props.selectedGuincho?.motorista.placa}</div>
-                    <div>Cor: {props.selectedGuincho?.color}</div>
-                  </div>
                 </div>
               </div>
               <div className="detail-actions">
@@ -589,31 +600,62 @@ export function ClientSideBar(props: ClientBarProps) {
               {props.routeG &&
                 props.distanceKmG != null &&
                 props.durationMinG != null &&
-                props.priceEstimateG != null && (
-                  <TowRequestData
-                    distanceKm={props.distanceKm}
-                    durationMin={props.durationMinTotal}
-                    priceEstimate={props.priceEstimate}
-                    distanceKmG={props.distanceKmG}
-                    durationMinG={props.durationMinG}
-                    priceEstimateG={props.priceEstimateG}
-                    suggestedPrice={null}
-                    routeG={props.routeG}
-                    modelo={null}
-                    totalDistanceKm={null}
-                  />
+                props.priceEstimateG != null &&
+                !towTravel && (
+                  <>
+                    {" "}
+                    <TowRequestData
+                      distanceKm={props.distanceKm}
+                      durationMin={props.durationMinTotal}
+                      priceEstimate={props.priceEstimate}
+                      distanceKmG={props.distanceKmG}
+                      durationMinG={props.durationMinG}
+                      priceEstimateG={props.priceEstimateG}
+                      suggestedPrice={null}
+                      routeG={props.routeG}
+                      modelo={null}
+                      totalDistanceKm={null}
+                    />{" "}
+                    <button
+                      className={buttonCounterClass()}
+                      disabled={serviceIsDisabled}
+                      onClick={
+                        props.requestStatus === "counterOfferReceived"
+                          ? () => setShowGetCounterModal(true)
+                          : () => setShowModal(true)
+                      }
+                    >
+                      {buttonCounterAndSubmitText()}
+                    </button>
+                  </>
                 )}
-              <button
-                className={buttonCounterClass()}
-                disabled={serviceIsDisabled}
-                onClick={
-                  props.requestStatus === "counterOfferReceived"
-                    ? () => setShowGetCounterModal(true)
-                    : () => setShowModal(true)
-                }
-              >
-                {buttonCounterAndSubmitText()}
-              </button>
+              {towTravel && (
+                <TowRequestData
+                  distanceKm={
+                    towTravel.distanceToPickupKm +
+                    towTravel.distanceToDestinationKm
+                  }
+                  durationMin={
+                    towTravel.timeToDestinationMin + towTravel.timeToPickupMin
+                  }
+                  priceEstimate={towTravel.finalPrice}
+                  distanceKmG={
+                    towTravel.distanceToPickupKm +
+                    towTravel.distanceToDestinationKm
+                  }
+                  durationMinG={
+                    towTravel.timeToDestinationMin + towTravel.timeToPickupMin
+                  }
+                  priceEstimateG={towTravel.finalPrice}
+                  suggestedPrice={towTravel.finalPrice}
+                  routeG={null}
+                  modelo={null}
+                  totalDistanceKm={
+                    towTravel.distanceToPickupKm +
+                    towTravel.distanceToDestinationKm
+                  }
+                />
+              )}
             </div>
           </>
         )}

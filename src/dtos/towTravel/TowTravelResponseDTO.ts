@@ -3,7 +3,7 @@ import type { TowTravelStatus } from "../../utils/enums/TowTravelStatus";
 export interface LocationDTO {
     latitude: number;
     longitude: number;
-    address: string;
+    address?: string;
   }
   
   export interface TowTravelResponseDTO {
@@ -11,11 +11,15 @@ export interface LocationDTO {
   
     driverId: string;
     driverName: string;
+    driverPhone: string;
+    vehicleModelDriver: string;
+    vehicleColorDriver: string;
+    placaDriver: string;
   
     clientId: string;
     clientName: string;
     clientPhone: string;
-    vehicleModel: string;
+    vehicleModelClient: string;
     notes: string;  
     questions: string;
   
@@ -37,5 +41,6 @@ export interface LocationDTO {
     cancellationReason?: string;
   
     origin: LocationDTO;
+    pickup: LocationDTO;
     destination: LocationDTO;
   }
