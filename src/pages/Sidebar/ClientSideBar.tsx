@@ -603,7 +603,7 @@ export function ClientSideBar(props: ClientBarProps) {
                 props.priceEstimateG != null &&
                 !towTravel && (
                   <>
-                    {" "}
+                    
                     <TowRequestData
                       distanceKm={props.distanceKm}
                       durationMin={props.durationMinTotal}
@@ -615,7 +615,7 @@ export function ClientSideBar(props: ClientBarProps) {
                       routeG={props.routeG}
                       modelo={null}
                       totalDistanceKm={null}
-                    />{" "}
+                    />
                     <button
                       className={buttonCounterClass()}
                       disabled={serviceIsDisabled}

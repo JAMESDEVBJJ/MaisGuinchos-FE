@@ -82,16 +82,14 @@ export function TowRequestData({
             </li>
           </>
         )}
-        
+
         {towTravel && (
           <li>
-            <strong>Preço:</strong>{" "}
-            {towTravel.finalPrice.toFixed(0)}{" "}
-            R$
+            <strong>Preço:</strong> {towTravel.finalPrice.toFixed(0)} R$
           </li>
         )}
 
-        {(!showDetails && !towTravel) && (
+        {!showDetails && !towTravel && (
           <li>
             <strong>Preço estimado:</strong>{" "}
             {suggestedPrice ? suggestedPrice.toFixed(0) : totalPrice.toFixed(0)}{" "}
@@ -100,8 +98,9 @@ export function TowRequestData({
         )}
       </ul>
 
-      {showDetails && user?.isClient && ( //mostra da towTravel
+      {showDetails && user?.isClient && !towTravel && (
         <div className="route-breakdown">
+          {" "}
           <p>
             <strong>
               Guincho
@@ -110,7 +109,6 @@ export function TowRequestData({
             </strong>{" "}
             {priceEstimateG.toFixed(0)} R$ {distanceKmG.toFixed(0)} km
           </p>
-
           <p>
             <strong>
               Você
@@ -121,7 +119,7 @@ export function TowRequestData({
           </p>
         </div>
       )}
-      {user?.isClient && (
+      {user?.isClient && !towTravel && (
         <span
           className="more-details"
           onClick={() => setShowDetails(!showDetails)}

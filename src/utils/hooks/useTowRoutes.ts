@@ -60,7 +60,7 @@ export function useTowRoutes(towTravel: TowTravelDTO | null) {
           });
         }
       } catch (err) {
-        console.error("Erro ao buscar rota", err);
+        console.error("Erro ao buscar e setar rota", err);
       }
     }
 

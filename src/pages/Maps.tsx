@@ -198,6 +198,18 @@ export function Maps({
               ></Marker>
             </>
           )}
+
+          {towTravel && (
+            <Marker
+              position={
+                [towTravel.pickup.latitude, towTravel.pickup.longitude] as [
+                  number,
+                  number
+                ]
+              }
+              icon={userIcon}
+            ></Marker>
+          )}
           {routeG && (
             <Polyline
               positions={routeG}
