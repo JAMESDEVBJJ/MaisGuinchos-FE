@@ -16,7 +16,7 @@ export function useTowRoutes(towTravel: TowTravelDTO | null) {
         var driverLocation = await api.get(
           `/maps/last-location/${towTravel!.driverId}`
         );
-
+          console.dir(towTravel?.status);
         let driverLocData: LocationDTO = driverLocation.data;
         if (towTravel!.status === TowTravelStatus.GoingToClient) {
           const responseToPickup = await api.post("/maps/route/calculate", {
@@ -35,26 +35,24 @@ export function useTowRoutes(towTravel: TowTravelDTO | null) {
               destinationLon: towTravel!.destination.longitude,
             }
           );
-
           setRoutes({
             toPickup: responseToPickup.data,
             toDestination: responseToDestination.data,
           });
-
           console.dir({
             toPickup: responseToPickup.data,
             toDestination: responseToDestination.data,
-          });
+          })
         }
 
-        if (towTravel!.status === TowTravelStatus.InProgress) {
+        if (towTravel!.status === TowTravelStatus.InProgress || towTravel!.status === TowTravelStatus.ArrivedAtPickup) {
           var responseToDestination = await api.post("/maps/route/calculate", {
             originLat: driverLocData.latitude,
             originLon: driverLocData.longitude,
             destinationLat: towTravel!.destination.latitude,
             destinationLon: towTravel!.destination.longitude,
           });
-
+          console.log("em progresso / guinchando");
           setRoutes({
             toDestination: responseToDestination.data,
           });

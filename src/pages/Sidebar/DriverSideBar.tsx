@@ -155,9 +155,12 @@ export function DriverSideBar(props: DriverSideProps) {
           distanceToDestinationKm: data.distanceToDestinationKm,
           distanceToPickupKm: data.distanceToPickupKm,
           status: 0,
-          origin: {latitude: data.driverLat, longitude: data.driverLon},
-          destination: {latitude: data.destinationLat, longitude: data.destinationLon},
-          pickup: {latitude: data.pickupLat, longitude: data.pickupLon}  
+          origin: { latitude: data.driverLat, longitude: data.driverLon },
+          destination: {
+            latitude: data.destinationLat,
+            longitude: data.destinationLon,
+          },
+          pickup: { latitude: data.pickupLat, longitude: data.pickupLon },
         };
 
         setSelectedTow((prev) => {
@@ -239,6 +242,32 @@ export function DriverSideBar(props: DriverSideProps) {
     }`;
   };
 
+  const getTravelMessage = () => {
+    if (!towTravel) {
+      return "Solicitação de serviço";
+    }
+
+    switch (towTravel.status) {
+      case TowTravelStatus.GoingToClient:
+        return "Vá até o veículo.";
+
+      case TowTravelStatus.ArrivedAtPickup:
+        return "Reboque em andamento";
+
+      case TowTravelStatus.InProgress:
+        return "Vá até o destino.";
+
+      case TowTravelStatus.Finished:
+        return "Corrida finalizada!";
+
+      case TowTravelStatus.Cancelled:
+        return "Corrida cancelada!";
+
+      default:
+        return "";
+    }
+  };
+
   async function acceptTowRequest() {
     if (selectedTow) {
       const response = await api.post(
@@ -257,9 +286,12 @@ export function DriverSideBar(props: DriverSideProps) {
         distanceToDestinationKm: data.distanceToDestinationKm,
         distanceToPickupKm: data.distanceToPickupKm,
         status: 0,
-        origin: {latitude: data.driverLat, longitude: data.driverLon},
-        destination: {latitude: data.destinationLat, longitude: data.destinationLon},
-        pickup: {latitude: data.pickupLat, longitude: data.pickupLon}  
+        origin: { latitude: data.driverLat, longitude: data.driverLon },
+        destination: {
+          latitude: data.destinationLat,
+          longitude: data.destinationLon,
+        },
+        pickup: { latitude: data.pickupLat, longitude: data.pickupLon },
       };
 
       console.dir(data);
@@ -349,7 +381,7 @@ export function DriverSideBar(props: DriverSideProps) {
   return (
     <>
       <aside className="sidebar" style={{ width: props.sideBarW }}>
-        {(!selectedTow && !towTravel) && (
+        {!selectedTow && !towTravel && (
           <>
             <div className="sidebar-header">
               <span className="status-label">
@@ -418,7 +450,7 @@ export function DriverSideBar(props: DriverSideProps) {
               ⬅
             </button>
 
-            <h3 className="solicith3">Solicitação de serviço</h3>
+            <h3 className="solicith3">{getTravelMessage()}</h3>
 
             <div className="detail-top">
               <h3>{towTravel?.clientName || selectedTow?.clientName}</h3>
@@ -466,7 +498,9 @@ export function DriverSideBar(props: DriverSideProps) {
                   />
 
                   <div className="tow-extra">
-                    <p>Questão: {towTravel.questions ?? "Veículo sem questões."}</p>
+                    <p>
+                      Questão: {towTravel.questions ?? "Veículo sem questões."}
+                    </p>
 
                     <p>Notas: {towTravel.notes ?? "Veículo sem notas."}</p>
                   </div>

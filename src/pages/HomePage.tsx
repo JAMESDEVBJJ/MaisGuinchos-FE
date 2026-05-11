@@ -15,6 +15,7 @@ import { useTowTravel } from "../contexts/TowTravelContext";
 import type { TowTravelDTO } from "../dtos/TowTravelDTO";
 import type { TowTravelResponseDTO } from "../dtos/towTravel/TowTravelResponseDTO";
 import { useTowRoutes } from "../utils/hooks/useTowRoutes";
+import { TowTravelProgress } from "./TowTravelProgress";
 
 const HomePage = () => {
   const [priceEstimateG, setPriceG] = useState<number | null>(0);
@@ -171,7 +172,7 @@ const HomePage = () => {
 
           distanceToDestinationKm: towPending.distanceToDestinationKm,
           timeToDestinationMin: towPending.timeToDestinationMin,
-          status: 0,
+          status: towPending.status,
 
           origin: towPending.origin,
           pickup: towPending.pickup,
@@ -287,6 +288,10 @@ const HomePage = () => {
       <Sidebar {...sideBarProps}></Sidebar>
 
       <main className="map-container">
+        {towTravel && (
+          <TowTravelProgress status={towTravel.status}></TowTravelProgress>
+        )}
+
         <div id="map">
           <Maps {...mapsProps}></Maps>
         </div>
