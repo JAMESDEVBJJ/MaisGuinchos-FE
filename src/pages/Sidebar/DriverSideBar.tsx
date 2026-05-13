@@ -43,6 +43,8 @@ export function DriverSideBar(props: DriverSideProps) {
 
   const { setTowTravel, towTravel, setTowTravelStatus } = useTowTravel();
 
+  const [loading, setLoading] = useState(false);
+
   const driverMarkerRef = useRef<L.Marker | null>(null);
 
   const guinchoIcon = new L.Icon({
@@ -313,6 +315,34 @@ export function DriverSideBar(props: DriverSideProps) {
     }
   }
 
+  async function startJourney(towTravel: TowTravelDTO) {
+    try {
+      setLoading(true);
+
+      const response = await api.post(
+        `towtravel/${towTravel.id}/start-journey`
+      );
+
+      const data = response.data;
+
+      setTowTravel((prev) => {
+        if (!prev) {
+          return null;
+        }
+
+        return {
+          ...prev,
+          status: data.status,
+        };
+      });
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao iniciar trajeto.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function calcularRotaDestino(origin: Position, destination: Position) {
     const response = await api.post("/maps/route/calculate", {
       originLat: origin.lat,
@@ -504,6 +534,14 @@ export function DriverSideBar(props: DriverSideProps) {
 
                     <p>Notas: {towTravel.notes ?? "Veículo sem notas."}</p>
                   </div>
+                  {towTravel.status === TowTravelStatus.ArrivedAtPickup && (
+                    <button
+                      className={`accept-btn secondary contact-enabled`}
+                      onClick={() => startJourney(towTravel)}
+                    >
+                      Iniciar trajeto
+                    </button>
+                  )}
                 </>
               )}
               {!towTravel && selectedTow !== null && (

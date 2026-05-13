@@ -11,7 +11,7 @@ import { TowRequestData } from "./TowRequestData";
 import ReceiveCounterTowModal from "./ReceiveCounterTowModal";
 import { useTowTravel } from "../../contexts/TowTravelContext";
 import type { AcceptTowRequestResponseDTO } from "../../dtos/AcceptTowRequestResponseDTO";
-import { TowTravelStatus } from "../../utils/enums/TowTravelStatus";
+import { TowTravelStatus } from '../../utils/enums/TowTravelStatus';
 import { RouteType, type RouteRealtimeDTO } from "../../dtos/RouteRealtimeDTO";
 import iconGuincho from "../../assets/icons/guinchoMarkup.png";
 import type { TowTravelDTO } from "../../dtos/TowTravelDTO";
@@ -193,9 +193,12 @@ export function ClientSideBar(props: ClientBarProps) {
         distanceToDestinationKm: data.distanceToDestinationKm,
         timeToDestinationMin: data.durationMinToDestination,
         status: 0,
-        origin: {latitude: data.driverLat, longitude: data.driverLon},
-        destination: {latitude: data.destinationLat, longitude: data.destinationLon},
-        pickup: {latitude: data.pickupLat, longitude: data.pickupLon} 
+        origin: { latitude: data.driverLat, longitude: data.driverLon },
+        destination: {
+          latitude: data.destinationLat,
+          longitude: data.destinationLon,
+        },
+        pickup: { latitude: data.pickupLat, longitude: data.pickupLon },
       };
 
       console.dir(towTravel);
@@ -463,6 +466,22 @@ export function ClientSideBar(props: ClientBarProps) {
     return "secondary fullwidth";
   };
 
+  const getStatusMessage = (
+    status: TowTravelStatus,
+    driverName: string | undefined
+  ) => {
+    const messages: Record<TowTravelStatus, string> = {
+      [TowTravelStatus.GoingToClient]: `${driverName} está indo até o veículo.`,
+      [TowTravelStatus.ArrivedAtPickup]: `${driverName} chegou até o veículo.`,
+      [TowTravelStatus.InProgress]: `${driverName} está indo até o destino.`,
+      [TowTravelStatus.ArrivedAtDestination]: `${driverName} chegou ao destino.`,
+      [TowTravelStatus.Finished]: `${driverName} finalizou o atendimento.`,
+      [TowTravelStatus.Cancelled]: `Reboque cancelado.`,
+    };
+
+    return messages[status] || `${driverName} - Status: ${status}`;
+  };
+
   return (
     <>
       <aside className="sidebar" style={{ width: props.sidebarW }}>
@@ -542,15 +561,9 @@ export function ClientSideBar(props: ClientBarProps) {
 
                 <div className="detail-info">
                   {towTravel ? (
-                    towTravel.status === TowTravelStatus.GoingToClient ? (
-                      <h3>{towTravel.driverName} está indo até o veículo.</h3>
-                    ) : towTravelStatus === TowTravelStatus.Arrived ? (
-                      <h3>{towTravel.driverName} chegou até o veículo.</h3>
-                    ) : towTravelStatus === TowTravelStatus.InProgress ? (
-                      <h3>{towTravel.driverName} está indo até o destino.</h3>
-                    ) : (
-                      <></>
-                    )
+                    <h3>
+                      {getStatusMessage(towTravel.status, towTravel.driverName)}
+                    </h3>
                   ) : (
                     <h3>{props.selectedGuincho?.motorista.name}</h3>
                   )}
@@ -603,7 +616,6 @@ export function ClientSideBar(props: ClientBarProps) {
                 props.priceEstimateG != null &&
                 !towTravel && (
                   <>
-                    
                     <TowRequestData
                       distanceKm={props.distanceKm}
                       durationMin={props.durationMinTotal}
