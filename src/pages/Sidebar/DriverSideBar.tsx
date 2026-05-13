@@ -343,6 +343,10 @@ export function DriverSideBar(props: DriverSideProps) {
     }
   }
 
+  function finishTravel(): void {
+    throw new Error("Function not implemented.");
+  }
+
   async function calcularRotaDestino(origin: Position, destination: Position) {
     const response = await api.post("/maps/route/calculate", {
       originLat: origin.lat,
@@ -536,10 +540,22 @@ export function DriverSideBar(props: DriverSideProps) {
                   </div>
                   {towTravel.status === TowTravelStatus.ArrivedAtPickup && (
                     <button
+                      disabled={loading}
                       className={`accept-btn secondary contact-enabled`}
                       onClick={() => startJourney(towTravel)}
                     >
                       Iniciar trajeto
+                    </button>
+                  )}
+
+                  {towTravel.status ===
+                    TowTravelStatus.ArrivedAtDestination && (
+                    <button
+                      disabled={loading}
+                      className={`accept-btn secondary contact-enabled`}
+                      onClick={() => finishTravel()}
+                    >
+                      Finalizar serviço
                     </button>
                   )}
                 </>
