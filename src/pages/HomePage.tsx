@@ -10,11 +10,12 @@ import {
 import { useRef } from "react";
 import L from "leaflet";
 import { Sidebar, type SidebarProps } from "./Sidebar/SideBar";
-
-interface CoordinateDto {
-  lat: number;
-  lon: number;
-}
+import type { CoordinateDto } from "../dtos/CoordinateDTO";
+import { useTowTravel } from "../contexts/TowTravelContext";
+import type { TowTravelDTO } from "../dtos/TowTravelDTO";
+import type { TowTravelResponseDTO } from "../dtos/towTravel/TowTravelResponseDTO";
+import { useTowRoutes } from "../utils/hooks/useTowRoutes";
+import { TowTravelProgress } from "./TowTravelProgress";
 
 const HomePage = () => {
   const [priceEstimateG, setPriceG] = useState<number | null>(0);
@@ -30,7 +31,6 @@ const HomePage = () => {
   const [loading, setLoading] = useState(false);
 
   const [userLocation, setUserLocation] = useState<Position | null>(null);
-  console.log("Render", userLocation);
 
   const [locationText, setLocationText] = useState<string>("");
   const [destinationText, setDestinationText] = useState<string>("");
@@ -53,6 +53,10 @@ const HomePage = () => {
     | "counterOfferReceived"
     | "counterOfferRejected"
   >("idle");
+
+  const { setTowTravel, towTravel } = useTowTravel();
+
+  const { routes } = useTowRoutes(towTravel);
 
   const mapRef = useRef<L.Map | null>(null);
 
@@ -85,7 +89,7 @@ const HomePage = () => {
     durationMinG: durationMinG,
     setDurationMinG: setDurationMinG,
     destination: destinationPosition,
-    durationMinTotal: durationMin,
+    durationMinTotal: durationMin + (durationMinG ? durationMinG : 0),
     setRequestStatus: setRequestStatus,
     requestStatus: requestStatus,
     setGuinchos: setGuinchos,
@@ -139,10 +143,82 @@ const HomePage = () => {
   }, []);
 
   useEffect(() => {
-    if (userLocation && destinationPosition) {
-      handleUpdateDestination();
+    const loadTow = async () => {
+      const response = await api.get("/towTravel/pending");
+
+      const towPending: TowTravelResponseDTO | null = response.data;
+
+      if (towPending) {
+        const towTravel: TowTravelDTO = {
+          towRequestId: towPending.towRequestId,
+          id: towPending.id,
+
+          driverId: towPending.driverId,
+          driverName: towPending.driverName,
+          driverPhone: towPending.driverPhone,
+          vehicleColorDriver: towPending.vehicleColorDriver,
+          placaDriver: towPending.placaDriver,
+
+          clientName: towPending.clientName,
+          clientPhone: towPending.clientPhone,
+          questions: towPending.questions,
+          notes: towPending.notes,
+          vehicleModelClient: towPending.vehicleModelClient,
+
+          finalPrice: towPending.finalPrice,
+
+          distanceToPickupKm: towPending.distanceToPickupKm,
+          timeToPickupMin: towPending.timeToPickupMin,
+
+          distanceToDestinationKm: towPending.distanceToDestinationKm,
+          timeToDestinationMin: towPending.timeToDestinationMin,
+          status: towPending.status,
+
+          origin: towPending.origin,
+          pickup: towPending.pickup,
+          destination: towPending.destination,
+        };
+
+        setTowTravel(towTravel);
+      }
+    };
+
+    loadTow();
+  }, []);
+
+  useEffect(() => {
+    if (!routes || !mapRef.current) return;
+
+    const map = mapRef.current;
+
+    const allLatLngs: [number, number][] = [];
+
+    if (routes.toPickup) {
+      const latlngs = routes.toPickup.polyline.map(
+        (coord: CoordinateDto) => [coord.lat, coord.lon] as [number, number]
+      );
+
+      allLatLngs.push(...latlngs);
+
+      setRouteG(latlngs);
     }
-  }, [userLocation]);
+
+    if (routes.toDestination) {
+      const latlngs = routes.toDestination.polyline.map(
+        (coord: CoordinateDto) => [coord.lat, coord.lon] as [number, number]
+      );
+
+      allLatLngs.push(...latlngs);
+
+      setRoute(latlngs);
+    }
+
+    if (allLatLngs.length > 0) {
+      map.fitBounds(allLatLngs, {
+        padding: [60, 60],
+      });
+    }
+  }, [routes]);
 
   async function buscarGuinchos() {
     setLoading(true);
@@ -212,6 +288,10 @@ const HomePage = () => {
       <Sidebar {...sideBarProps}></Sidebar>
 
       <main className="map-container">
+        {towTravel && (
+          <TowTravelProgress status={towTravel.status}></TowTravelProgress>
+        )}
+
         <div id="map">
           <Maps {...mapsProps}></Maps>
         </div>

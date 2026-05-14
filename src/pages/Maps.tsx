@@ -2,7 +2,6 @@ import {
   MapContainer,
   TileLayer,
   Marker,
-  Popup,
   Polyline,
   useMap,
 } from "react-leaflet";
@@ -40,7 +39,6 @@ export function Maps({
   setHoveredGuinchoId,
   setPriceG,
   setRequestStatus,
-  requestStatus,
   setRouteG,
   route,
   routeG,
@@ -57,7 +55,7 @@ export function Maps({
 
   const [isRoutePanelOpen, setIsRoutePanelOpen] = useState(false);
 
-  const { towTravel, setTowTravel, clearTowTravel } = useTowTravel();
+  const { towTravel } = useTowTravel();
 
   const [isDarkTheme, setIsDark] = useState(true);
 
@@ -172,14 +170,6 @@ export function Maps({
               );
             })}
 
-          {towTravel && towTravel.driverLat && towTravel.driverLon && (
-            <Marker
-              key={towTravel.towTravelId}
-              position={[towTravel.driverLat, towTravel.driverLon]}
-              icon={guinchoIcon}
-            />
-          )}
-
           {user?.isDriver ? (
             <Marker
               position={[userPosition.lat, userPosition.lon]}
@@ -207,6 +197,18 @@ export function Maps({
                 icon={destinationIconMarkup}
               ></Marker>
             </>
+          )}
+
+          {towTravel && (
+            <Marker
+              position={
+                [towTravel.pickup.latitude, towTravel.pickup.longitude] as [
+                  number,
+                  number
+                ]
+              }
+              icon={userIcon}
+            ></Marker>
           )}
           {routeG && (
             <Polyline

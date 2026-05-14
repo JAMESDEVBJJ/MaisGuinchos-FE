@@ -1,10 +1,11 @@
 import { createContext, useContext, useState } from "react";
 import type { ReactNode } from "react";
 
-import type { AcceptTowRequestResponseDTO } from "../dtos/AcceptTowRequestResponseDTO";
 import { TowTravelStatus } from "../utils/enums/TowTravelStatus";
+import type { TowTravelDTO } from "../dtos/TowTravelDTO";
+import type { RouteDTO } from "../dtos/RouteDTO";
 
-type TowTravel = AcceptTowRequestResponseDTO;
+type TowTravel = TowTravelDTO;
 
 type TowTravelContextType = {
   towTravel: TowTravel | null;
@@ -13,11 +14,17 @@ type TowTravelContextType = {
   setTowTravelStatus: React.Dispatch<
     React.SetStateAction<TowTravelStatus | null>
   >;
-  remainingDistance: number | null;
-  setRemainingDistance: React.Dispatch<React.SetStateAction<number | null>>;
-  remainingTime: number | null;
-  setRemainingTime: React.Dispatch<React.SetStateAction<number | null>>;
   clearTowTravel: () => void;
+  routes: {
+    toPickup?: RouteDTO;
+    toDestination?: RouteDTO;
+  } | null;
+  setRoutes: React.Dispatch<
+    React.SetStateAction<{
+      toPickup?: RouteDTO;
+      toDestination?: RouteDTO;
+    } | null>
+  >;
 };
 
 const TowTravelContext = createContext<TowTravelContextType | undefined>(
@@ -29,10 +36,10 @@ export function TowTravelProvider({ children }: { children: ReactNode }) {
   const [towTravelStatus, setTowTravelStatus] =
     useState<TowTravelStatus | null>(null);
 
-  const [remainingTime, setRemainingTime] = useState<number | null>(null);
-  const [remainingDistance, setRemainingDistance] = useState<number | null>(
-    null
-  );
+  const [routes, setRoutes] = useState<{
+    toPickup?: RouteDTO;
+    toDestination?: RouteDTO;
+  } | null>(null);
 
   function clearTowTravel() {
     setTowTravel(null);
@@ -46,10 +53,8 @@ export function TowTravelProvider({ children }: { children: ReactNode }) {
         towTravelStatus,
         setTowTravelStatus,
         clearTowTravel,
-        remainingTime,
-        setRemainingTime,
-        remainingDistance,
-        setRemainingDistance,
+        routes,
+        setRoutes,
       }}
     >
       {children}

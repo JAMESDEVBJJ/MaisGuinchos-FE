@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTowTravel } from "../../contexts/TowTravelContext";
+import { useAuth } from "../../contexts/AuthContext";
 type TowRequestDataProps = {
   distanceKm: number;
   durationMin: number;
@@ -24,20 +25,26 @@ export function TowRequestData({
   distanceKmG,
   durationMinG,
   priceEstimateG,
-  routeG,
-  modelo,
+  modelo, //trazer e mostra
   totalDistanceKm,
   suggestedPrice,
 }: TowRequestDataProps) {
   const [showDetails, setShowDetails] = useState(false);
 
-  //if (!routeG) return null;
+  const { user } = useAuth();
 
   const totalDistance = distanceKm + distanceKmG;
   const totalDuration = durationMin + durationMinG;
   const totalPrice = priceEstimate + priceEstimateG;
 
-  const {towTravel, towTravelStatus, remainingTime, remainingDistance} = useTowTravel();
+  const { towTravel } = useTowTravel();
+
+  const totalTimeTravel = towTravel
+    ? towTravel?.timeToDestinationMin + towTravel?.timeToPickupMin
+    : 0;
+  const totalDistanceTravel = towTravel
+    ? towTravel?.distanceToDestinationKm + towTravel?.distanceToPickupKm
+    : 0;
 
   return (
     <div className="route-summary">
@@ -60,18 +67,29 @@ export function TowRequestData({
           <>
             <li>
               <strong>Distância restante: </strong>{" "}
-              {remainingDistance
-                ? remainingDistance.toFixed(1) : "sem distancia faltante"}{" "}
+              {totalDistanceTravel
+                ? totalDistanceTravel.toFixed(1)
+                : "não recebida"}{" "}
               Km
             </li>
 
             <li>
-              <strong>Tempo médio restante: </strong> {remainingTime ? (remainingTime / 60).toFixed(1) : "tbm"} h
+              <strong>Tempo restante estimado: </strong>{" "}
+              {totalTimeTravel
+                ? (totalTimeTravel / 60).toFixed(1)
+                : "não recebido"}{" "}
+              h
             </li>
           </>
         )}
 
-        {!showDetails && (
+        {towTravel && (
+          <li>
+            <strong>Preço:</strong> {towTravel.finalPrice.toFixed(0)} R$
+          </li>
+        )}
+
+        {!showDetails && !towTravel && (
           <li>
             <strong>Preço estimado:</strong>{" "}
             {suggestedPrice ? suggestedPrice.toFixed(0) : totalPrice.toFixed(0)}{" "}
@@ -80,8 +98,9 @@ export function TowRequestData({
         )}
       </ul>
 
-      {showDetails && (
+      {showDetails && user?.isClient && !towTravel && (
         <div className="route-breakdown">
+          {" "}
           <p>
             <strong>
               Guincho
@@ -90,7 +109,6 @@ export function TowRequestData({
             </strong>{" "}
             {priceEstimateG.toFixed(0)} R$ {distanceKmG.toFixed(0)} km
           </p>
-
           <p>
             <strong>
               Você
@@ -101,13 +119,14 @@ export function TowRequestData({
           </p>
         </div>
       )}
-
-      <span
-        className="more-details"
-        onClick={() => setShowDetails(!showDetails)}
-      >
-        {showDetails ? "Menos detalhes" : "Mais detalhes"}
-      </span>
+      {user?.isClient && !towTravel && (
+        <span
+          className="more-details"
+          onClick={() => setShowDetails(!showDetails)}
+        >
+          {showDetails ? "Menos detalhes" : "Mais detalhes"}
+        </span>
+      )}
     </div>
   );
 }

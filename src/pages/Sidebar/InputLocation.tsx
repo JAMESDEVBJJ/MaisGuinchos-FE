@@ -15,7 +15,6 @@ export function InputLocation({
   setLocationText,
   setRouteG,
   setUserLocation,
-  
 }: InputLocationProps) {
   async function handleUpdateLocation() {
     if (!locationText.trim()) {

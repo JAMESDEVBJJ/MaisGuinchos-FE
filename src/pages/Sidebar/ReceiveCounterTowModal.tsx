@@ -1,12 +1,13 @@
 import { useTowTravel } from "../../contexts/TowTravelContext";
 import type { AcceptTowRequestResponseDTO } from "../../dtos/AcceptTowRequestResponseDTO";
-import type { PutTowCounterOfferDTO } from "../../dtos/CounterOfferDTO";
+import type { TowRequestDTO } from "../../dtos/TowRequestDTO";
+import type { TowTravelDTO } from "../../dtos/TowTravelDTO";
 import { api } from "../../services/api";
 import "../../styles/ConterOfferModals/ReceiveCounterTowModal.css";
 
 type GetCounterOfferModalProps = {
   onClose: () => void;
-  towCounterReceived: PutTowCounterOfferDTO | null;
+  towCounterReceived: TowRequestDTO | null;
   setShowGetCounterModal: React.Dispatch<React.SetStateAction<boolean>>;
   setRequestStatus: React.Dispatch<
     React.SetStateAction<
@@ -23,7 +24,7 @@ type GetCounterOfferModalProps = {
 export default function ReceiveCounterTowModal({
   ...props
 }: GetCounterOfferModalProps) {
-  const {setTowTravel} = useTowTravel();
+  const { setTowTravel } = useTowTravel();
 
   async function submit() {
     try {
@@ -33,12 +34,24 @@ export default function ReceiveCounterTowModal({
         `towrequests/${props.towCounterReceived.id}/accept-counter-offer`
       );
 
-      const data : AcceptTowRequestResponseDTO = response.data;
-      setTowTravel(data);
+      const data: AcceptTowRequestResponseDTO = response.data;
+
+      const towTravel: TowTravelDTO = {
+        towRequestId: data.towRequestId,
+        id: data.towTravelId,
+        driverId: data.towDriverId,
+        finalPrice: data.finalPrice,
+
+        distanceToPickupKm: data.distanceToPickupKm,
+        timeToPickupMin: data.durationMinToPickup,
+
+        distanceToDestinationKm: data.distanceToDestinationKm,
+        timeToDestinationMin: data.durationMinToDestination,
+        status: 0,
+      };
+
+      setTowTravel(towTravel);
       props.setRequestStatus("accepted");
-
-
-      //setar
 
     } catch (error) {
       const message = "Erro ao aceitar contraproposta.";
