@@ -48,11 +48,16 @@ export default function ReceiveCounterTowModal({
         distanceToDestinationKm: data.distanceToDestinationKm,
         timeToDestinationMin: data.durationMinToDestination,
         status: 0,
+        origin: { latitude: data.driverLat, longitude: data.driverLon },
+        destination: {
+          latitude: data.destinationLat,
+          longitude: data.destinationLon,
+        },
+        pickup: { latitude: data.pickupLat, longitude: data.pickupLon },
       };
 
       setTowTravel(towTravel);
       props.setRequestStatus("accepted");
-
     } catch (error) {
       const message = "Erro ao aceitar contraproposta.";
 
@@ -101,7 +106,9 @@ export default function ReceiveCounterTowModal({
               maximumFractionDigits: 2,
             })}
           </span>
-
+          <span className="percentMore">
+            {" "} + {props.towCounterReceived!.counterOfferPercent}%
+          </span>
           <h2 className="newPrice">
             R${" "}
             {props.towCounterReceived?.counterOfferPrice!.toLocaleString(

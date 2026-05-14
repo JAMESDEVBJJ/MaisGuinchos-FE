@@ -10,6 +10,7 @@ export function TowTravelProgress({ status }: Props) {
     TowTravelStatus.GoingToClient,
     TowTravelStatus.ArrivedAtPickup,
     TowTravelStatus.InProgress,
+    TowTravelStatus.ArrivedAtDestination, 
     TowTravelStatus.Finished,
   ];
 

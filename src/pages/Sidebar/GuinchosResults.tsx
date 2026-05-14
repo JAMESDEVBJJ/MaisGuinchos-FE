@@ -14,7 +14,7 @@ export default function GuinchosResults({
   guinchos,
   setHovered,
   mapRef,
-  setSelectedGuincho
+  setSelectedGuincho,
 }: GuinchosResultsProps) {
   if (guinchos.length <= 0) {
     return null;
@@ -28,12 +28,18 @@ export default function GuinchosResults({
           onMouseEnter={() => setHovered(g.motorista.userId)}
           onMouseLeave={() => setHovered(null)}
           onClick={() => {
+            if (!g.available) return;
             if (
               g.motorista.lat != null &&
               g.motorista.lon != null &&
               mapRef.current
             ) {
-              flyToTarget(mapRef.current, g.motorista.lat, g.motorista.lon, 0.8);
+              flyToTarget(
+                mapRef.current,
+                g.motorista.lat,
+                g.motorista.lon,
+                0.8
+              );
             }
             setSelectedGuincho(g);
           }}

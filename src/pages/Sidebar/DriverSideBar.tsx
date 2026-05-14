@@ -347,9 +347,7 @@ export function DriverSideBar(props: DriverSideProps) {
     try {
       setLoading(true);
 
-      const response = await api.post(
-        `towtravel/${towTravel.id}/finish`
-      );
+      const response = await api.post(`towtravel/${towTravel.id}/finish`);
 
       const data = response.data;
 
@@ -363,9 +361,12 @@ export function DriverSideBar(props: DriverSideProps) {
           status: data.status,
         };
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert("Erro ao finalizar reboque.");
+      const errorMessage =
+        error.response?.data?.error || "Erro ao finalizar reboque.";
+
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }

@@ -295,6 +295,26 @@ export function ClientSideBar(props: ClientBarProps) {
       });
     });
 
+    connection.on("JourneyStarted", () => {
+      setTowTravel((prev) => {
+        if (prev === null) {
+          return null;
+        }
+
+        return { ...prev, status: TowTravelStatus.InProgress };
+      });
+    })
+
+    connection.on("JourneyFinished", () => {
+      setTowTravel((prev) => {
+        if (prev === null) {
+          return null;
+        }
+
+        return { ...prev, status: TowTravelStatus.Finished };
+      });
+    })
+
     return () => {
       connection.stop();
     };

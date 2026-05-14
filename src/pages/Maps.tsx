@@ -220,7 +220,7 @@ export function Maps({
               }}
             />
           )}
-          {priceEstimate && !isRoutePanelOpen && (
+          {priceEstimate && !isRoutePanelOpen && !towTravel && (
             <div
               className="price-hud"
               onClick={() => setIsRoutePanelOpen(true)}
@@ -231,7 +231,7 @@ export function Maps({
                 : priceEstimate.toFixed(2)}
             </div>
           )}
-          {isRoutePanelOpen && (
+          {isRoutePanelOpen && !towTravel && (
             <div
               className="route-overlay"
               onClick={() => setIsRoutePanelOpen(false)}
