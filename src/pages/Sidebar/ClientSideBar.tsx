@@ -11,7 +11,7 @@ import { TowRequestData } from "./TowRequestData";
 import ReceiveCounterTowModal from "./ReceiveCounterTowModal";
 import { useTowTravel } from "../../contexts/TowTravelContext";
 import type { AcceptTowRequestResponseDTO } from "../../dtos/AcceptTowRequestResponseDTO";
-import { TowTravelStatus } from '../../utils/enums/TowTravelStatus';
+import { TowTravelStatus } from "../../utils/enums/TowTravelStatus";
 import { RouteType, type RouteRealtimeDTO } from "../../dtos/RouteRealtimeDTO";
 import iconGuincho from "../../assets/icons/guinchoMarkup.png";
 import type { TowTravelDTO } from "../../dtos/TowTravelDTO";
@@ -273,6 +273,26 @@ export function ClientSideBar(props: ClientBarProps) {
         });
         console.log("nn é to pickup");
       }
+    });
+
+    connection.on("DriverArrivedAtPickup", () => {
+      setTowTravel((prev) => {
+        if (prev === null) {
+          return null;
+        }
+
+        return { ...prev, status: TowTravelStatus.ArrivedAtPickup };
+      });
+    });
+
+    connection.on("DriverArrivedAtDestination", () => {
+      setTowTravel((prev) => {
+        if (prev === null) {
+          return null;
+        }
+
+        return { ...prev, status: TowTravelStatus.ArrivedAtDestination };
+      });
     });
 
     return () => {

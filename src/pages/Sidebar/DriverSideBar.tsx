@@ -343,8 +343,32 @@ export function DriverSideBar(props: DriverSideProps) {
     }
   }
 
-  function finishTravel(): void {
-    throw new Error("Function not implemented.");
+  async function finishTravel(towTravel: TowTravelDTO) {
+    try {
+      setLoading(true);
+
+      const response = await api.post(
+        `towtravel/${towTravel.id}/finish`
+      );
+
+      const data = response.data;
+
+      setTowTravel((prev) => {
+        if (!prev) {
+          return null;
+        }
+
+        return {
+          ...prev,
+          status: data.status,
+        };
+      });
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao finalizar reboque.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function calcularRotaDestino(origin: Position, destination: Position) {
@@ -553,7 +577,7 @@ export function DriverSideBar(props: DriverSideProps) {
                     <button
                       disabled={loading}
                       className={`accept-btn secondary contact-enabled`}
-                      onClick={() => finishTravel()}
+                      onClick={() => finishTravel(towTravel)}
                     >
                       Finalizar serviço
                     </button>
