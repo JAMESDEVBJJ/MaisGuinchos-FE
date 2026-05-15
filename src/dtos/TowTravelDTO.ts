@@ -7,8 +7,7 @@ export interface TowTravelDTO {
   clientName?: string;
   clientPhone?: string;
   vehicleModelClient?: string;
-  notes?: string;
-  questions?: string;
+
 
   driverName?: string;
   driverPhone?: string;
@@ -36,4 +35,13 @@ export interface TowTravelDTO {
   endedAt?: string;
   canceledAt?: string;
   cancellationReason?: string;
+
+  truck: {
+    id: string;
+    model: string;
+    color: string;
+    plate: string;
+  };
+  notes?: string;
+  questions?: string;
 }

@@ -177,6 +177,12 @@ const HomePage = () => {
           origin: towPending.origin,
           pickup: towPending.pickup,
           destination: towPending.destination,
+          truck: {
+            id: towPending.truck.id,
+            model: towPending.truck.model, 
+            color: towPending.truck.color,
+            plate: towPending.truck.plate
+          }
         };
 
         setTowTravel(towTravel);

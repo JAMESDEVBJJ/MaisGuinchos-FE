@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTowTravel } from "../../contexts/TowTravelContext";
 import { useAuth } from "../../contexts/AuthContext";
+import { TowTravelStatus } from "../../utils/enums/TowTravelStatus";
 type TowRequestDataProps = {
   distanceKm: number;
   durationMin: number;
@@ -63,6 +64,20 @@ export function TowRequestData({
               <strong>Tempo médio:</strong> {(totalDuration / 60).toFixed(1)} h
             </li>
           </>
+        ) : towTravel.status === TowTravelStatus.Finished ? (
+          <>
+            <strong>Serviço finalizado.</strong>
+            <strong>
+              Valor do serviço: {towTravel.finalPrice.toFixed(0)} R$
+            </strong>
+          </>
+        ) : towTravel.status === TowTravelStatus.ArrivedAtDestination ? (
+          <>
+            <strong>Trajeto finalizado, aguardando término do reboque.</strong>
+            <strong>
+              Valor do serviço: {towTravel.finalPrice.toFixed(0)} R$
+            </strong>
+          </>
         ) : (
           <>
             <li>
@@ -83,11 +98,13 @@ export function TowRequestData({
           </>
         )}
 
-        {towTravel && (
-          <li>
-            <strong>Preço:</strong> {towTravel.finalPrice.toFixed(0)} R$
-          </li>
-        )}
+        {towTravel &&
+          towTravel.status !== TowTravelStatus.Finished &&
+          towTravel.status !== TowTravelStatus.ArrivedAtDestination && (
+            <li>
+              <strong>Preço:</strong> {towTravel.finalPrice.toFixed(0)} R$
+            </li>
+          )}
 
         {!showDetails && !towTravel && (
           <li>

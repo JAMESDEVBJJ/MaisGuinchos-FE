@@ -163,6 +163,14 @@ export function DriverSideBar(props: DriverSideProps) {
             longitude: data.destinationLon,
           },
           pickup: { latitude: data.pickupLat, longitude: data.pickupLon },
+          truck: {
+            id: data.truck.id,
+            model: data.truck.model, 
+            color: data.truck.color,
+            plate: data.truck.plate
+          },
+          notes: data.notes,
+          questions: data.questions
         };
 
         setSelectedTow((prev) => {
@@ -231,6 +239,22 @@ export function DriverSideBar(props: DriverSideProps) {
       }
     });
 
+    connection.on("ArrivedAtPickup", () => {
+      setTowTravel((prev) => {
+        if (!prev) return null;
+
+        return { ...prev, status: TowTravelStatus.ArrivedAtPickup };
+      });
+    });
+
+    connection.on("ArrivedAtDestination", () => {
+      setTowTravel((prev) => {
+        if (!prev) return null;
+
+        return { ...prev, status: TowTravelStatus.ArrivedAtDestination };
+      });
+    });
+
     return () => {
       connection.stop();
     };
@@ -294,6 +318,12 @@ export function DriverSideBar(props: DriverSideProps) {
           longitude: data.destinationLon,
         },
         pickup: { latitude: data.pickupLat, longitude: data.pickupLon },
+        truck: {
+          id: data.truck.id,
+          model: data.truck.model, 
+          color: data.truck.color,
+          plate: data.truck.plate
+        }
       };
 
       console.dir(data);
@@ -498,16 +528,21 @@ export function DriverSideBar(props: DriverSideProps) {
         )}
         {(selectedTow || towTravel) && (
           <div className="tow-details">
-            <button
-              className="back"
-              onClick={() => {
-                setSelectedTow(null);
-                props.setRoute(null);
-                props.setRouteG(null);
-              }}
-            >
-              ⬅
-            </button>
+            {(!towTravel ||
+              towTravel?.status === TowTravelStatus.Finished ||
+              towTravel?.status === TowTravelStatus.Cancelled) && (
+              <button
+                className="back"
+                onClick={() => {
+                  setSelectedTow(null);
+                  props.setRoute(null);
+                  props.setRouteG(null);
+                  setTowTravel(null);
+                }}
+              >
+                ⬅
+              </button>
+            )}
 
             <h3 className="solicith3">{getTravelMessage()}</h3>
 

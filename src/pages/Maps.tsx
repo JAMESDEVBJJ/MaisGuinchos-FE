@@ -210,6 +210,7 @@ export function Maps({
               icon={userIcon}
             ></Marker>
           )}
+
           {routeG && (
             <Polyline
               positions={routeG}
