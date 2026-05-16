@@ -71,9 +71,18 @@ export function TowRequestData({
               Valor do serviço: {towTravel.finalPrice.toFixed(0)} R$
             </strong>
           </>
-        ) : towTravel.status === TowTravelStatus.ArrivedAtDestination ? (
+        ) : towTravel.status === TowTravelStatus.ArrivedAtDestination &&
+          user?.isClient ? (
           <>
             <strong>Trajeto finalizado, aguardando término do reboque.</strong>
+            <strong>
+              Valor do serviço: {towTravel.finalPrice.toFixed(0)} R$
+            </strong>
+          </>
+        ) : towTravel.status === TowTravelStatus.ArrivedAtDestination &&
+          user?.isDriver ? (
+          <>
+            <strong>Você chegou ao destino.</strong>
             <strong>
               Valor do serviço: {towTravel.finalPrice.toFixed(0)} R$
             </strong>

@@ -184,7 +184,6 @@ const HomePage = () => {
             plate: towPending.truck.plate
           }
         };
-
         setTowTravel(towTravel);
       }
     };

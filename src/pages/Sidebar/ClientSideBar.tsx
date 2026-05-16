@@ -664,7 +664,11 @@ export function ClientSideBar(props: ClientBarProps) {
                   alt={props.selectedGuincho?.motorista?.name}
                 />
 
-                <div className={`detail-info ${props.hideDriverPhoto ? "only-content" : ""}`}>
+                <div
+                  className={`detail-info ${
+                    props.hideDriverPhoto ? "only-content" : ""
+                  }`}
+                >
                   {towTravel ? (
                     <h3>{getStatusMessage(towTravel.status, driverName)}</h3>
                   ) : (

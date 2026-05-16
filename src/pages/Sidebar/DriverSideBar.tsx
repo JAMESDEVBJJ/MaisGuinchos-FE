@@ -165,12 +165,12 @@ export function DriverSideBar(props: DriverSideProps) {
           pickup: { latitude: data.pickupLat, longitude: data.pickupLon },
           truck: {
             id: data.truck.id,
-            model: data.truck.model, 
+            model: data.truck.model,
             color: data.truck.color,
-            plate: data.truck.plate
+            plate: data.truck.plate,
           },
           notes: data.notes,
-          questions: data.questions
+          questions: data.questions,
         };
 
         setSelectedTow((prev) => {
@@ -235,7 +235,18 @@ export function DriverSideBar(props: DriverSideProps) {
             timeToDestinationMin: data.durationMinutes,
           };
         });
-        console.log("nn é to pickup");
+        const maps = props.mapRef.current;
+        if (!maps) return;
+
+        const newLatLng: [number, number] = [data.origin.lat, data.origin.lon];
+
+        if (!driverMarkerRef.current) {
+          driverMarkerRef.current = L.marker(newLatLng, {
+            icon: guinchoIcon,
+          }).addTo(maps);
+        } else {
+          driverMarkerRef.current.setLatLng(newLatLng);
+        }
       }
     });
 
@@ -320,13 +331,13 @@ export function DriverSideBar(props: DriverSideProps) {
         pickup: { latitude: data.pickupLat, longitude: data.pickupLon },
         truck: {
           id: data.truck.id,
-          model: data.truck.model, 
+          model: data.truck.model,
           color: data.truck.color,
-          plate: data.truck.plate
-        }
+          plate: data.truck.plate,
+        },
+        notes: data.notes,
+        questions: data.questions,
       };
-
-      console.dir(data);
 
       setSelectedTow((prev) => {
         if (!prev || prev.id !== response.data.towRequestId) return prev;
@@ -596,7 +607,10 @@ export function DriverSideBar(props: DriverSideProps) {
                       Questão: {towTravel.questions ?? "Veículo sem questões."}
                     </p>
 
-                    <p>Notas: {towTravel.notes ?? "Veículo sem notas."}</p>
+                    <p>
+                      Notas:{" "}
+                      {towTravel.notes !== "" ? towTravel.notes : "Sem notas."}
+                    </p>
                   </div>
                   {towTravel.status === TowTravelStatus.ArrivedAtPickup && (
                     <button

@@ -39,10 +39,6 @@ export function useTowRoutes(towTravel: TowTravelDTO | null) {
             toPickup: responseToPickup.data,
             toDestination: responseToDestination.data,
           });
-          console.dir({
-            toPickup: responseToPickup.data,
-            toDestination: responseToDestination.data,
-          })
         }
 
         if (towTravel!.status === TowTravelStatus.InProgress || towTravel!.status === TowTravelStatus.ArrivedAtPickup) {
@@ -52,7 +48,6 @@ export function useTowRoutes(towTravel: TowTravelDTO | null) {
             destinationLat: towTravel!.destination.latitude,
             destinationLon: towTravel!.destination.longitude,
           });
-          console.log("em progresso / guinchando");
           setRoutes({
             toDestination: responseToDestination.data,
           });
