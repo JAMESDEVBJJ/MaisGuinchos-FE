@@ -664,7 +664,7 @@ export function ClientSideBar(props: ClientBarProps) {
                   alt={props.selectedGuincho?.motorista?.name}
                 />
 
-                <div className="detail-info">
+                <div className={`detail-info ${props.hideDriverPhoto ? "only-content" : ""}`}>
                   {towTravel ? (
                     <h3>{getStatusMessage(towTravel.status, driverName)}</h3>
                   ) : (
@@ -709,7 +709,7 @@ export function ClientSideBar(props: ClientBarProps) {
                     className="primary fullwidth"
                     onClick={calcularRotaComGuincho}
                   >
-                    Calcular rota com guincho
+                    Calcular rota
                   </button>
                 )}
               </div>

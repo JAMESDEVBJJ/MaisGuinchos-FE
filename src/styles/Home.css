@@ -607,12 +607,16 @@ button.primary {
   border-radius: 10px;
   border: none;
   cursor: pointer;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.5px;
-  transition: transform 0.1s ease, filter 0.2s ease;
+  font-family:'Lucida Sans', sans-serif;
+  font-size: 17px;
+  color: white;
+  cursor: pointer;
+  transition: filter 0.2s ease, transform 0.1s ease;
 }
 button.primary:hover {
-  filter: brightness(1.1);
+  filter: brightness(0.8);
 }
 
 button.primary:active {
@@ -963,16 +967,15 @@ button.waiting:hover {
   gap: 18px;
 }
 
-.detail-top.only-content {
-  justify-content: center;
-}
-
 .detail-info {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
+
+  margin-left: auto;
 }
+
 .detail {
   padding-top: 15px;
 }
