@@ -171,6 +171,7 @@ export function DriverSideBar(props: DriverSideProps) {
           },
           notes: data.notes,
           questions: data.questions,
+          driverPhoto: data.driverPhoto
         };
 
         setSelectedTow((prev) => {
@@ -183,8 +184,6 @@ export function DriverSideBar(props: DriverSideProps) {
             p.id === data.towRequestId ? { ...p, status: 4 } : p
           )
         );
-
-        console.dir(data);
 
         setTowTravel(towTravel);
         setTowTravelStatus(TowTravelStatus.GoingToClient);
@@ -337,6 +336,7 @@ export function DriverSideBar(props: DriverSideProps) {
         },
         notes: data.notes,
         questions: data.questions,
+        driverPhoto: data.driverPhoto
       };
 
       setSelectedTow((prev) => {

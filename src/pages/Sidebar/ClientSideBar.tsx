@@ -122,7 +122,9 @@ export function ClientSideBar(props: ClientBarProps) {
   const { towTravel, setTowTravel, clearTowTravel, setTowTravelStatus } =
     useTowTravel();
 
-  const foto = props.selectedGuincho?.motorista?.foto;
+  const foto = towTravel
+    ? towTravel.driverPhoto
+    : props.selectedGuincho?.motorista?.foto;
   const isDefault = !foto || foto.trim() === "";
 
   const serviceIsDisabled =
@@ -206,6 +208,7 @@ export function ClientSideBar(props: ClientBarProps) {
           color: data.truck.color,
           plate: data.truck.plate,
         },
+        driverPhoto: data.driverPhoto,
       };
 
       console.dir(towTravel);

@@ -50,4 +50,6 @@ export interface TowTravelResponseDTO {
     color: string;
     plate: string;
   };
+
+  driverPhoto: string;
 }

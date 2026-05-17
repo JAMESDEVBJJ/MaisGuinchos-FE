@@ -14,6 +14,7 @@ export interface TowTravelDTO {
   vehicleColorDriver?: string;
   placaDriver?: string;
   driverId: string;
+  driverPhoto: string;
   towRequestId: string;
 
   finalPrice: number;

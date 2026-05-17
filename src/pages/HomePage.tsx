@@ -182,7 +182,8 @@ const HomePage = () => {
             model: towPending.truck.model, 
             color: towPending.truck.color,
             plate: towPending.truck.plate
-          }
+          },
+          driverPhoto: towPending.driverPhoto
         };
         setTowTravel(towTravel);
       }

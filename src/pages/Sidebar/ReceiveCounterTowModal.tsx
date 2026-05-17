@@ -54,6 +54,13 @@ export default function ReceiveCounterTowModal({
           longitude: data.destinationLon,
         },
         pickup: { latitude: data.pickupLat, longitude: data.pickupLon },
+        truck: {
+          id: data.truck.id,
+          model: data.truck.model,
+          color: data.truck.color,
+          plate: data.truck.plate,
+        },
+        driverPhoto: data.driverPhoto
       };
 
       setTowTravel(towTravel);
@@ -107,7 +114,8 @@ export default function ReceiveCounterTowModal({
             })}
           </span>
           <span className="percentMore">
-            {" "} + {props.towCounterReceived!.counterOfferPercent}%
+            {" "}
+            + {props.towCounterReceived!.counterOfferPercent}%
           </span>
           <h2 className="newPrice">
             R${" "}

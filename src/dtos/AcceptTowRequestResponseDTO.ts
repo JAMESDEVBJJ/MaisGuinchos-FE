@@ -33,4 +33,6 @@ export interface AcceptTowRequestResponseDTO {
       color: string;
       plate: string;
     };
+
+    driverPhoto: string;
   }
