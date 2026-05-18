@@ -27,8 +27,8 @@ Este projeto consome uma API backend (ASP.NET) utilizando autenticação via **J
   - Motorista
   - Empresa
 - Homepage com sidebar estruturada e mapa interativo
-- Fluxo condicional para cadastro de motorista
 - Integração com API via Axios
+- Referencias e contextos
 - Persistência de estado entre steps do formulário
 - Função de setar localização e destino do usuario
 - Calcular rotas e buscar guinchos proximos 
