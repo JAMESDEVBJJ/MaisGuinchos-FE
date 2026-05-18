@@ -1,10 +1,37 @@
 # MaisGuinchos – Frontend
 
-Frontend do projeto **MaisGuinchos**, desenvolvido em **React + TypeScript + Leaflet**, responsável pela interface de autenticação, cadastro de usuários e fluxos iniciais da aplicação.
+Frontend do projeto **MaisGuinchos**, desenvolvido em **React + TypeScript + Leaflet**, responsável pela interface com autenticação, cadastro, login, paginas e fluxos gerais da aplicação.
 
 Este projeto consome uma API backend (ASP.NET) utilizando autenticação via **JWT**.
 
+---
+
 > ⚠️ Projeto em desenvolvimento.
+>
+> Sobre o app:
+>  O sistema atende motoristas, clientes e empresas, permitindo:
+
+- Definir localização e destino
+- Buscar guinchos próximos
+- Calculos de rota e viagem
+- Criar solicitações de reboque
+- Motoristas aceitarem ou enviarem contra propostas
+- Pedido e corrida controlada por estados, com contra proposta e rota em tempo real
+
+## 🔐 Funcionalidades atuais
+
+- Tela de login
+- Cadastro de usuário em múltiplos passos (steps)
+- Seleção de tipo de conta:
+  - Cliente
+  - Motorista
+  - Empresa
+- Homepage com sidebar estruturada e mapa interativo
+- Fluxo condicional para cadastro de motorista
+- Integração com API via Axios
+- Persistência de estado entre steps do formulário
+- Função de setar localização e destino do usuario
+- Calcular rotas e buscar guinchos proximos 
 
 ---
 
@@ -32,20 +59,6 @@ src/
 
 ---
 
-## 🔐 Funcionalidades atuais
-
-- Tela de login
-- Cadastro de usuário em múltiplos passos (steps)
-- Seleção de tipo de conta:
-  - Cliente
-  - Motorista
-  - Empresa
-- Fluxo condicional para cadastro de motorista
-- Integração com API via Axios
-- Persistência de estado entre steps do formulário
-- Tela home com função de setar localização do usuario e buscar guinchos proximos 
-
----
 
 ## ▶️ Como rodar o projeto
 
