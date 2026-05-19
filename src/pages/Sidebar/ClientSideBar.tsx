@@ -306,7 +306,7 @@ export function ClientSideBar(props: ClientBarProps) {
         return { ...prev, status: TowTravelStatus.ArrivedAtPickup };
       });
 
-      props.setRouteG(null);
+      props.setRouteG([]);
     });
 
     connection.on("DriverArrivedAtDestination", () => {

@@ -277,9 +277,9 @@ const HomePage = () => {
 
     if (!maps) return;
 
-    const poly = L.polyline(routePositions, { weight: 4, opacity: 0.6 });
+    const bounds = L.latLngBounds(routePositions);
 
-    maps.fitBounds(poly.getBounds(), { padding: [60, 60] });
+    maps.fitBounds(bounds, { padding: [60, 60] });
   }
 
   async function handleUpdateDestination() {
