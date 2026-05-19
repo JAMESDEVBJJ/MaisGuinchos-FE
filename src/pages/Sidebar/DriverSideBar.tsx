@@ -171,7 +171,7 @@ export function DriverSideBar(props: DriverSideProps) {
           },
           notes: data.notes,
           questions: data.questions,
-          driverPhoto: data.driverPhoto
+          driverPhoto: data.driverPhotoUrl,
         };
 
         setSelectedTow((prev) => {
@@ -336,7 +336,7 @@ export function DriverSideBar(props: DriverSideProps) {
         },
         notes: data.notes,
         questions: data.questions,
-        driverPhoto: data.driverPhoto
+        driverPhoto: data.driverPhotoUrl,
       };
 
       setSelectedTow((prev) => {
@@ -569,12 +569,15 @@ export function DriverSideBar(props: DriverSideProps) {
             <div className="detail">
               {towTravel && (
                 <>
-                  <InputLocation
-                    locationText={props.locationText}
-                    setLocationText={props.setLocationText}
-                    setRouteG={props.setRouteG}
-                    setUserLocation={props.setUserLocation}
-                  />
+                  {towTravel.status !== TowTravelStatus.ArrivedAtDestination &&
+                    towTravel.status !== TowTravelStatus.ArrivedAtPickup && (
+                      <InputLocation
+                        locationText={props.locationText}
+                        setLocationText={props.setLocationText}
+                        setRouteG={props.setRouteG}
+                        setUserLocation={props.setUserLocation}
+                      />
+                    )}
 
                   <TowRequestData
                     distanceKm={

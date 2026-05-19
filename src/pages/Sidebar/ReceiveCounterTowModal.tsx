@@ -60,7 +60,7 @@ export default function ReceiveCounterTowModal({
           color: data.truck.color,
           plate: data.truck.plate,
         },
-        driverPhoto: data.driverPhoto
+        driverPhoto: data.driverPhotoUrl
       };
 
       setTowTravel(towTravel);

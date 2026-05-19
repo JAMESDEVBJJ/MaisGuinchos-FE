@@ -208,7 +208,7 @@ export function ClientSideBar(props: ClientBarProps) {
           color: data.truck.color,
           plate: data.truck.plate,
         },
-        driverPhoto: data.driverPhoto,
+        driverPhoto: data.driverPhotoUrl,
       };
 
       console.dir(towTravel);
