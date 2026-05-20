@@ -208,6 +208,7 @@ export function ClientSideBar(props: ClientBarProps) {
           color: data.truck.color,
           plate: data.truck.plate,
         },
+        vehicleModelClient: data.vehicleModel,
         driverPhoto: data.driverPhotoUrl,
       };
 

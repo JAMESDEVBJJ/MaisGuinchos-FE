@@ -172,6 +172,7 @@ export function DriverSideBar(props: DriverSideProps) {
           notes: data.notes,
           questions: data.questions,
           driverPhoto: data.driverPhotoUrl,
+          vehicleModelClient: data.vehicleModel
         };
 
         setSelectedTow((prev) => {
@@ -337,6 +338,7 @@ export function DriverSideBar(props: DriverSideProps) {
         notes: data.notes,
         questions: data.questions,
         driverPhoto: data.driverPhotoUrl,
+        vehicleModelClient: data.vehicleModel
       };
 
       setSelectedTow((prev) => {
@@ -614,6 +616,11 @@ export function DriverSideBar(props: DriverSideProps) {
                       Notas:{" "}
                       {towTravel.notes !== "" ? towTravel.notes : "Sem notas."}
                     </p>
+
+                    <p>
+                      Modelo:{" "}
+                      {towTravel.vehicleModelClient !== "" ? towTravel.vehicleModelClient : "Sem modelo informado."}
+                    </p>
                   </div>
                   {towTravel.status === TowTravelStatus.ArrivedAtPickup && (
                     <button
@@ -655,12 +662,14 @@ export function DriverSideBar(props: DriverSideProps) {
                     <p>Questão: {selectedTow.vehicleIssue}</p>
 
                     <p>Notas: {selectedTow.notes}</p>
+
+                    <p>Modelo: {selectedTow.vehicleType}</p>
                   </div>
 
                   {(selectedTow.status !== 2 ||
                     selectedTow.counterOfferRecused) && (
                     <button
-                      className={`accept-btn secondary contact-enabled ${
+                      className={`accept-btn secondary contact-enabled margin-top ${
                         selectedTow!.status === 4 && "accepted"
                       }`}
                       onClick={() => acceptTowRequest()}

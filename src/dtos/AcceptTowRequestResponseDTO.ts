@@ -34,5 +34,7 @@ export interface AcceptTowRequestResponseDTO {
       plate: string;
     };
 
+    vehicleModel: string;
+
     driverPhotoUrl: string;
   }
