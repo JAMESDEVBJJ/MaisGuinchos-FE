@@ -89,7 +89,7 @@ export function DriverSideBar(props: DriverSideProps) {
   useEffect(() => {
     if (!token) return;
 
-    async function getPendingTows() {
+    async function getPendingTowsRequests() {
       try {
         const response = await api.get("/towRequests/pendings");
 
@@ -104,7 +104,7 @@ export function DriverSideBar(props: DriverSideProps) {
       }
     }
 
-    getPendingTows();
+    getPendingTowsRequests();
   }, []);
 
   useEffect(() => {
@@ -172,7 +172,8 @@ export function DriverSideBar(props: DriverSideProps) {
           notes: data.notes,
           questions: data.questions,
           driverPhoto: data.driverPhotoUrl,
-          vehicleModelClient: data.vehicleModel
+          vehicleModelClient: data.vehicleModel,
+          driverPhone: data.driverPhone
         };
 
         setSelectedTow((prev) => {
@@ -338,18 +339,18 @@ export function DriverSideBar(props: DriverSideProps) {
         notes: data.notes,
         questions: data.questions,
         driverPhoto: data.driverPhotoUrl,
-        vehicleModelClient: data.vehicleModel
+        vehicleModelClient: data.vehicleModel,
+        driverPhone: data.driverPhone
       };
 
       setSelectedTow((prev) => {
-        if (!prev || prev.id !== response.data.towRequestId) return prev;
+        if (!prev || prev.id !== data.towRequestId) return prev;
 
         return { ...prev, status: 4 };
       });
+
       setTowsReceive((prev) =>
-        prev.map((p) =>
-          p.id === response.data.towRequestId ? { ...p, status: 4 } : p
-        )
+        prev.filter(t => t.id !== data.towRequestId)
       );
 
       setTowTravel(towTravel);
@@ -551,6 +552,13 @@ export function DriverSideBar(props: DriverSideProps) {
                   props.setRoute(null);
                   props.setRouteG(null);
                   setTowTravel(null);
+
+                  const maps = props.mapRef.current;
+                  if (driverMarkerRef.current && maps) {
+                    maps.removeLayer(driverMarkerRef.current);
+                    driverMarkerRef.current = null;
+                  }
+                  
                 }}
               >
                 ⬅
@@ -572,7 +580,8 @@ export function DriverSideBar(props: DriverSideProps) {
               {towTravel && (
                 <>
                   {towTravel.status !== TowTravelStatus.ArrivedAtDestination &&
-                    towTravel.status !== TowTravelStatus.ArrivedAtPickup && (
+                    towTravel.status !== TowTravelStatus.ArrivedAtPickup &&
+                    towTravel.status !== TowTravelStatus.Finished && (
                       <InputLocation
                         locationText={props.locationText}
                         setLocationText={props.setLocationText}
@@ -619,7 +628,9 @@ export function DriverSideBar(props: DriverSideProps) {
 
                     <p>
                       Modelo:{" "}
-                      {towTravel.vehicleModelClient !== "" ? towTravel.vehicleModelClient : "Sem modelo informado."}
+                      {towTravel.vehicleModelClient !== ""
+                        ? towTravel.vehicleModelClient
+                        : "Sem modelo informado."}
                     </p>
                   </div>
                   {towTravel.status === TowTravelStatus.ArrivedAtPickup && (

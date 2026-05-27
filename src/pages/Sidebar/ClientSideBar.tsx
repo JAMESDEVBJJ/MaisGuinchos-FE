@@ -210,6 +210,7 @@ export function ClientSideBar(props: ClientBarProps) {
         },
         vehicleModelClient: data.vehicleModel,
         driverPhoto: data.driverPhotoUrl,
+        driverPhone: data.driverPhone,
       };
 
       console.dir(towTravel);
@@ -449,12 +450,18 @@ export function ClientSideBar(props: ClientBarProps) {
   }
 
   function handleBackToList() {
+    const map = props.mapRef.current;
+
     if (routeLayerRef.current) {
-      const map = props.mapRef.current;
       if (map) {
         map.removeLayer(routeLayerRef.current);
       }
       routeLayerRef.current = null;
+    }
+
+    if (driverMarkerRef.current && map) {
+      map.removeLayer(driverMarkerRef.current);
+      driverMarkerRef.current = null;
     }
 
     if (
@@ -584,7 +591,7 @@ export function ClientSideBar(props: ClientBarProps) {
       [TowTravelStatus.ArrivedAtPickup]: `${driverName} chegou até o veículo.`,
       [TowTravelStatus.InProgress]: `${driverName} está indo até o destino${dots}`,
       [TowTravelStatus.ArrivedAtDestination]: `${driverName} chegou ao destino.`,
-      [TowTravelStatus.Finished]: `${driverName} finalizou o atendimento.`,
+      [TowTravelStatus.Finished]: `${driverName} finalizou o atendimento!`,
       [TowTravelStatus.Cancelled]: `Reboque cancelado.`,
     };
 
@@ -648,7 +655,7 @@ export function ClientSideBar(props: ClientBarProps) {
             )}
           </>
         ) : (
-          <>
+          <div className="tow-details">
             <div className="detail">
               {(!towTravel ||
                 towTravel.status === TowTravelStatus.Cancelled ||
@@ -701,13 +708,7 @@ export function ClientSideBar(props: ClientBarProps) {
                       </div>
                     </>
                   ) : (
-                    <div className="driver-data">
-                      <span className="phone">{towTravel.driverPhone}</span>
-
-                      <div>Modelo: {towTravel.truck.model}</div>
-                      <div>Placa: {towTravel.truck.plate}</div>
-                      <div>Cor: {towTravel.truck.color}</div>
-                    </div>
+                    <></>
                   )}
                 </div>
               </div>
@@ -753,34 +754,43 @@ export function ClientSideBar(props: ClientBarProps) {
                   </>
                 )}
               {towTravel && (
-                <TowRequestData
-                  distanceKm={
-                    towTravel.distanceToPickupKm +
-                    towTravel.distanceToDestinationKm
-                  }
-                  durationMin={
-                    towTravel.timeToDestinationMin + towTravel.timeToPickupMin
-                  }
-                  priceEstimate={towTravel.finalPrice}
-                  distanceKmG={
-                    towTravel.distanceToPickupKm +
-                    towTravel.distanceToDestinationKm
-                  }
-                  durationMinG={
-                    towTravel.timeToDestinationMin + towTravel.timeToPickupMin
-                  }
-                  priceEstimateG={towTravel.finalPrice}
-                  suggestedPrice={towTravel.finalPrice}
-                  routeG={null}
-                  modelo={null}
-                  totalDistanceKm={
-                    towTravel.distanceToPickupKm +
-                    towTravel.distanceToDestinationKm
-                  }
-                />
+                <>
+                  <TowRequestData
+                    distanceKm={
+                      towTravel.distanceToPickupKm +
+                      towTravel.distanceToDestinationKm
+                    }
+                    durationMin={
+                      towTravel.timeToDestinationMin + towTravel.timeToPickupMin
+                    }
+                    priceEstimate={towTravel.finalPrice}
+                    distanceKmG={
+                      towTravel.distanceToPickupKm +
+                      towTravel.distanceToDestinationKm
+                    }
+                    durationMinG={
+                      towTravel.timeToDestinationMin + towTravel.timeToPickupMin
+                    }
+                    priceEstimateG={towTravel.finalPrice}
+                    suggestedPrice={towTravel.finalPrice}
+                    routeG={null}
+                    modelo={null}
+                    totalDistanceKm={
+                      towTravel.distanceToPickupKm +
+                      towTravel.distanceToDestinationKm
+                    }
+                  />
+
+                  <div className="tow-extra">
+                    <p>Modelo: {towTravel.truck.model}</p>
+                    <p>Placa: {towTravel.truck.plate}</p>
+                    <p>Cor: {towTravel.truck.color}</p>
+                    <p>Telefone: {towTravel.driverPhone}</p>
+                  </div>
+                </>
               )}
             </div>
-          </>
+          </div>
         )}
         <div className="resize-handle" onMouseDown={handleMouseDown} />
       </aside>

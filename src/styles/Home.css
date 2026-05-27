@@ -540,7 +540,6 @@ input {
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid #ff7a2d;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
   margin-left: 4%;
 }
 
@@ -933,7 +932,7 @@ button.waiting:hover {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 20px;
 }
 
 .accept-btn {

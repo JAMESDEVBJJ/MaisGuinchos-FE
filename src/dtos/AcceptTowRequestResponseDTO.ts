@@ -37,4 +37,5 @@ export interface AcceptTowRequestResponseDTO {
     vehicleModel: string;
 
     driverPhotoUrl: string;
+    driverPhone: string;
   }

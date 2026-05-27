@@ -151,7 +151,7 @@ export function Maps({
                   icon={isHovered ? guinchoHoverIcon : guinchoIcon}
                   eventHandlers={{
                     click: () => {
-                      if (!m.available) return; //mostrar na ui que guincho ta off
+                      if (!m.available) return;
                       setSelectedGuincho(m);
                       setPriceG(null);
                       setDistanceKmG(null);

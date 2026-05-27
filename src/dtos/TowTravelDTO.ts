@@ -9,7 +9,7 @@ export interface TowTravelDTO {
   vehicleModelClient: string;
 
   driverName?: string;
-  driverPhone?: string;
+  driverPhone: string;
   vehicleModelDriver?: string;
   vehicleColorDriver?: string;
   placaDriver?: string;
