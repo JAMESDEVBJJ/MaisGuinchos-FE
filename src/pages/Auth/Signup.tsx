@@ -148,7 +148,7 @@ function Signup() {
             ></SignStep3>
           )}
           {step !== 4 && (
-            <Link to="/" className="signup">
+            <Link to="/login" className="signup">
               Voltar para login
             </Link>
           )}
