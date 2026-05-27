@@ -72,27 +72,28 @@ function Signup() {
         if (file) {
           formData.append("Guincho.Foto", file);
         }
-
       }
 
       await api.post("/user", formData);
 
       toast.success("Usuário criado com sucesso!");
-      
+
       navigate("/");
     } catch (error: any) {
+      const data = error.response?.data;
 
-      const errors = error.response?.data?.errors;
-
-      if (errors) {
-        Object.values(errors).forEach((messages: any) => {
+      if (data?.errors) {
+        Object.values(data.errors).forEach((messages: any) => {
           messages.forEach((message: string) => {
             toast.error(message);
           });
-        })
+        });
+      } else if (data?.error) {
+        toast.error(data.error);
       } else {
-        toast.error("Erro ao criar a conta.");
+        toast.error("Erro ao criar conta.");
       }
+
       console.log(error);
     }
   }

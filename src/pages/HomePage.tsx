@@ -133,13 +133,26 @@ const HomePage = () => {
         } else {
           setUserLocation({ lat: -9.854179, lon: -51.648332 });
         }
-      } catch (error) {
+      } catch (error: any) {
+        const data = error.response?.data;
+
+        if (data?.errors) {
+          Object.values(data.errors).forEach((messages: any) => {
+            messages.forEach((message: string) => {
+              toast.error(message);
+            });
+          });
+        } else if (data?.error) {
+          toast.error(data.error);
+        } else {
+          toast.error("Erro ao buscar última localização");
+        }
+
         console.error("Erro ao buscar última localização", error);
 
         setUserLocation({ lat: -9.854179, lon: -51.648332 });
       }
     }
-
     loadLastLocation();
   }, []);
 

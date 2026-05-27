@@ -540,9 +540,22 @@ export function ClientSideBar(props: ClientBarProps) {
       setVehicleType("");
       setVehicleIssue("");
       setNotes("");
-    } catch (error) {
-      console.error(error);
-      toast.error("Erro ao solicitar guincho.");
+    } catch (error: any) {
+      const data = error.response?.data;
+
+      if (data?.errors) {
+        Object.values(data.errors).forEach((messages: any) => {
+          messages.forEach((message: string) => {
+            toast.error(message);
+          });
+        });
+      } else if (data?.error) {
+        toast.error(data.error);
+      } else {
+        toast.error("Erro inesperado ao solicitar guincho.");
+      }
+
+      console.log(error);
     }
   }
 
