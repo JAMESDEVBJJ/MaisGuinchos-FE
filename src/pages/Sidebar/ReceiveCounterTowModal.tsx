@@ -4,6 +4,7 @@ import type { TowRequestDTO } from "../../dtos/TowRequestDTO";
 import type { TowTravelDTO } from "../../dtos/TowTravelDTO";
 import { api } from "../../services/api";
 import "../../styles/ConterOfferModals/ReceiveCounterTowModal.css";
+import { toast } from 'react-toastify';
 
 type GetCounterOfferModalProps = {
   onClose: () => void;
@@ -61,7 +62,8 @@ export default function ReceiveCounterTowModal({
           plate: data.truck.plate,
         },
         vehicleModelClient: data.vehicleModel,
-        driverPhoto: data.driverPhotoUrl
+        driverPhoto: data.driverPhotoUrl,
+        driverPhone: data.driverPhone
       };
 
       setTowTravel(towTravel);
@@ -71,7 +73,7 @@ export default function ReceiveCounterTowModal({
 
       console.error(message, error);
 
-      alert(message);
+      toast.error(message);
     }
   }
 
@@ -96,7 +98,7 @@ export default function ReceiveCounterTowModal({
 
       console.error(message, error);
 
-      alert(message);
+      toast.error(message);
     }
   }
 

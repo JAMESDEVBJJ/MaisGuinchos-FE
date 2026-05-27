@@ -16,6 +16,7 @@ import { RouteType, type RouteRealtimeDTO } from "../../dtos/RouteRealtimeDTO";
 import iconGuincho from "../../assets/icons/guinchoMarkup.png";
 import type { TowTravelDTO } from "../../dtos/TowTravelDTO";
 import type { TowRequestDTO } from "../../dtos/TowRequestDTO";
+import { toast } from "react-toastify";
 
 interface CoordinateDto {
   lat: number;
@@ -486,22 +487,22 @@ export function ClientSideBar(props: ClientBarProps) {
 
   async function handleConfirmSend() {
     if (!props.selectedGuincho) {
-      alert("Selecione um motorista primeiro.");
+      toast.error("Selecione um motorista primeiro.");
       return;
     }
 
     if (!props.userLocation || !props.destination) {
-      alert("Localização inválida.");
+      toast.error("Localização inválida.");
       return;
     }
 
     if (!vehicleType || !vehicleIssue) {
-      alert("Preencha os campos obrigatórios.");
+      toast.error("Preencha os campos obrigatórios.");
       return;
     }
 
     if (!props.distanceKmG || !props.durationMinG) {
-      alert("Dados da rota do até o usuário inválidos.");
+      toast.error("Dados da rota do até o usuário inválidos.");
       return;
     }
 
@@ -541,7 +542,7 @@ export function ClientSideBar(props: ClientBarProps) {
       setNotes("");
     } catch (error) {
       console.error(error);
-      alert("Erro ao solicitar guincho.");
+      toast.error("Erro ao solicitar guincho.");
     }
   }
 

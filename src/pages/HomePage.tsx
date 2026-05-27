@@ -16,6 +16,7 @@ import type { TowTravelDTO } from "../dtos/TowTravelDTO";
 import type { TowTravelResponseDTO } from "../dtos/towTravel/TowTravelResponseDTO";
 import { useTowRoutes } from "../utils/hooks/useTowRoutes";
 import { TowTravelProgress } from "./TowTravelProgress";
+import { toast } from "react-toastify/unstyled";
 
 const HomePage = () => {
   const [priceEstimateG, setPriceG] = useState<number | null>(0);
@@ -179,11 +180,11 @@ const HomePage = () => {
           destination: towPending.destination,
           truck: {
             id: towPending.truck.id,
-            model: towPending.truck.model, 
+            model: towPending.truck.model,
             color: towPending.truck.color,
-            plate: towPending.truck.plate
+            plate: towPending.truck.plate,
           },
-          driverPhoto: towPending.driverPhoto
+          driverPhoto: towPending.driverPhoto,
         };
         setTowTravel(towTravel);
       }
@@ -239,7 +240,7 @@ const HomePage = () => {
         error?.response?.data?.title ||
         "Erro inesperado. Tente novamente.";
 
-      alert(message);
+      toast.error(message);
     }
 
     if (response?.data) {

@@ -14,6 +14,7 @@ import { useTowTravel } from "../../contexts/TowTravelContext";
 import type { TowTravelDTO } from "../../dtos/TowTravelDTO";
 import { RouteType, type RouteRealtimeDTO } from "../../dtos/RouteRealtimeDTO";
 import iconGuincho from "../../assets/icons/guinchoMarkup.png";
+import { toast } from 'react-toastify';
 
 type DriverSideProps = {
   locationText: string;
@@ -381,7 +382,7 @@ export function DriverSideBar(props: DriverSideProps) {
       });
     } catch (error) {
       console.error(error);
-      alert("Erro ao iniciar trajeto.");
+      toast.error("Erro ao iniciar trajeto.");
     } finally {
       setLoading(false);
     }
@@ -410,7 +411,7 @@ export function DriverSideBar(props: DriverSideProps) {
       const errorMessage =
         error.response?.data?.error || "Erro ao finalizar reboque.";
 
-      alert(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

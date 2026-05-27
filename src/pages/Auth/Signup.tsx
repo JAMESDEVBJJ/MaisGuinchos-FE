@@ -6,6 +6,7 @@ import SignStep2 from "./SignStep2";
 import SignStep3 from "./SignStep3";
 import { api } from "../../services/api";
 import SignStepGuincho from "./SignStepGuincho";
+import { toast } from "react-toastify";
 
 function Signup() {
   const [step, setStep] = useState(1);
@@ -27,18 +28,18 @@ function Signup() {
         form.email === "" &&
         (form.password === "" || form.confirmPass === "")
       ) {
-        alert("Email e senha obrigatórios");
+        toast.error("Email e senha obrigatórios");
         return;
       } else if (form.email === "") {
-        alert("Email obrigatório");
+        toast.error("Email obrigatório");
         return;
       } else if (form.password === "" || form.confirmPass === "") {
-        alert("Senha obrigatória");
+        toast.error("Senha obrigatória");
         return;
       }
 
       if (form.password != form.confirmPass) {
-        alert("Senhas não conferem");
+        toast.error("Senhas não conferem");
         return;
       }
     }
@@ -76,11 +77,22 @@ function Signup() {
 
       await api.post("/user", formData);
 
-      alert("Usuário criado com sucesso :3!");
+      toast.success("Usuário criado com sucesso!");
       
       navigate("/");
-    } catch (error) {
-      alert("Erro ao criar a conta.");
+    } catch (error: any) {
+
+      const errors = error.response?.data?.errors;
+
+      if (errors) {
+        Object.values(errors).forEach((messages: any) => {
+          messages.forEach((message: string) => {
+            toast.error(message);
+          });
+        })
+      } else {
+        toast.error("Erro ao criar a conta.");
+      }
       console.log(error);
     }
   }
