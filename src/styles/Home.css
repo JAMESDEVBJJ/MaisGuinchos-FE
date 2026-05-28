@@ -912,7 +912,6 @@ button.waiting:hover {
 }
 
 .tow-details {
-  padding: 20px;
   color: white;
 }
 .solicith3 {
@@ -1012,4 +1011,9 @@ button.waiting:hover {
 
 .map-container {
   position: relative;
+}
+
+.bottom {
+  margin-top: -60px;
+  margin-bottom: 30px;
 }

@@ -227,7 +227,7 @@ export function Maps({
                 pathOptions={{
                   color: "yellow",
                   weight: 4,
-                  opacity: 0.8,
+                  opacity: 0.85,
                 }}
               />
             )}

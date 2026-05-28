@@ -14,7 +14,7 @@ import { useTowTravel } from "../../contexts/TowTravelContext";
 import type { TowTravelDTO } from "../../dtos/TowTravelDTO";
 import { RouteType, type RouteRealtimeDTO } from "../../dtos/RouteRealtimeDTO";
 import iconGuincho from "../../assets/icons/guinchoMarkup.png";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 type DriverSideProps = {
   locationText: string;
@@ -174,7 +174,7 @@ export function DriverSideBar(props: DriverSideProps) {
           questions: data.questions,
           driverPhoto: data.driverPhotoUrl,
           vehicleModelClient: data.vehicleModel,
-          driverPhone: data.driverPhone
+          driverPhone: data.driverPhone,
         };
 
         setSelectedTow((prev) => {
@@ -341,7 +341,7 @@ export function DriverSideBar(props: DriverSideProps) {
         questions: data.questions,
         driverPhoto: data.driverPhotoUrl,
         vehicleModelClient: data.vehicleModel,
-        driverPhone: data.driverPhone
+        driverPhone: data.driverPhone,
       };
 
       setSelectedTow((prev) => {
@@ -350,9 +350,7 @@ export function DriverSideBar(props: DriverSideProps) {
         return { ...prev, status: 4 };
       });
 
-      setTowsReceive((prev) =>
-        prev.filter(t => t.id !== data.towRequestId)
-      );
+      setTowsReceive((prev) => prev.filter((t) => t.id !== data.towRequestId));
 
       setTowTravel(towTravel);
 
@@ -559,7 +557,6 @@ export function DriverSideBar(props: DriverSideProps) {
                     maps.removeLayer(driverMarkerRef.current);
                     driverMarkerRef.current = null;
                   }
-                  
                 }}
               >
                 ⬅
@@ -623,16 +620,19 @@ export function DriverSideBar(props: DriverSideProps) {
                     </p>
 
                     <p>
-                      Notas:{" "}
-                      {towTravel.notes !== "" ? towTravel.notes : "Sem notas."}
-                    </p>
-
-                    <p>
                       Modelo:{" "}
                       {towTravel.vehicleModelClient !== ""
                         ? towTravel.vehicleModelClient
                         : "Sem modelo informado."}
                     </p>
+                    {towTravel.notes && (
+                      <p>
+                        Notas:{" "}
+                        {towTravel.notes !== ""
+                          ? towTravel.notes
+                          : "Sem notas."}
+                      </p>
+                    )}
                   </div>
                   {towTravel.status === TowTravelStatus.ArrivedAtPickup && (
                     <button
@@ -673,9 +673,9 @@ export function DriverSideBar(props: DriverSideProps) {
                   <div className="tow-extra">
                     <p>Questão: {selectedTow.vehicleIssue}</p>
 
-                    <p>Notas: {selectedTow.notes}</p>
-
                     <p>Modelo: {selectedTow.vehicleType}</p>
+
+                    {selectedTow.notes && <p>Notas: {selectedTow.notes}</p>}
                   </div>
 
                   {(selectedTow.status !== 2 ||

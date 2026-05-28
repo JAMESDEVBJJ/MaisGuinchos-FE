@@ -117,6 +117,23 @@ function Signup() {
 
   return (
     <div className="page">
+      {step > 1 && (
+        <button className="back-button" onClick={prevStep}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="30"
+            height="30"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </button>
+      )}
       {step !== 4 && (
         <div className="login-card">
           <h2 className="h2-cadastro">Cadastrar</h2>
@@ -131,7 +148,6 @@ function Signup() {
             <SignStep2
               form={form}
               setForm={setForm}
-              onBack={prevStep}
               onNext={nextStep}
             ></SignStep2>
           )}
