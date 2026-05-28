@@ -16,6 +16,7 @@ import { Sun, Moon } from "lucide-react";
 import { useTowTravel } from "../contexts/TowTravelContext";
 import { flyToTarget } from "../utils/mapUtils";
 import { useAuth } from "../contexts/AuthContext";
+import { TowTravelStatus } from "../utils/enums/TowTravelStatus";
 
 function MapController({ mapRef }: { mapRef: React.RefObject<L.Map | null> }) {
   const map = useMap();
@@ -150,6 +151,7 @@ export function Maps({
                   icon={isHovered ? guinchoHoverIcon : guinchoIcon}
                   eventHandlers={{
                     click: () => {
+                      if (!m.available) return;
                       setSelectedGuincho(m);
                       setPriceG(null);
                       setDistanceKmG(null);
@@ -182,22 +184,27 @@ export function Maps({
             ></Marker>
           )}
 
-          {route && (
-            <>
-              <Polyline
-                positions={route}
-                pathOptions={{
-                  color: "darkorange",
-                  weight: 4,
-                  opacity: 0.8,
-                }}
-              />
-              <Marker
-                position={route[route.length - 1]}
-                icon={destinationIconMarkup}
-              ></Marker>
-            </>
-          )}
+          {route &&
+            route.length > 0 &&
+            (!towTravel ||
+              (towTravel.status !== TowTravelStatus.ArrivedAtDestination &&
+                towTravel.status !== TowTravelStatus.Cancelled &&
+                towTravel.status !== TowTravelStatus.Finished)) && (
+              <>
+                <Polyline
+                  positions={route}
+                  pathOptions={{
+                    color: "darkorange",
+                    weight: 4,
+                    opacity: 0.8,
+                  }}
+                />
+                <Marker
+                  position={route[route.length - 1]}
+                  icon={destinationIconMarkup}
+                ></Marker>
+              </>
+            )}
 
           {towTravel && (
             <Marker
@@ -210,17 +217,21 @@ export function Maps({
               icon={userIcon}
             ></Marker>
           )}
-          {routeG && (
-            <Polyline
-              positions={routeG}
-              pathOptions={{
-                color: "yellow",
-                weight: 4,
-                opacity: 0.8,
-              }}
-            />
-          )}
-          {priceEstimate && !isRoutePanelOpen && (
+
+          {routeG &&
+            routeG.length > 0 &&
+            (!towTravel ||
+              towTravel.status == TowTravelStatus.GoingToClient) && (
+              <Polyline
+                positions={routeG}
+                pathOptions={{
+                  color: "yellow",
+                  weight: 4,
+                  opacity: 0.85,
+                }}
+              />
+            )}
+          {priceEstimate && !isRoutePanelOpen && !towTravel && (
             <div
               className="price-hud"
               onClick={() => setIsRoutePanelOpen(true)}
@@ -231,7 +242,7 @@ export function Maps({
                 : priceEstimate.toFixed(2)}
             </div>
           )}
-          {isRoutePanelOpen && (
+          {isRoutePanelOpen && !towTravel && (
             <div
               className="route-overlay"
               onClick={() => setIsRoutePanelOpen(false)}

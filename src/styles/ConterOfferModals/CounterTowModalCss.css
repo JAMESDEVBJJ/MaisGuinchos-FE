@@ -28,9 +28,15 @@
 }
 
 .oldPrice {
-  font-size: 14px;
+  font-size: 15px;
   color: #9aa6b2;
   text-decoration: line-through;
+}
+
+.percentMore {
+  font-size: 15px;
+  font-weight: 700;
+  color: #9aa6b2;
 }
 
 .newPrice {
@@ -171,11 +177,11 @@
 
 .sendButton.success {
   background: transparent;
-  border: 2px solid #4CAF50;
-  color: #4CAF50;
+  border: 2px solid #4caf50;
+  color: #4caf50;
 }
 .sendButton.success:hover {
-  cursor:initial;
+  cursor: initial;
 }
 
 .sendButton.loading {

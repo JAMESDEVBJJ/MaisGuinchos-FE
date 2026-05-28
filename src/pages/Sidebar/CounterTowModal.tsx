@@ -2,6 +2,7 @@ import { useState } from "react";
 import "../../styles/ConterOfferModals/CounterTowModalCss.css";
 import type { TowRequestReceiveDto } from "../../dtos/TowRequestReceiveDTO";
 import { api } from "../../services/api";
+import { toast } from 'react-toastify';
 
 const reasons = [
   "Veículo sem pneus",
@@ -71,7 +72,7 @@ export default function CounterOfferModal({
       let reasonString = finalReasons.join(", ");
 
       if (!reasonString.trim()) {
-        alert("Informe ao menos um motivo");
+        toast.error("Informe ao menos um motivo");
         return;
       }
 
@@ -104,7 +105,7 @@ export default function CounterOfferModal({
       setStatus("success");
     } catch (error) {
       console.error("Erro ao enviar contraproposta:", error);
-      alert("Erro ao enviar contraproposta");
+      toast.error("Erro ao enviar contraproposta");
       setStatus("idle");
     }
   }

@@ -6,6 +6,7 @@ import SignStep2 from "./SignStep2";
 import SignStep3 from "./SignStep3";
 import { api } from "../../services/api";
 import SignStepGuincho from "./SignStepGuincho";
+import { toast } from "react-toastify";
 
 function Signup() {
   const [step, setStep] = useState(1);
@@ -27,18 +28,18 @@ function Signup() {
         form.email === "" &&
         (form.password === "" || form.confirmPass === "")
       ) {
-        alert("Email e senha obrigatórios");
+        toast.error("Email e senha obrigatórios");
         return;
       } else if (form.email === "") {
-        alert("Email obrigatório");
+        toast.error("Email obrigatório");
         return;
       } else if (form.password === "" || form.confirmPass === "") {
-        alert("Senha obrigatória");
+        toast.error("Senha obrigatória");
         return;
       }
 
       if (form.password != form.confirmPass) {
-        alert("Senhas não conferem");
+        toast.error("Senhas não conferem");
         return;
       }
     }
@@ -71,16 +72,28 @@ function Signup() {
         if (file) {
           formData.append("Guincho.Foto", file);
         }
-
       }
 
       await api.post("/user", formData);
 
-      alert("Usuário criado com sucesso :3!");
-      
+      toast.success("Usuário criado com sucesso!");
+
       navigate("/");
-    } catch (error) {
-      alert("Erro ao criar a conta.");
+    } catch (error: any) {
+      const data = error.response?.data;
+
+      if (data?.errors) {
+        Object.values(data.errors).forEach((messages: any) => {
+          messages.forEach((message: string) => {
+            toast.error(message);
+          });
+        });
+      } else if (data?.error) {
+        toast.error(data.error);
+      } else {
+        toast.error("Erro ao criar conta.");
+      }
+
       console.log(error);
     }
   }
@@ -104,6 +117,23 @@ function Signup() {
 
   return (
     <div className="page">
+      {step > 1 && (
+        <button className="back-button" onClick={prevStep}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="30"
+            height="30"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </button>
+      )}
       {step !== 4 && (
         <div className="login-card">
           <h2 className="h2-cadastro">Cadastrar</h2>
@@ -118,7 +148,6 @@ function Signup() {
             <SignStep2
               form={form}
               setForm={setForm}
-              onBack={prevStep}
               onNext={nextStep}
             ></SignStep2>
           )}
@@ -135,7 +164,7 @@ function Signup() {
             ></SignStep3>
           )}
           {step !== 4 && (
-            <Link to="/" className="signup">
+            <Link to="/login" className="signup">
               Voltar para login
             </Link>
           )}

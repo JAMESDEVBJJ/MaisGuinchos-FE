@@ -16,6 +16,7 @@ import type { TowTravelDTO } from "../dtos/TowTravelDTO";
 import type { TowTravelResponseDTO } from "../dtos/towTravel/TowTravelResponseDTO";
 import { useTowRoutes } from "../utils/hooks/useTowRoutes";
 import { TowTravelProgress } from "./TowTravelProgress";
+import { toast } from "react-toastify/unstyled";
 
 const HomePage = () => {
   const [priceEstimateG, setPriceG] = useState<number | null>(0);
@@ -132,13 +133,26 @@ const HomePage = () => {
         } else {
           setUserLocation({ lat: -9.854179, lon: -51.648332 });
         }
-      } catch (error) {
+      } catch (error: any) {
+        const data = error.response?.data;
+
+        if (data?.errors) {
+          Object.values(data.errors).forEach((messages: any) => {
+            messages.forEach((message: string) => {
+              toast.error(message);
+            });
+          });
+        } else if (data?.error) {
+          toast.error(data.error);
+        } else {
+          toast.error("Erro ao buscar última localização");
+        }
+
         console.error("Erro ao buscar última localização", error);
 
         setUserLocation({ lat: -9.854179, lon: -51.648332 });
       }
     }
-
     loadLastLocation();
   }, []);
 
@@ -177,8 +191,14 @@ const HomePage = () => {
           origin: towPending.origin,
           pickup: towPending.pickup,
           destination: towPending.destination,
+          truck: {
+            id: towPending.truck.id,
+            model: towPending.truck.model,
+            color: towPending.truck.color,
+            plate: towPending.truck.plate,
+          },
+          driverPhoto: towPending.driverPhoto,
         };
-
         setTowTravel(towTravel);
       }
     };
@@ -233,7 +253,7 @@ const HomePage = () => {
         error?.response?.data?.title ||
         "Erro inesperado. Tente novamente.";
 
-      alert(message);
+      toast.error(message);
     }
 
     if (response?.data) {
@@ -271,9 +291,9 @@ const HomePage = () => {
 
     if (!maps) return;
 
-    const poly = L.polyline(routePositions, { weight: 4, opacity: 0.6 });
+    const bounds = L.latLngBounds(routePositions);
 
-    maps.fitBounds(poly.getBounds(), { padding: [60, 60] });
+    maps.fitBounds(bounds, { padding: [60, 60] });
   }
 
   async function handleUpdateDestination() {

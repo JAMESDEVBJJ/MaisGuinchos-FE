@@ -4,6 +4,7 @@ import type { TowRequestDTO } from "../../dtos/TowRequestDTO";
 import type { TowTravelDTO } from "../../dtos/TowTravelDTO";
 import { api } from "../../services/api";
 import "../../styles/ConterOfferModals/ReceiveCounterTowModal.css";
+import { toast } from 'react-toastify';
 
 type GetCounterOfferModalProps = {
   onClose: () => void;
@@ -48,17 +49,31 @@ export default function ReceiveCounterTowModal({
         distanceToDestinationKm: data.distanceToDestinationKm,
         timeToDestinationMin: data.durationMinToDestination,
         status: 0,
+        origin: { latitude: data.driverLat, longitude: data.driverLon },
+        destination: {
+          latitude: data.destinationLat,
+          longitude: data.destinationLon,
+        },
+        pickup: { latitude: data.pickupLat, longitude: data.pickupLon },
+        truck: {
+          id: data.truck.id,
+          model: data.truck.model,
+          color: data.truck.color,
+          plate: data.truck.plate,
+        },
+        vehicleModelClient: data.vehicleModel,
+        driverPhoto: data.driverPhotoUrl,
+        driverPhone: data.driverPhone
       };
 
       setTowTravel(towTravel);
       props.setRequestStatus("accepted");
-
     } catch (error) {
       const message = "Erro ao aceitar contraproposta.";
 
       console.error(message, error);
 
-      alert(message);
+      toast.error(message);
     }
   }
 
@@ -83,7 +98,7 @@ export default function ReceiveCounterTowModal({
 
       console.error(message, error);
 
-      alert(message);
+      toast.error(message);
     }
   }
 
@@ -101,7 +116,10 @@ export default function ReceiveCounterTowModal({
               maximumFractionDigits: 2,
             })}
           </span>
-
+          <span className="percentMore">
+            {" "}
+            + {props.towCounterReceived!.counterOfferPercent}%
+          </span>
           <h2 className="newPrice">
             R${" "}
             {props.towCounterReceived?.counterOfferPrice!.toLocaleString(

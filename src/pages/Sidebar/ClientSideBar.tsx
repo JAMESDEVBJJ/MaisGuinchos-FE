@@ -16,6 +16,7 @@ import { RouteType, type RouteRealtimeDTO } from "../../dtos/RouteRealtimeDTO";
 import iconGuincho from "../../assets/icons/guinchoMarkup.png";
 import type { TowTravelDTO } from "../../dtos/TowTravelDTO";
 import type { TowRequestDTO } from "../../dtos/TowRequestDTO";
+import { toast } from "react-toastify";
 
 interface CoordinateDto {
   lat: number;
@@ -66,6 +67,7 @@ type ClientBarProps = {
   handleUpdateDestination: () => Promise<void>;
   setRouteG: React.Dispatch<React.SetStateAction<[number, number][] | null>>;
   routeG: [number, number][] | null;
+  setRoute: React.Dispatch<React.SetStateAction<[number, number][] | null>>;
   route: [number, number][] | null;
   mapRef: React.RefObject<L.Map | null>;
   loading: boolean;
@@ -118,15 +120,12 @@ export function ClientSideBar(props: ClientBarProps) {
 
   const [showGetCounterModal, setShowGetCounterModal] = useState(false);
 
-  const {
-    towTravel,
-    setTowTravel,
-    clearTowTravel,
-    setTowTravelStatus,
-    towTravelStatus,
-  } = useTowTravel();
+  const { towTravel, setTowTravel, clearTowTravel, setTowTravelStatus } =
+    useTowTravel();
 
-  const foto = props.selectedGuincho?.motorista?.foto;
+  const foto = towTravel
+    ? towTravel.driverPhoto
+    : props.selectedGuincho?.motorista?.foto;
   const isDefault = !foto || foto.trim() === "";
 
   const serviceIsDisabled =
@@ -138,7 +137,12 @@ export function ClientSideBar(props: ClientBarProps) {
 
   const [dots, setDots] = useState("");
 
+  const towLoaded = useRef<boolean>(false);
+
   const driverMarkerRef = useRef<L.Marker | null>(null);
+  const driverName = towTravel?.driverName
+    ? towTravel?.driverName
+    : props.selectedGuincho?.motorista.name;
 
   const guinchoIcon = new L.Icon({
     iconUrl: iconGuincho,
@@ -199,6 +203,15 @@ export function ClientSideBar(props: ClientBarProps) {
           longitude: data.destinationLon,
         },
         pickup: { latitude: data.pickupLat, longitude: data.pickupLon },
+        truck: {
+          id: data.truck.id,
+          model: data.truck.model,
+          color: data.truck.color,
+          plate: data.truck.plate,
+        },
+        vehicleModelClient: data.vehicleModel,
+        driverPhoto: data.driverPhotoUrl,
+        driverPhone: data.driverPhone,
       };
 
       console.dir(towTravel);
@@ -271,7 +284,19 @@ export function ClientSideBar(props: ClientBarProps) {
             timeToDestinationMin: data.durationMinutes,
           };
         });
-        console.log("nn é to pickup");
+
+        const maps = props.mapRef.current;
+        if (!maps) return;
+
+        const newLatLng: [number, number] = [data.origin.lat, data.origin.lon];
+
+        if (!driverMarkerRef.current) {
+          driverMarkerRef.current = L.marker(newLatLng, {
+            icon: guinchoIcon,
+          }).addTo(maps);
+        } else {
+          driverMarkerRef.current.setLatLng(newLatLng);
+        }
       }
     });
 
@@ -283,6 +308,8 @@ export function ClientSideBar(props: ClientBarProps) {
 
         return { ...prev, status: TowTravelStatus.ArrivedAtPickup };
       });
+
+      props.setRouteG([]);
     });
 
     connection.on("DriverArrivedAtDestination", () => {
@@ -293,12 +320,49 @@ export function ClientSideBar(props: ClientBarProps) {
 
         return { ...prev, status: TowTravelStatus.ArrivedAtDestination };
       });
+      props.setRoute(null);
+    });
+
+    connection.on("JourneyStarted", () => {
+      setTowTravel((prev) => {
+        if (prev === null) {
+          return null;
+        }
+
+        return { ...prev, status: TowTravelStatus.InProgress };
+      });
+    });
+
+    connection.on("JourneyFinished", () => {
+      setTowTravel((prev) => {
+        if (prev === null) {
+          return null;
+        }
+
+        return { ...prev, status: TowTravelStatus.Finished };
+      });
     });
 
     return () => {
       connection.stop();
     };
   }, []);
+
+  useEffect(() => {
+    if (!towTravel) return;
+
+    const maps = props.mapRef.current;
+    if (!maps || driverMarkerRef.current) return;
+
+    const newLatLng: [number, number] = [
+      towTravel.origin.latitude,
+      towTravel.origin.longitude,
+    ];
+
+    driverMarkerRef.current = L.marker(newLatLng, {
+      icon: guinchoIcon,
+    }).addTo(maps);
+  }, [towTravel]);
 
   useEffect(() => {
     if (props.requestStatus !== "waitingDriver") {
@@ -317,6 +381,26 @@ export function ClientSideBar(props: ClientBarProps) {
 
     return () => clearInterval(interval);
   }, [props.requestStatus]);
+
+  useEffect(() => {
+    if (!towTravel) return;
+    if (
+      towTravel.status !== TowTravelStatus.GoingToClient &&
+      towTravel.status !== TowTravelStatus.InProgress
+    ) {
+      setDots("");
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setDots((prev) => {
+        if (prev === "...") return ".";
+        return prev + ".";
+      });
+    }, 500);
+
+    return () => clearInterval(interval);
+  }, [towTravel?.status]);
 
   function handleMouseDown() {
     props.setIsResizing(true);
@@ -367,12 +451,25 @@ export function ClientSideBar(props: ClientBarProps) {
   }
 
   function handleBackToList() {
+    const map = props.mapRef.current;
+
     if (routeLayerRef.current) {
-      const map = props.mapRef.current;
       if (map) {
         map.removeLayer(routeLayerRef.current);
       }
       routeLayerRef.current = null;
+    }
+
+    if (driverMarkerRef.current && map) {
+      map.removeLayer(driverMarkerRef.current);
+      driverMarkerRef.current = null;
+    }
+
+    if (
+      towTravel?.status === TowTravelStatus.Finished ||
+      towTravel?.status === TowTravelStatus.Cancelled
+    ) {
+      props.setRoute(null);
     }
 
     clearTowTravel();
@@ -390,22 +487,22 @@ export function ClientSideBar(props: ClientBarProps) {
 
   async function handleConfirmSend() {
     if (!props.selectedGuincho) {
-      alert("Selecione um motorista primeiro.");
+      toast.error("Selecione um motorista primeiro.");
       return;
     }
 
     if (!props.userLocation || !props.destination) {
-      alert("Localização inválida.");
+      toast.error("Localização inválida.");
       return;
     }
 
     if (!vehicleType || !vehicleIssue) {
-      alert("Preencha os campos obrigatórios.");
+      toast.error("Preencha os campos obrigatórios.");
       return;
     }
 
     if (!props.distanceKmG || !props.durationMinG) {
-      alert("Dados da rota do até o usuário inválidos.");
+      toast.error("Dados da rota do até o usuário inválidos.");
       return;
     }
 
@@ -443,9 +540,22 @@ export function ClientSideBar(props: ClientBarProps) {
       setVehicleType("");
       setVehicleIssue("");
       setNotes("");
-    } catch (error) {
-      console.error(error);
-      alert("Erro ao solicitar guincho.");
+    } catch (error: any) {
+      const data = error.response?.data;
+
+      if (data?.errors) {
+        Object.values(data.errors).forEach((messages: any) => {
+          messages.forEach((message: string) => {
+            toast.error(message);
+          });
+        });
+      } else if (data?.error) {
+        toast.error(data.error);
+      } else {
+        toast.error("Erro inesperado ao solicitar guincho.");
+      }
+
+      console.log(error);
     }
   }
 
@@ -491,11 +601,11 @@ export function ClientSideBar(props: ClientBarProps) {
     driverName: string | undefined
   ) => {
     const messages: Record<TowTravelStatus, string> = {
-      [TowTravelStatus.GoingToClient]: `${driverName} está indo até o veículo.`,
+      [TowTravelStatus.GoingToClient]: `${driverName} está indo até o veículo${dots}`,
       [TowTravelStatus.ArrivedAtPickup]: `${driverName} chegou até o veículo.`,
-      [TowTravelStatus.InProgress]: `${driverName} está indo até o destino.`,
+      [TowTravelStatus.InProgress]: `${driverName} está indo até o destino${dots}`,
       [TowTravelStatus.ArrivedAtDestination]: `${driverName} chegou ao destino.`,
-      [TowTravelStatus.Finished]: `${driverName} finalizou o atendimento.`,
+      [TowTravelStatus.Finished]: `${driverName} finalizou o atendimento!`,
       [TowTravelStatus.Cancelled]: `Reboque cancelado.`,
     };
 
@@ -559,11 +669,11 @@ export function ClientSideBar(props: ClientBarProps) {
             )}
           </>
         ) : (
-          <>
+          <div className="tow-details">
             <div className="detail">
               {(!towTravel ||
-                towTravelStatus === TowTravelStatus.Cancelled ||
-                towTravelStatus === TowTravelStatus.Finished) && (
+                towTravel.status === TowTravelStatus.Cancelled ||
+                towTravel.status === TowTravelStatus.Finished) && (
                 <button className="back" onClick={handleBackToList}>
                   ⬅
                 </button>
@@ -579,11 +689,13 @@ export function ClientSideBar(props: ClientBarProps) {
                   alt={props.selectedGuincho?.motorista?.name}
                 />
 
-                <div className="detail-info">
+                <div
+                  className={`detail-info ${
+                    props.hideDriverPhoto ? "only-content" : ""
+                  }`}
+                >
                   {towTravel ? (
-                    <h3>
-                      {getStatusMessage(towTravel.status, towTravel.driverName)}
-                    </h3>
+                    <h3>{getStatusMessage(towTravel.status, driverName)}</h3>
                   ) : (
                     <h3>{props.selectedGuincho?.motorista.name}</h3>
                   )}
@@ -610,13 +722,7 @@ export function ClientSideBar(props: ClientBarProps) {
                       </div>
                     </>
                   ) : (
-                    <div className="driver-data">
-                      <span className="phone">{towTravel.driverPhone}</span>
-
-                      <div>Modelo: {towTravel.vehicleModelDriver}</div>
-                      <div>Placa: {towTravel.placaDriver}</div>
-                      <div>Cor: {towTravel.vehicleColorDriver}</div>
-                    </div>
+                    <></>
                   )}
                 </div>
               </div>
@@ -626,7 +732,7 @@ export function ClientSideBar(props: ClientBarProps) {
                     className="primary fullwidth"
                     onClick={calcularRotaComGuincho}
                   >
-                    Calcular rota com guincho
+                    Calcular rota
                   </button>
                 )}
               </div>
@@ -662,34 +768,43 @@ export function ClientSideBar(props: ClientBarProps) {
                   </>
                 )}
               {towTravel && (
-                <TowRequestData
-                  distanceKm={
-                    towTravel.distanceToPickupKm +
-                    towTravel.distanceToDestinationKm
-                  }
-                  durationMin={
-                    towTravel.timeToDestinationMin + towTravel.timeToPickupMin
-                  }
-                  priceEstimate={towTravel.finalPrice}
-                  distanceKmG={
-                    towTravel.distanceToPickupKm +
-                    towTravel.distanceToDestinationKm
-                  }
-                  durationMinG={
-                    towTravel.timeToDestinationMin + towTravel.timeToPickupMin
-                  }
-                  priceEstimateG={towTravel.finalPrice}
-                  suggestedPrice={towTravel.finalPrice}
-                  routeG={null}
-                  modelo={null}
-                  totalDistanceKm={
-                    towTravel.distanceToPickupKm +
-                    towTravel.distanceToDestinationKm
-                  }
-                />
+                <>
+                  <TowRequestData
+                    distanceKm={
+                      towTravel.distanceToPickupKm +
+                      towTravel.distanceToDestinationKm
+                    }
+                    durationMin={
+                      towTravel.timeToDestinationMin + towTravel.timeToPickupMin
+                    }
+                    priceEstimate={towTravel.finalPrice}
+                    distanceKmG={
+                      towTravel.distanceToPickupKm +
+                      towTravel.distanceToDestinationKm
+                    }
+                    durationMinG={
+                      towTravel.timeToDestinationMin + towTravel.timeToPickupMin
+                    }
+                    priceEstimateG={towTravel.finalPrice}
+                    suggestedPrice={towTravel.finalPrice}
+                    routeG={null}
+                    modelo={null}
+                    totalDistanceKm={
+                      towTravel.distanceToPickupKm +
+                      towTravel.distanceToDestinationKm
+                    }
+                  />
+
+                  <div className="tow-extra">
+                    <p>Modelo: {towTravel.truck.model}</p>
+                    <p>Placa: {towTravel.truck.plate}</p>
+                    <p>Cor: {towTravel.truck.color}</p>
+                    <p>Telefone: {towTravel.driverPhone}</p>
+                  </div>
+                </>
               )}
             </div>
-          </>
+          </div>
         )}
         <div className="resize-handle" onMouseDown={handleMouseDown} />
       </aside>

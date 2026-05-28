@@ -9,6 +9,9 @@ export interface AcceptTowRequestResponseDTO {
     estimatedArrivalTime: number;
     distanceKm: number;
 
+    notes?: string;
+    questions?: string;
+    
     distanceToPickupKm: number,
     durationMinToPickup: number,
 
@@ -23,4 +26,16 @@ export interface AcceptTowRequestResponseDTO {
   
     destinationLat: number;
     destinationLon: number;
+
+    truck: {
+      id: string;
+      model: string;
+      color: string;
+      plate: string;
+    };
+
+    vehicleModel: string;
+
+    driverPhotoUrl: string;
+    driverPhone: string;
   }
