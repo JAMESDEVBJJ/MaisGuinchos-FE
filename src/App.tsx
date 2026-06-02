@@ -6,6 +6,7 @@ import HomePage from "./pages/HomePage";
 import { TowTravelProvider } from "./contexts/TowTravelContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { TowRequestProvider } from "./contexts/providers/TowRequestsProvider";
 
 function App() {
   return (
@@ -20,31 +21,26 @@ function App() {
           borderRadius: "8px",
         }}
         style={{ zIndex: 9999 }}
-      
       />
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route
-            path="/"
-            element={
-              <TowTravelProvider>
-                <HomePage />
-              </TowTravelProvider>
-            }
-          />
-          <Route
-            path="/homepage"
-            element={
-              <TowTravelProvider>
-                <HomePage />
-              </TowTravelProvider>
-            }
-          />
+          <Route path="/" element={HomePageWithProviders()} />
+          <Route path="/homepage" element={HomePageWithProviders()} />
         </Routes>
       </BrowserRouter>
     </>
+  );
+}
+
+function HomePageWithProviders() {
+  return (
+    <TowTravelProvider>
+      <TowRequestProvider>
+        <HomePage />
+      </TowRequestProvider>
+    </TowTravelProvider>
   );
 }
 

@@ -18,6 +18,8 @@ type GetCounterOfferModalProps = {
       | "accepted"
       | "counterOfferReceived"
       | "counterOfferRejected"
+      | "rejected"
+      | "cancelled"
     >
   >;
 };

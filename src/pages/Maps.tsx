@@ -41,6 +41,7 @@ export function Maps({
   setPriceG,
   setRequestStatus,
   setRouteG,
+  setRoute,
   route,
   routeG,
   priceEstimate,
@@ -49,6 +50,8 @@ export function Maps({
   priceEstimateG,
   distanceKmG,
   durationMinG,
+  setHasActiveTowRequest,
+  hasActiveTowRequest
 }: MapProps) {
   const lastUserPosRef = useRef<[number, number] | null>(null);
 
@@ -159,7 +162,10 @@ export function Maps({
                       setRouteG(null);
                       setHoveredGuinchoId(null);
                       setRequestStatus("idle");
-
+                      if (hasActiveTowRequest) {
+                        setHasActiveTowRequest(false);
+                        setRoute(null);
+                      }
                       flyToTarget(
                         mapRef.current,
                         motorista.lat,

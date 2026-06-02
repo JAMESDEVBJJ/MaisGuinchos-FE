@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type SetStateAction } from "react";
 import "../styles/Home.css";
 import { api } from "../services/api";
 import { Maps } from "./Maps";
@@ -53,6 +53,8 @@ const HomePage = () => {
     | "accepted"
     | "counterOfferReceived"
     | "counterOfferRejected"
+    | "rejected"
+    | "cancelled"
   >("idle");
 
   const { setTowTravel, towTravel } = useTowTravel();
@@ -60,6 +62,9 @@ const HomePage = () => {
   const { routes } = useTowRoutes(towTravel);
 
   const mapRef = useRef<L.Map | null>(null);
+
+  const [hasActiveTowRequest, setHasActiveTowRequest] =
+    useState<boolean>(false);
 
   const sideBarProps: SidebarProps = {
     locationText: locationText,
@@ -94,9 +99,13 @@ const HomePage = () => {
     setRequestStatus: setRequestStatus,
     requestStatus: requestStatus,
     setGuinchos: setGuinchos,
+    hasActiveTowRequest: hasActiveTowRequest,
+    setHasActiveTowRequest: setHasActiveTowRequest,
   };
 
   const mapsProps: MapProps = {
+    hasActiveTowRequest: hasActiveTowRequest,
+    setHasActiveTowRequest: setHasActiveTowRequest,
     motoristasPosition: guinchos,
     userPosition: userLocation,
     hoveredGuinchoId: hoveredGuinchoId,
@@ -110,6 +119,7 @@ const HomePage = () => {
     setDurationMinG: setDurationMinG,
     setHoveredGuinchoId: setHoveredGuinchoId,
     setRouteG: setRouteG,
+    setRoute: setRoute,
     route: route,
     routeG: routeG,
     priceEstimate: priceEstimate,

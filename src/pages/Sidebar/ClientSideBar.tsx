@@ -17,6 +17,9 @@ import iconGuincho from "../../assets/icons/guinchoMarkup.png";
 import type { TowTravelDTO } from "../../dtos/TowTravelDTO";
 import type { TowRequestDTO } from "../../dtos/TowRequestDTO";
 import { toast } from "react-toastify";
+import { useTowRequest } from "../../contexts/TowRequestsContext";
+import type { RouteDTO } from "../../dtos/RouteDTO";
+import { mapToTowRequest } from "../../mappers/TowRequestMapper";
 
 interface CoordinateDto {
   lat: number;
@@ -93,10 +96,14 @@ type ClientBarProps = {
       | "accepted"
       | "counterOfferReceived"
       | "counterOfferRejected"
+      | "rejected"
+      | "cancelled"
     >
   >;
   requestStatus: string;
   hideDriverPhoto: boolean;
+  hasActiveTowRequest: boolean;
+  setHasActiveTowRequest: React.Dispatch<React.SetStateAction<boolean>>;
 };
 export function ClientSideBar(props: ClientBarProps) {
   const token = localStorage.getItem("token");
@@ -120,8 +127,13 @@ export function ClientSideBar(props: ClientBarProps) {
 
   const [showGetCounterModal, setShowGetCounterModal] = useState(false);
 
-  const { towTravel, setTowTravel, clearTowTravel, setTowTravelStatus } =
-    useTowTravel();
+  const {
+    towTravel,
+    setTowTravel,
+    clearTowTravel,
+    setTowTravelStatus,
+    setRoutes,
+  } = useTowTravel();
 
   const foto = towTravel
     ? towTravel.driverPhoto
@@ -137,8 +149,6 @@ export function ClientSideBar(props: ClientBarProps) {
 
   const [dots, setDots] = useState("");
 
-  const towLoaded = useRef<boolean>(false);
-
   const driverMarkerRef = useRef<L.Marker | null>(null);
   const driverName = towTravel?.driverName
     ? towTravel?.driverName
@@ -150,6 +160,107 @@ export function ClientSideBar(props: ClientBarProps) {
     iconAnchor: [18, 36],
     popupAnchor: [0, -36],
   });
+
+  const { activeTowsRequests } = useTowRequest();
+
+  useEffect(() => {
+    async function loadTowRequest() {
+      const selectedDriver = props.selectedGuincho;
+
+      if (!selectedDriver) return;
+
+      const activeTow = activeTowsRequests.find(
+        (x) => x.driverId === selectedDriver.motorista.userId
+      );
+
+      if (!activeTow) return;
+
+      const status = mapTowRequestStatus(activeTow.status);
+      props.setHasActiveTowRequest(true);
+      props.setRequestStatus(status);
+      setTowRequest(mapToTowRequest(activeTow));
+
+      const routes: {
+        toPickup: RouteDTO;
+        toDestination: RouteDTO;
+      } | null = await calculateRoutes(
+        selectedDriver.motorista.lat,
+        selectedDriver.motorista.lon,
+
+        activeTow.pickupLat,
+        activeTow.pickupLon,
+
+        activeTow.dropoffLat,
+        activeTow.dropoffLon
+      );
+
+      if (!routes) return;
+
+      setRoutes(routes);
+      props.setDistanceKmG(routes.toPickup.distanceKm);
+      props.setPriceG(routes.toPickup.priceEstimate);
+      props.setDurationMinG(routes.toPickup.durationMinutes);
+      props.setRouteG(
+        routes.toPickup.polyline.map((c) => {
+          return [c.lat, c.lon] as [number, number];
+        })
+      );
+    }
+
+    loadTowRequest();
+  }, [props.selectedGuincho, activeTowsRequests]);
+  function mapTowRequestStatus(status: number) {
+    switch (status) {
+      case 1:
+        return "waitingDriver";
+
+      case 2:
+        return "counterOfferReceived";
+
+      case 3:
+        return "counterOfferRejected";
+
+      case 4:
+        return "accepted";
+
+      case 5:
+        return "rejected";
+
+      case 6:
+        return "cancelled";
+
+      default:
+        return "cancelled";
+    }
+  }
+
+  async function calculateRoutes(
+    driverLat: number,
+    driverLon: number,
+    pickupLat: number,
+    pickupLon: number,
+    dropoffLat: number,
+    dropoffLon: number
+  ) {
+    const responseToPickup = await api.post("/maps/route/calculate", {
+      originLat: driverLat,
+      originLon: driverLon,
+      destinationLat: pickupLat,
+      destinationLon: pickupLon,
+    });
+
+    const responseToDestination = await api.post("/maps/route/calculate", {
+      originLat: pickupLat,
+      originLon: pickupLon,
+      destinationLat: dropoffLat,
+      destinationLon: dropoffLon,
+    });
+
+    return {
+      toPickup: responseToPickup.data,
+      toDestination: responseToDestination.data,
+    };
+  }
 
   useEffect(() => {
     if (!token) return;
@@ -473,6 +584,11 @@ export function ClientSideBar(props: ClientBarProps) {
     }
 
     clearTowTravel();
+    if (props.hasActiveTowRequest) {
+      props.setHasActiveTowRequest(false);
+      props.setRoute(null)
+    }
+   
     props.setPriceG(null);
     props.setDistanceKmG(null);
     props.setDurationMinG(null);
@@ -727,7 +843,7 @@ export function ClientSideBar(props: ClientBarProps) {
                 </div>
               </div>
               <div className="detail-actions">
-                {!towTravel && (
+                {!towTravel && !props.hasActiveTowRequest && (
                   <button
                     className="primary fullwidth"
                     onClick={calcularRotaComGuincho}

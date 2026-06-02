@@ -31,6 +31,8 @@ export type UserDto = {
 };
 
 export type MapProps = {
+  hasActiveTowRequest: boolean;
+  setHasActiveTowRequest: React.Dispatch<React.SetStateAction<boolean>>;
   motoristasPosition: GuinchosDto[];
   userPosition: Position | null;
   hoveredGuinchoId: string | null;
@@ -41,9 +43,19 @@ export type MapProps = {
   setDistanceKmG: React.Dispatch<React.SetStateAction<number | null>>;
   setDurationMinG: React.Dispatch<React.SetStateAction<number | null>>;
   setRouteG: React.Dispatch<React.SetStateAction<[number, number][] | null>>;
+  setRoute: React.Dispatch<React.SetStateAction<[number, number][] | null>>;
   setHoveredGuinchoId: React.Dispatch<React.SetStateAction<string | null>>;
   setRequestStatus: React.Dispatch<
-    React.SetStateAction<"idle" | "sending" | "waitingDriver" | "accepted" | "counterOfferReceived" | "counterOfferRejected">
+    React.SetStateAction<
+      | "idle"
+      | "sending"
+      | "waitingDriver"
+      | "accepted"
+      | "counterOfferReceived"
+      | "counterOfferRejected"
+      | "rejected"
+      | "cancelled"
+    >
   >;
   requestStatus: string;
   route: [number, number][] | null;
