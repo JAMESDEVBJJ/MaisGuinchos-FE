@@ -277,9 +277,8 @@ export function DriverSideBar(props: DriverSideProps) {
   const buttonCounterClass = () => {
     if (selectedTow?.counterOfferRecused) return "secondary fullwidth disabled";
 
-    return `counter-btn sendButton  fullwidth  ${
-      selectedTow?.status === 2 && "success"
-    }`;
+    return `counter-btn sendButton  fullwidth  ${selectedTow?.status === 2 && "success"
+      }`;
   };
 
   const getTravelMessage = () => {
@@ -310,52 +309,71 @@ export function DriverSideBar(props: DriverSideProps) {
 
   async function acceptTowRequest() {
     if (selectedTow) {
-      const response = await api.post(
-        `towrequests/${selectedTow.id}/accept-tow`
-      );
+      try {
+        const response = await api.post(
+          `towrequests/${selectedTow.id}/accept-tow`
+        );
 
-      const data: AcceptTowRequestResponseDTO = response.data;
+        const data: AcceptTowRequestResponseDTO = response.data;
 
-      const towTravel: TowTravelDTO = {
-        towRequestId: data.towRequestId,
-        id: data.towTravelId,
-        driverId: data.towDriverId,
-        finalPrice: data.finalPrice,
-        timeToDestinationMin: data.durationMinToDestination,
-        timeToPickupMin: data.durationMinToPickup,
-        distanceToDestinationKm: data.distanceToDestinationKm,
-        distanceToPickupKm: data.distanceToPickupKm,
-        status: 0,
-        origin: { latitude: data.driverLat, longitude: data.driverLon },
-        destination: {
-          latitude: data.destinationLat,
-          longitude: data.destinationLon,
-        },
-        pickup: { latitude: data.pickupLat, longitude: data.pickupLon },
-        truck: {
-          id: data.truck.id,
-          model: data.truck.model,
-          color: data.truck.color,
-          plate: data.truck.plate,
-        },
-        notes: data.notes,
-        questions: data.questions,
-        driverPhoto: data.driverPhotoUrl,
-        vehicleModelClient: data.vehicleModel,
-        driverPhone: data.driverPhone,
-      };
+        const towTravel: TowTravelDTO = {
+          towRequestId: data.towRequestId,
+          id: data.towTravelId,
+          driverId: data.towDriverId,
+          finalPrice: data.finalPrice,
+          timeToDestinationMin: data.durationMinToDestination,
+          timeToPickupMin: data.durationMinToPickup,
+          distanceToDestinationKm: data.distanceToDestinationKm,
+          distanceToPickupKm: data.distanceToPickupKm,
+          status: 0,
+          origin: { latitude: data.driverLat, longitude: data.driverLon },
+          destination: {
+            latitude: data.destinationLat,
+            longitude: data.destinationLon,
+          },
+          pickup: { latitude: data.pickupLat, longitude: data.pickupLon },
+          truck: {
+            id: data.truck.id,
+            model: data.truck.model,
+            color: data.truck.color,
+            plate: data.truck.plate,
+          },
+          notes: data.notes,
+          questions: data.questions,
+          driverPhoto: data.driverPhotoUrl,
+          vehicleModelClient: data.vehicleModel,
+          driverPhone: data.driverPhone,
+        };
 
-      setSelectedTow((prev) => {
-        if (!prev || prev.id !== data.towRequestId) return prev;
+        setSelectedTow((prev) => {
+          if (!prev || prev.id !== data.towRequestId) return prev;
 
-        return { ...prev, status: 4 };
-      });
+          return { ...prev, status: 4 };
+        });
 
-      setTowsReceive((prev) => prev.filter((t) => t.id !== data.towRequestId));
+        setTowsReceive((prev) => prev.filter((t) => t.id !== data.towRequestId));
 
-      setTowTravel(towTravel);
+        setTowTravel(towTravel);
 
-      calcularRotaTowTravel(data);
+        calcularRotaTowTravel(data);
+      } catch (error: any) {
+        const data = error.response?.data;
+        if (data?.errors) {
+          Object.values(data.errors).forEach((messages: any) => {
+            messages.forEach((message: string) => {
+              toast.error(message);
+            });
+          });
+        } else if (data?.error) {
+          toast.error(data.error);
+        } else {
+          toast.error("Erro ao tentar aceitar pedido de reboque.");
+        }
+
+        console.error("Erro ao tentar aceitar pedido de reboque", error);
+
+      }
+
     }
   }
 
@@ -546,24 +564,24 @@ export function DriverSideBar(props: DriverSideProps) {
             {(!towTravel ||
               towTravel?.status === TowTravelStatus.Finished ||
               towTravel?.status === TowTravelStatus.Cancelled) && (
-              <button
-                className="back"
-                onClick={() => {
-                  setSelectedTow(null);
-                  props.setRoute(null);
-                  props.setRouteG(null);
-                  setTowTravel(null);
+                <button
+                  className="back"
+                  onClick={() => {
+                    setSelectedTow(null);
+                    props.setRoute(null);
+                    props.setRouteG(null);
+                    setTowTravel(null);
 
-                  const maps = props.mapRef.current;
-                  if (driverMarkerRef.current && maps) {
-                    maps.removeLayer(driverMarkerRef.current);
-                    driverMarkerRef.current = null;
-                  }
-                }}
-              >
-                ⬅
-              </button>
-            )}
+                    const maps = props.mapRef.current;
+                    if (driverMarkerRef.current && maps) {
+                      maps.removeLayer(driverMarkerRef.current);
+                      driverMarkerRef.current = null;
+                    }
+                  }}
+                >
+                  ⬅
+                </button>
+              )}
 
             <h3 className="solicith3">{getTravelMessage()}</h3>
 
@@ -648,14 +666,14 @@ export function DriverSideBar(props: DriverSideProps) {
 
                   {towTravel.status ===
                     TowTravelStatus.ArrivedAtDestination && (
-                    <button
-                      disabled={loading}
-                      className={`accept-btn secondary contact-enabled`}
-                      onClick={() => finishTravel(towTravel)}
-                    >
-                      Finalizar serviço
-                    </button>
-                  )}
+                      <button
+                        disabled={loading}
+                        className={`accept-btn secondary contact-enabled`}
+                        onClick={() => finishTravel(towTravel)}
+                      >
+                        Finalizar serviço
+                      </button>
+                    )}
                 </>
               )}
               {!towTravel && selectedTow !== null && (
@@ -682,18 +700,17 @@ export function DriverSideBar(props: DriverSideProps) {
 
                   {(selectedTow.status !== 2 ||
                     selectedTow.counterOfferRecused) && (
-                    <button
-                      className={`accept-btn secondary contact-enabled margin-top ${
-                        selectedTow!.status === 4 && "accepted"
-                      }`}
-                      onClick={() => acceptTowRequest()}
-                      disabled={selectedTow.status === 4}
-                    >
-                      {selectedTow.status === 4
-                        ? "Solicitação aceita!"
-                        : "Aceitar"}
-                    </button>
-                  )}
+                      <button
+                        className={`accept-btn secondary contact-enabled margin-top ${selectedTow!.status === 4 && "accepted"
+                          }`}
+                        onClick={() => acceptTowRequest()}
+                        disabled={selectedTow.status === 4}
+                      >
+                        {selectedTow.status === 4
+                          ? "Solicitação aceita!"
+                          : "Aceitar"}
+                      </button>
+                    )}
 
                   {selectedTow.status != 4 && (
                     <button
@@ -707,12 +724,12 @@ export function DriverSideBar(props: DriverSideProps) {
                       {selectedTow.counterOfferRecused
                         ? "Countra proposta recusada!"
                         : selectedTow.status !== 2
-                        ? "Enviar contraproposta"
-                        : selectedTow.status === 2
-                        ? "Contraproposta enviada!"
-                        : selectedTow.status === 4
-                        ? "Contra proposta aceita!"
-                        : ""}
+                          ? "Enviar contraproposta"
+                          : selectedTow.status === 2
+                            ? "Contraproposta enviada!"
+                            : selectedTow.status === 4
+                              ? "Contra proposta aceita!"
+                              : ""}
                     </button>
                   )}
                 </>

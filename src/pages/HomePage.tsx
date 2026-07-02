@@ -16,7 +16,7 @@ import type { TowTravelDTO } from "../dtos/TowTravelDTO";
 import type { TowTravelResponseDTO } from "../dtos/towTravel/TowTravelResponseDTO";
 import { useTowRoutes } from "../utils/hooks/useTowRoutes";
 import { TowTravelProgress } from "./TowTravelProgress";
-import { toast } from "react-toastify/unstyled";
+import { toast } from "react-toastify";
 
 const HomePage = () => {
   const [priceEstimateG, setPriceG] = useState<number | null>(0);
@@ -169,9 +169,8 @@ const HomePage = () => {
   useEffect(() => {
     const loadTow = async () => {
       const response = await api.get("/towTravel/pending");
-
+      
       const towPending: TowTravelResponseDTO | null = response.data;
-
       if (towPending) {
         const towTravel: TowTravelDTO = {
           towRequestId: towPending.towRequestId,
