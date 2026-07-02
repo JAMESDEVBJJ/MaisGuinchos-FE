@@ -1017,3 +1017,21 @@ button.waiting:hover {
   margin-top: -60px;
   margin-bottom: 30px;
 }
+
+
+.settings-btn {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  background: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

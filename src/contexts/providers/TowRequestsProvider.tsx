@@ -14,7 +14,6 @@ export function TowRequestProvider({
     async function loadActiveTows() {
       try {
         const response = await api.get("/towRequests/my-actives");
-        console.dir(response.data)
         setActiveTowsRequests(response.data);
       } catch (error) {
         console.error(error);

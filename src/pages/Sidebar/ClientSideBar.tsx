@@ -20,6 +20,9 @@ import { toast } from "react-toastify";
 import { useTowRequest } from "../../contexts/TowRequestsContext";
 import type { RouteDTO } from "../../dtos/RouteDTO";
 import { mapToTowRequest } from "../../mappers/TowRequestMapper";
+import type { TowRequestReceiveDto } from "../../dtos/TowRequestReceiveDTO";
+import { SettingsButton } from "./SettingsButton";
+
 
 interface CoordinateDto {
   lat: number;
@@ -125,6 +128,8 @@ export function ClientSideBar(props: ClientBarProps) {
 
   const [towRequest, setTowRequest] = useState<TowRequestDTO | null>(null);
 
+  const { setActiveTowsRequests } = useTowRequest();
+
   const [showGetCounterModal, setShowGetCounterModal] = useState(false);
 
   const {
@@ -166,7 +171,6 @@ export function ClientSideBar(props: ClientBarProps) {
   useEffect(() => {
     async function loadTowRequest() {
       const selectedDriver = props.selectedGuincho;
-
       if (!selectedDriver) return;
 
       const activeTow = activeTowsRequests.find(
@@ -174,7 +178,6 @@ export function ClientSideBar(props: ClientBarProps) {
       );
 
       if (!activeTow) return;
-
       const status = mapTowRequestStatus(activeTow.status);
       props.setHasActiveTowRequest(true);
       props.setRequestStatus(status);
@@ -193,7 +196,6 @@ export function ClientSideBar(props: ClientBarProps) {
         activeTow.dropoffLat,
         activeTow.dropoffLon
       );
-
       if (!routes) return;
 
       setRoutes(routes);
@@ -296,6 +298,8 @@ export function ClientSideBar(props: ClientBarProps) {
     connection.on("TowRequestAccepted", (data: AcceptTowRequestResponseDTO) => {
       props.setRequestStatus("accepted");
 
+      setActiveTowsRequests((prev) => prev.filter((x) => x.id !== data.towRequestId));
+
       const towTravel: TowTravelDTO = {
         towRequestId: data.towRequestId,
         id: data.towTravelId,
@@ -324,8 +328,6 @@ export function ClientSideBar(props: ClientBarProps) {
         driverPhoto: data.driverPhotoUrl,
         driverPhone: data.driverPhone,
       };
-
-      console.dir(towTravel);
 
       setTowTravel(towTravel);
       setTowTravelStatus(TowTravelStatus.GoingToClient);
@@ -588,7 +590,7 @@ export function ClientSideBar(props: ClientBarProps) {
       props.setHasActiveTowRequest(false);
       props.setRoute(null)
     }
-   
+
     props.setPriceG(null);
     props.setDistanceKmG(null);
     props.setDurationMinG(null);
@@ -647,12 +649,11 @@ export function ClientSideBar(props: ClientBarProps) {
     };
 
     try {
-      await api.post("/towrequests", towRequestDto);
-
-      props.setRequestStatus("waitingDriver");
+      const response = await api.post("/towrequests", towRequestDto);
+      const data = response.data as TowRequestReceiveDto;
+      setActiveTowsRequests(prev => [...prev, data]);
 
       setShowModal(false);
-
       setVehicleType("");
       setVehicleIssue("");
       setNotes("");
@@ -670,8 +671,6 @@ export function ClientSideBar(props: ClientBarProps) {
       } else {
         toast.error("Erro inesperado ao solicitar guincho.");
       }
-
-      console.log(error);
     }
   }
 
@@ -731,38 +730,39 @@ export function ClientSideBar(props: ClientBarProps) {
   return (
     <>
       <aside className="sidebar" style={{ width: props.sidebarW }}>
+        <SettingsButton />
         {props.selectedGuincho == null && !towTravel ? (
           <>
-            {props.selectedGuincho == null && (
-              <div className="sidebar-1">
-                <div className="search">
-                  <InputLocation
-                    locationText={props.locationText}
-                    setLocationText={props.setLocationText}
-                    setRouteG={props.setRouteG}
-                    setUserLocation={props.setUserLocation}
-                  />
-                  <div className="input-wrapper">
-                    <input
-                      type="text"
-                      placeholder="Setar destino"
-                      value={props.destinationText}
-                      onChange={(e) => props.setDestinationText(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          props.handleUpdateDestination();
-                        }
-                      }}
-                    />
-                    <img src={iconDestination} className="input-icon" />
-                  </div>
 
-                  <button onClick={props.buscarGuinchos}>
-                    Buscar guinchos
-                  </button>
+            <div className="sidebar-1">
+              <div className="search">
+                <InputLocation
+                  locationText={props.locationText}
+                  setLocationText={props.setLocationText}
+                  setRouteG={props.setRouteG}
+                  setUserLocation={props.setUserLocation}
+                />
+                <div className="input-wrapper">
+                  <input
+                    type="text"
+                    placeholder="Setar destino"
+                    value={props.destinationText}
+                    onChange={(e) => props.setDestinationText(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        props.handleUpdateDestination();
+                      }
+                    }}
+                  />
+                  <img src={iconDestination} className="input-icon" />
                 </div>
+
+                <button onClick={props.buscarGuinchos}>
+                  Buscar guinchos
+                </button>
               </div>
-            )}
+            </div>
+
             {props.loading && (
               <>
                 <h1>LOADING...</h1>
@@ -790,15 +790,14 @@ export function ClientSideBar(props: ClientBarProps) {
               {(!towTravel ||
                 towTravel.status === TowTravelStatus.Cancelled ||
                 towTravel.status === TowTravelStatus.Finished) && (
-                <button className="back" onClick={handleBackToList}>
-                  ⬅
-                </button>
-              )}
+                  <button className="back" onClick={handleBackToList}>
+                    ⬅
+                  </button>
+                )}
               <div className="detail-top">
                 <img
-                  className={`detail-photo ${
-                    isDefault ? "default-photo" : ""
-                  } ${props.hideDriverPhoto ? "hide" : ""}`}
+                  className={`detail-photo ${isDefault ? "default-photo" : ""
+                    } ${props.hideDriverPhoto ? "hide" : ""}`}
                   src={
                     isDefault ? defaultUserPng : `https://localhost:7120${foto}`
                   }
@@ -806,9 +805,8 @@ export function ClientSideBar(props: ClientBarProps) {
                 />
 
                 <div
-                  className={`detail-info ${
-                    props.hideDriverPhoto ? "only-content" : ""
-                  }`}
+                  className={`detail-info ${props.hideDriverPhoto ? "only-content" : ""
+                    }`}
                 >
                   {towTravel ? (
                     <h3>{getStatusMessage(towTravel.status, driverName)}</h3>
@@ -960,26 +958,25 @@ export function ClientSideBar(props: ClientBarProps) {
             </div>
 
             <button
-              className={`secondary fullwidth ${
-                props.requestStatus === "waitingDriver"
-                  ? "waiting"
-                  : props.routeG && props.route
+              className={`secondary fullwidth ${props.requestStatus === "waitingDriver"
+                ? "waiting"
+                : props.routeG && props.route
                   ? "contact-enabled"
                   : ""
-              }`}
+                }`}
               disabled={
                 serviceIsDisabled || props.requestStatus === "waitingDriver"
               }
               onClick={handleConfirmSend}
             >
               {props.requestStatus === "waitingDriver" ||
-              props.requestStatus === "counterOfferRejected"
+                props.requestStatus === "counterOfferRejected"
                 ? `Aguardando motorista${dots}`
                 : props.requestStatus === "counterOfferReceived"
-                ? "Contraproposta recebida!"
-                : props.requestStatus === "sending"
-                ? "Enviando..."
-                : "Solicitar Guincho"}
+                  ? "Contraproposta recebida!"
+                  : props.requestStatus === "sending"
+                    ? "Enviando..."
+                    : "Solicitar Guincho"}
             </button>
           </div>
         </div>

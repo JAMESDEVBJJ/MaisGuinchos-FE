@@ -89,12 +89,8 @@ export default function ReceiveCounterTowModal({
 
       const { status } = response.data;
 
-      console.log(status);
-
       props.setShowGetCounterModal(false);
       props.setRequestStatus("counterOfferRejected");
-
-      console.log("envio e termino");
     } catch (error) {
       const message = "Erro ao rejeitar contraproposta.";
 

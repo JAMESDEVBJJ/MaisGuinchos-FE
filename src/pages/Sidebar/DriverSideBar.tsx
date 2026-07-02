@@ -15,6 +15,7 @@ import type { TowTravelDTO } from "../../dtos/TowTravelDTO";
 import { RouteType, type RouteRealtimeDTO } from "../../dtos/RouteRealtimeDTO";
 import iconGuincho from "../../assets/icons/guinchoMarkup.png";
 import { toast } from "react-toastify";
+import{ SettingsButton } from "./SettingsButton";
 
 type DriverSideProps = {
   locationText: string;
@@ -121,7 +122,7 @@ export function DriverSideBar(props: DriverSideProps) {
     async function startConnection() {
       try {
         await connection.start();
-        console.log("Conectado ao TowHub");
+        console.log("Conectado ao TowHub como driver");
       } catch (err) {
         console.error("Erro ao conectar:", err);
       }
@@ -486,6 +487,7 @@ export function DriverSideBar(props: DriverSideProps) {
         {!selectedTow && !towTravel && (
           <>
             <div className="sidebar-header">
+              <SettingsButton />
               <span className="status-label">
                 {isAvailable ? "Disponível" : "Indisponível"}
               </span>
