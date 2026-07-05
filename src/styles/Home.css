@@ -226,7 +226,7 @@ input {
   display: flex;
   flex-direction: column;
   /*gap: 5px;*/
-  background-color: #1b2832;
+  background-color: var(--bg-card);
 
   align-items: center;
   height: 55vh;
@@ -258,7 +258,7 @@ input {
   margin: 14px auto;
   width: 90%;
   border-radius: 6px;
-  background-color: #0f1a21;
+  background-color: var(--bg-sidebar);
   cursor: pointer;
   padding: 12px 14px;
   display: flex;

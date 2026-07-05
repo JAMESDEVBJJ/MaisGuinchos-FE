@@ -3,6 +3,10 @@ import "../../styles/HistoryPage.css";
 import ActiveRequestsGrid from "./HistoryGrids/Actives";
 import { useAuth } from "../../contexts/AuthContext";
 import { ChevronDown } from "lucide-react";
+import RequestsGridRow from "./HistoryGrids/RequestsGridRow";
+import { api } from "../../services/api";
+import type { TowRequestHistoryDto } from "../../dtos/TowRequestHistoryDTO";
+import RequestsGrid from "./HistoryGrids/RequestsGrid";
 
 function History() {
   const [openedSections, setOpenedSections] = useState({
@@ -11,13 +15,41 @@ function History() {
     travels: false,
   });
 
-  const toggleSection = (section: keyof typeof openedSections) => {
+  const { user } = useAuth();
+
+  const [historyRequests, setHistoryRequests] = useState<
+    TowRequestHistoryDto[]
+  >([]);
+
+  async function loadTowRequests() {
+    if (!user) return;
+    try {
+      const response = await api.get(`/towRequests/${user!.id}/all`);
+
+      const data: TowRequestHistoryDto[] = response.data;
+
+      console.dir(data);
+
+      setHistoryRequests(data);
+    } catch (error) {
+      console.error(error);
+      setHistoryRequests([]);
+    }
+  }
+
+  const toggleSection = async (section: "requests" | "travels" | "actives") => {
+    const willOpen = !openedSections[section];
+
     setOpenedSections((prev) => ({
       ...prev,
-      [section]: !prev[section],
+      [section]: willOpen,
     }));
+
+    if (section === "requests" && willOpen && historyRequests.length === 0) {
+      await loadTowRequests();
+    }
   };
-  const { user } = useAuth();
+
   return (
     <div className="history-page">
       {user?.isClient && (
@@ -60,9 +92,7 @@ function History() {
         <div
           className={`history-content ${openedSections.requests ? "open" : ""}`}
         >
-          <div className="history-grid-placeholder">
-            Aqui ficará o histórico de solicitações
-          </div>
+          <RequestsGrid requests={historyRequests} />
         </div>
       </div>
 
