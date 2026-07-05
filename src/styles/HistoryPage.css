@@ -1,0 +1,114 @@
+.history-page {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.history-section {
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.history-header {
+  width: 100%;
+  padding: 18px 22px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background: transparent;
+  border: none;
+
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.history-header:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.arrow {
+  transition: transform 0.25s ease;
+}
+
+.arrow.open {
+  transform: rotate(180deg);
+}
+
+.history-content {
+  max-height: 0;
+  overflow: hidden;
+
+  opacity: 0;
+
+  transition: max-height 0.2s ease, opacity 0.25s ease;
+}
+
+.history-content.open {
+  max-height: 600px;
+  opacity: 1;
+}
+
+.history-grid-placeholder {
+  padding: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+}
+.history-grid {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.history-grid-header,
+.history-grid-row {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr;
+  align-items: center;
+}
+
+.history-grid-header {
+  padding: 0 18px 10px;
+
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.history-grid-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.history-grid-row {
+  padding: 16px 18px;
+
+  background: rgba(0, 0, 0, 0.22);
+
+  border-radius: 10px;
+
+  transition: 0.2s;
+}
+
+.history-grid-row:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.history-grid-row span {
+  color: white;
+  font-size: 0.95rem;
+}
+
+.history-grid-empty {
+  padding: 30px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+}
