@@ -1,11 +1,19 @@
 import { useState } from "react";
-import  "../styles/SettingsPage.css";
+import "../styles/SettingsPage.css";
 import Perfil from "./SettingsComponents/Profile";
 import Notifications from "./SettingsComponents/Notifications";
 import History from "./SettingsComponents/History";
+import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function SettingsPage() {
   const [selectedTab, setSelectedTab] = useState("historico");
+
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    navigate("/homepage");
+  };
 
   const renderContent = () => {
     switch (selectedTab) {
@@ -23,7 +31,12 @@ function SettingsPage() {
   return (
     <div className="settings-page">
       <aside className="sidebar-settings">
-        <h2>Menu</h2>
+        <div className="sidebar-settings-header">
+          <button className="back-button" onClick={handleBack}>
+            <ArrowLeft size={22} />
+          </button>
+          <h2>Menu</h2>
+        </div>
 
         <button
           className={selectedTab === "perfil" ? "active" : ""}
