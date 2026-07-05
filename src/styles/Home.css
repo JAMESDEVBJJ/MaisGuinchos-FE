@@ -1,3 +1,29 @@
+:root {
+  /* Fundo */
+  --bg-main: #081625;
+  --bg-sidebar: #0b1b2d;
+  --bg-surface: #122437;
+  --bg-card: #162a3f;
+  --bg-hover: #1b3550;
+
+  /* Bordas */
+  --border: #27405a;
+
+  /* Texto */
+  --text-primary: #f5f7fa;
+  --text-secondary: #aab7c7;
+  --text-muted: #6f8398;
+
+  /* Cor principal */
+  --primary: #ff8b2b;
+  --primary-hover: #ffa34a;
+  --primary-dark: #e57211;
+
+  /* Estados */
+  --success: #39d98a;
+  --danger: #ff5d5d;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -29,7 +55,8 @@ body {
   padding: 16px;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(180deg, #1f2b38, #1a2430);
+  /*background: linear-gradient(180deg, #1f2b38, #1a2430);*/
+  background: linear-gradient(90deg, #0d1b2a, #10253b);
   height: 100%;
 
   position: relative;
@@ -98,15 +125,24 @@ body {
 
 input:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgb(234, 84, 3), 0 4px 10px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 0 2px rgb(234, 84, 3, 0.7), 0 4px 10px rgba(0, 0, 0, 0.3);
+  border-color:var(--primary);
 }
-
 input {
   padding: 12px;
   border-radius: 8px;
   border: none;
   background: #1b2832;
   color: #fff;
+
+
+  background:var(--bg-surface);
+
+  border:1px solid var(--border);
+
+  color:var(--text-primary);
+
+  transition:.2s;
 }
 
 .search input::placeholder {
@@ -422,7 +458,7 @@ input {
 }
 
 .sidebar {
-  background: #101924;
+  background: var(--bg-sidebar);
   color: #fff;
   height: 100vh;
   overflow: auto;
@@ -435,7 +471,7 @@ input {
   height: 100vh;
   min-width: 280px;
   max-width: 600px;
-  background-color: #0f1a21;
+  background: var(--bg-sidebar);
   overflow-y: auto;
   overflow-x: visible;
 }
@@ -487,7 +523,7 @@ input {
   gap: 10px;
   padding: 8px;
   align-items: center;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--bg-card);
   border-radius: 8px;
   cursor: pointer;
 }
@@ -875,8 +911,15 @@ button.waiting:hover {
   padding: 8px 10px;
   border-radius: 6px;
   border: 1px solid #2f3e4e;
-  background-color: #22313f;
-  color: white;
+
+  background: var(--bg-surface);
+
+  border: 1px solid var(--border);
+
+  color: var(--text-primary);
+
+  transition: 0.2s;
+
   font-size: 0.9rem;
   outline: none;
 }
@@ -1017,7 +1060,6 @@ button.waiting:hover {
   margin-top: -60px;
   margin-bottom: 30px;
 }
-
 
 .settings-btn {
   position: absolute;

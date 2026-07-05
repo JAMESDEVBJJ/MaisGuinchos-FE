@@ -1,7 +1,8 @@
-import { ChevronDown } from "lucide-react";
 import { useState } from "react";
-import "../../styles/HistoryPage.css"
+import "../../styles/HistoryPage.css";
 import ActiveRequestsGrid from "./HistoryGrids/Actives";
+import { useAuth } from "../../contexts/AuthContext";
+import { ChevronDown } from "lucide-react";
 
 function History() {
   const [openedSections, setOpenedSections] = useState({
@@ -16,30 +17,32 @@ function History() {
       [section]: !prev[section],
     }));
   };
-
+  const { user } = useAuth();
   return (
     <div className="history-page">
-      <div className="history-section">
-        <button
-          className="history-header"
-          onClick={() => toggleSection("actives")}
-        >
-          <span>Solicitações ativas</span>
+      {user?.isClient && (
+        <div className="history-section">
+          <button
+            className="history-header"
+            onClick={() => toggleSection("actives")}
+          >
+            <span>Solicitações ativas</span>
 
-          <ChevronDown
-            size={20}
-            className={openedSections.actives ? "arrow open" : "arrow"}
-          />
-        </button>
+            <ChevronDown
+              size={20}
+              className={openedSections.actives ? "arrow open" : "arrow"}
+            />
+          </button>
 
-        <div
-          className={`history-content ${
-            openedSections.actives ? "open" : ""
-          }`}
-        >
-          <ActiveRequestsGrid></ActiveRequestsGrid>
+          <div
+            className={`history-content ${
+              openedSections.actives ? "open" : ""
+            }`}
+          >
+            <ActiveRequestsGrid></ActiveRequestsGrid>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="history-section">
         <button
@@ -55,9 +58,7 @@ function History() {
         </button>
 
         <div
-          className={`history-content ${
-            openedSections.requests ? "open" : ""
-          }`}
+          className={`history-content ${openedSections.requests ? "open" : ""}`}
         >
           <div className="history-grid-placeholder">
             Aqui ficará o histórico de solicitações
@@ -79,9 +80,7 @@ function History() {
         </button>
 
         <div
-          className={`history-content ${
-            openedSections.travels ? "open" : ""
-          }`}
+          className={`history-content ${openedSections.travels ? "open" : ""}`}
         >
           <div className="history-grid-placeholder">
             Aqui ficará o histórico de corridas
