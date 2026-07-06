@@ -212,3 +212,10 @@
   font-size: 0.95rem;
   line-height: 1.45;
 }
+
+.status-history-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}

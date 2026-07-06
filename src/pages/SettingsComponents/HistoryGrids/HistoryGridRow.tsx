@@ -1,5 +1,11 @@
+import type { LucideIcon } from "lucide-react";
+
 type Props = {
-  status: string;
+  status: {
+    label: string;
+    icon: LucideIcon;
+    color: string;
+  };
   driver: string;
   distance: string;
   time: string;
@@ -7,10 +13,14 @@ type Props = {
 };
 
 function HistoryGridRow({ status, driver, distance, time, price }: Props) {
+  const Icon = status.icon;
   return (
     <div className="history-grid-item">
       <div className="history-grid-row-header">
-        <span>{status}</span>
+        <td className="status-history-row">
+          <Icon size={16} color={status.color} strokeWidth={2.3} />
+          <span>{status.label}</span>
+        </td>
         <span>{driver}</span>
         <span>{distance}</span>
         <span>{time}</span>

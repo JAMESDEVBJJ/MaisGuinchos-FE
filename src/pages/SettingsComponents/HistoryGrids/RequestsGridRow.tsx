@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { TowRequestHistoryDto } from "../../../dtos/TowRequestHistoryDTO";
+import { getTowRequestStatusInfo } from "../../../utils/towsRequestsUtils";
 
 type Props = {
   request: TowRequestHistoryDto;
@@ -8,13 +9,21 @@ type Props = {
 function RequestsGridRow({ request }: Props) {
   const [expanded, setExpanded] = useState(false);
 
+  const status = getTowRequestStatusInfo(request.status);
+  const Icon = status.icon;
+
   return (
     <div className="history-grid-item">
       <div
         className="history-grid-row-header"
         onClick={() => setExpanded(!expanded)}
       >
-        <span>{request.status}</span>
+        
+        <td className="status-history-row">
+          <Icon size={16} color={status.color} strokeWidth={2.3} />
+          <span>{status.label}</span>
+        </td>
+
         <span>{request.driverName}</span>
         <span>{request.totalDistanceKm.toFixed(2)} Km</span>
         <span>{request.durationMinutes.toFixed(2)} min</span>

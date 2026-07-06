@@ -1,4 +1,5 @@
 import { useTowRequest } from "../../../contexts/TowRequestsContext";
+import { getTowRequestStatusInfo } from "../../../utils/towsRequestsUtils";
 import HistoryGridRow from "./HistoryGridRow";
 
 function ActiveRequestsGrid() {
@@ -18,7 +19,7 @@ function ActiveRequestsGrid() {
         {activeTowsRequests.map((tow) => (
           <HistoryGridRow
             key={tow.id}
-            status={getTowRequestStatus(tow.status)}
+            status={getTowRequestStatusInfo(tow.status)}
             driver={tow.driverName}
             distance={`${tow.totalDistanceKm.toFixed(2)} km`}
             time={`${tow.durationMinutes.toFixed(2)} min`}
