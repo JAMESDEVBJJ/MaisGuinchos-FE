@@ -20,7 +20,7 @@ function RequestsGridRow({ request }: Props) {
         <span>{request.durationMinutes.toFixed(2)} min</span>
         <span>{request.suggestedPrice?.toFixed(2)} R$</span>
 
-        <span className={`arrow ${expanded ? "open" : ""}`}>▼</span>
+        <span className={`arrow orange ${expanded ? "open" : ""}`}>▼</span>
       </div>
 
       <div className={`history-grid-row-details ${expanded ? "open" : ""}`}>

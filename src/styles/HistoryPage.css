@@ -151,6 +151,10 @@
   font-size: 0.95rem;
 }
 
+.history-grid-row-header .orange {
+  color: rgb(255, 145, 0);
+}
+
 .history-grid-row-header .arrow {
   display: flex;
   justify-content: center;
