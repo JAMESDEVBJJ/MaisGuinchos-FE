@@ -17,9 +17,9 @@ function HistoryGridRow({ status, driver, distance, time, price }: Props) {
   return (
     <div className="history-grid-item">
       <div className="history-grid-row-header">
-        <td className="status-history-row">
-          <Icon size={16} color={status.color} strokeWidth={2.3} />
+        <td className="status-history-row">  
           <span>{status.label}</span>
+          <Icon size={16} color={status.color} strokeWidth={2.3} />
         </td>
         <span>{driver}</span>
         <span>{distance}</span>

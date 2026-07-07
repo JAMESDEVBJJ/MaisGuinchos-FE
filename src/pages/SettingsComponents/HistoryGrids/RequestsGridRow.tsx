@@ -18,10 +18,9 @@ function RequestsGridRow({ request }: Props) {
         className="history-grid-row-header"
         onClick={() => setExpanded(!expanded)}
       >
-        
         <td className="status-history-row">
-          <Icon size={16} color={status.color} strokeWidth={2.3} />
           <span>{status.label}</span>
+          <Icon size={16} color={status.color} strokeWidth={2.3} />
         </td>
 
         <span>{request.driverName}</span>

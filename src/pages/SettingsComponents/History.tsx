@@ -3,10 +3,11 @@ import "../../styles/HistoryPage.css";
 import ActiveRequestsGrid from "./HistoryGrids/Actives";
 import { useAuth } from "../../contexts/AuthContext";
 import { ChevronDown } from "lucide-react";
-import RequestsGridRow from "./HistoryGrids/RequestsGridRow";
 import { api } from "../../services/api";
 import type { TowRequestHistoryDto } from "../../dtos/TowRequestHistoryDTO";
 import RequestsGrid from "./HistoryGrids/RequestsGrid";
+import TravelsGrid from "./HistoryGrids/TravelsGrid";
+import type { TowTravelHistoryResponseDTO } from "../../dtos/towTravel/TowTravelHistoryResponseDTO";
 
 function History() {
   const [openedSections, setOpenedSections] = useState({
@@ -19,6 +20,10 @@ function History() {
 
   const [historyRequests, setHistoryRequests] = useState<
     TowRequestHistoryDto[]
+  >([]);
+
+  const [historyTravels, setHistoryTravels] = useState<
+    TowTravelHistoryResponseDTO[]
   >([]);
 
   async function loadTowRequests() {
@@ -37,6 +42,22 @@ function History() {
     }
   }
 
+  async function loadTowTravels() {
+    if (!user) return;
+    try {
+      const response = await api.get(`/TowTravel/${user!.id}/all`);
+
+      const data: TowTravelHistoryResponseDTO[] = response.data;
+
+      console.dir(data);
+
+      setHistoryTravels(data);
+    } catch (error) {
+      console.error(error);
+      setHistoryTravels([]);
+    }
+  }
+
   const toggleSection = async (section: "requests" | "travels" | "actives") => {
     const willOpen = !openedSections[section];
 
@@ -47,6 +68,10 @@ function History() {
 
     if (section === "requests" && willOpen && historyRequests.length === 0) {
       await loadTowRequests();
+    }
+
+    if (section === "travels" && willOpen && historyTravels.length === 0) {
+      await loadTowTravels();
     }
   };
 
@@ -110,11 +135,9 @@ function History() {
         </button>
 
         <div
-          className={`history-content ${openedSections.travels ? "open" : ""}`}
+          className={`history-content ${openedSections.requests ? "open" : ""}`}
         >
-          <div className="history-grid-placeholder">
-            Aqui ficará o histórico de corridas
-          </div>
+          <TravelsGrid travels={historyTravels} />
         </div>
       </div>
     </div>
