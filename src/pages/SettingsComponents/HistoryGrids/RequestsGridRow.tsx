@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { TowRequestHistoryDto } from "../../../dtos/TowRequestHistoryDTO";
 import { getTowRequestStatusInfo } from "../../../utils/towsRequestsUtils";
+import { formatDate, formatMinutes } from "../../../utils/formatMin";
 
 type Props = {
   request: TowRequestHistoryDto;
@@ -24,17 +25,31 @@ function RequestsGridRow({ request }: Props) {
         </td>
 
         <span>{request.driverName}</span>
-        <span>{request.totalDistanceKm.toFixed(2)} Km</span>
-        <span>{request.durationMinutes.toFixed(2)} min</span>
-        <span>{request.suggestedPrice?.toFixed(2)} R$</span>
+        <span>
+          {new Intl.NumberFormat("pt-BR", {
+            minimumFractionDigits: 1,
+            maximumFractionDigits: 2,
+          }).format(request.totalDistanceKm)}{" "}
+          Km
+        </span>
+        <span>{formatMinutes(request.durationMinutes)} </span>
+        <span>
+          {" "}
+          {new Intl.NumberFormat("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          }).format(request.suggestedPrice)}
+        </span>
 
-        <span className={`arrow orange ${expanded ? "open" : ""}`}>▼</span>
+        <span className={`arrow ${expanded ? "open" : ""}`}>▼</span>
       </div>
 
       <div className={`history-grid-row-details ${expanded ? "open" : ""}`}>
         <div>
           <strong>Solicitado em</strong>
-          <span>{request.createdAt}</span>
+          <span>
+            {formatDate(request.createdAt)}
+          </span>
         </div>
 
         <div>

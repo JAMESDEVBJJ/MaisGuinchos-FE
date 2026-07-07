@@ -126,7 +126,7 @@ body {
 input:focus {
   outline: none;
   box-shadow: 0 0 0 2px rgb(234, 84, 3, 0.7), 0 4px 10px rgba(0, 0, 0, 0.3);
-  border-color:var(--primary);
+  border-color: var(--primary);
 }
 input {
   padding: 12px;
@@ -135,14 +135,13 @@ input {
   background: #1b2832;
   color: #fff;
 
+  background: var(--bg-surface);
 
-  background:var(--bg-surface);
+  border: 1px solid var(--border);
 
-  border:1px solid var(--border);
+  color: var(--text-primary);
 
-  color:var(--text-primary);
-
-  transition:.2s;
+  transition: 0.2s;
 }
 
 .search input::placeholder {

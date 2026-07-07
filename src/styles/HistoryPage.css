@@ -27,7 +27,7 @@
   border: none;
 
   color: white;
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 600;
 
   cursor: pointer;
@@ -38,27 +38,56 @@
   background: rgba(255, 255, 255, 0.02);
 }
 
+.history-header:hover .arrow {
+  color: #f59e0b;
+}
+
 .arrow {
-  transition: transform 0.25s ease;
+  color: #777;
+  transition: transform 0.25s ease, color 0.25s ease;
+  cursor: pointer;
+}
+
+.history-grid-row-header:hover .arrow {
+  color: #f59e0b;
 }
 
 .arrow.open {
+  color: #f59e0b;
   transform: rotate(180deg);
 }
 
 .history-content {
   max-height: 0;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: hidden;
   opacity: 0;
 
   transition: max-height 0.25s ease, opacity 0.25s ease;
 }
 
 .history-content.open {
-  max-height: 700px;
+  max-height: 350px;
+  overflow-y: auto;
   opacity: 1;
 }
 
+.history-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.history-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.history-content::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 999px;
+}
+
+.history-content::-webkit-scrollbar-thumb:hover {
+  background: #f59e0b;
+}
 /* ===========================
      Placeholder
   =========================== */

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { TowTravelHistoryResponseDTO } from "../../../dtos/towTravel/TowTravelHistoryResponseDTO";
 import { getTowTravelStatusInfo } from "../../../utils/towTravelUtils";
+import { formatDate } from "../../../utils/formatMin";
 
 type Props = {
   travel: TowTravelHistoryResponseDTO;
@@ -28,7 +29,7 @@ function TravelsGridRow({ travel }: Props) {
         <span>{} min</span>
         <span>{} R$</span>
 
-        <span className={`arrow orange ${expanded ? "open" : ""}`}>▼</span>
+        <span className={`arrow ${expanded ? "open" : ""}`}>▼</span>
       </div>
 
       <div className={`history-grid-row-details ${expanded ? "open" : ""}`}>
@@ -56,12 +57,12 @@ function TravelsGridRow({ travel }: Props) {
 
         <div>
           <strong>Iniciada em</strong>
-          <span>{travel.startedAt ?? "-"}</span>
+          <span>{travel.startedAt ? formatDate(travel.startedAt) : "-"}</span>
         </div>
 
         <div>
           <strong>Finalizada em</strong>
-          <span>{travel.endedAt ?? "-"}</span>
+          <span>{travel.endedAt ? formatDate(travel.endedAt) : "-"}</span>
         </div>
 
         <div>

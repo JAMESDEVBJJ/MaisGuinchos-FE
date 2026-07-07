@@ -544,7 +544,7 @@ export function DriverSideBar(props: DriverSideProps) {
                           <div className="left">
                             <span className="client-name">{firstName}</span>
                             <span className="distance">
-                              {t.totalDistanceKm}km
+                              {t.totalDistanceKm} Km
                             </span>
                             <span className="duration">
                               há {formatTime(getMinutesSince(t.createdAt))}

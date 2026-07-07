@@ -1,4 +1,9 @@
 import { useTowRequest } from "../../../contexts/TowRequestsContext";
+import {
+  formatCurrency,
+  formatDistance,
+  formatMinutes,
+} from "../../../utils/formatMin";
 import { getTowRequestStatusInfo } from "../../../utils/towsRequestsUtils";
 import HistoryGridRow from "./HistoryGridRow";
 
@@ -21,9 +26,9 @@ function ActiveRequestsGrid() {
             key={tow.id}
             status={getTowRequestStatusInfo(tow.status)}
             driver={tow.driverName}
-            distance={`${tow.totalDistanceKm.toFixed(2)} km`}
-            time={`${tow.durationMinutes.toFixed(2)} min`}
-            price={`R$ ${tow.suggestedPrice}`}
+            distance={`${formatDistance(tow.totalDistanceKm)} Km`}
+            time={`${formatMinutes(tow.durationMinutes)}`}
+            price={` ${formatCurrency(tow.suggestedPrice)}`}
           />
         ))}
       </div>
