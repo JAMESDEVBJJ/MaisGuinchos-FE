@@ -135,7 +135,7 @@ function History() {
         </button>
 
         <div
-          className={`history-content ${openedSections.requests ? "open" : ""}`}
+          className={`history-content ${openedSections.travels ? "open" : ""}`}
         >
           <TravelsGrid travels={historyTravels} />
         </div>
