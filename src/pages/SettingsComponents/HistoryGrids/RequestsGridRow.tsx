@@ -47,23 +47,17 @@ function RequestsGridRow({ request }: Props) {
       <div className={`history-grid-row-details ${expanded ? "open" : ""}`}>
         <div>
           <strong>Solicitado em</strong>
-          <span>
-            {formatDate(request.createdAt)}
-          </span>
+          <span>{formatDate(request.createdAt)}</span>
         </div>
 
         <div>
           <strong>Origem</strong>
-          <span>
-            Lat: {request.pickupLat} Lon:{request.pickupLon}
-          </span>
+          <span>{request.pickupAddress || "-"}</span>
         </div>
 
         <div>
           <strong>Destino</strong>
-          <span>
-            Lat: {request.dropoffLat} Lon: {request.dropoffLon}
-          </span>
+          <span>{request.dropoffAddress || "-"}</span>
         </div>
 
         <div>

@@ -7,9 +7,11 @@ export type TowRequestHistoryDto = {
   driverId: string;
   driverName: string;
 
+  pickupAddress: string;
   pickupLat: number;
   pickupLon: number;
 
+  dropoffAddress: string;
   dropoffLat: number;
   dropoffLon: number;
 
