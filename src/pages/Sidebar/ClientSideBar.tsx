@@ -22,7 +22,7 @@ import type { RouteDTO } from "../../dtos/RouteDTO";
 import { mapToTowRequest } from "../../mappers/TowRequestMapper";
 import type { TowRequestReceiveDto } from "../../dtos/TowRequestReceiveDTO";
 import { SettingsButton } from "./SettingsButton";
-
+import { ArrowLeft } from "lucide-react";
 
 interface CoordinateDto {
   lat: number;
@@ -730,10 +730,10 @@ export function ClientSideBar(props: ClientBarProps) {
   return (
     <>
       <aside className="sidebar" style={{ width: props.sidebarW }}>
-        <SettingsButton />
+
         {props.selectedGuincho == null && !towTravel ? (
           <>
-
+            <SettingsButton />
             <div className="sidebar-1">
               <div className="search">
                 <InputLocation
@@ -790,8 +790,8 @@ export function ClientSideBar(props: ClientBarProps) {
               {(!towTravel ||
                 towTravel.status === TowTravelStatus.Cancelled ||
                 towTravel.status === TowTravelStatus.Finished) && (
-                  <button className="back" onClick={handleBackToList}>
-                    ⬅
+                  <button className="back-button" onClick={handleBackToList}>
+                    <ArrowLeft size={22} />
                   </button>
                 )}
               <div className="detail-top">

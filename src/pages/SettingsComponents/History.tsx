@@ -33,8 +33,6 @@ function History() {
 
       const data: TowRequestHistoryDto[] = response.data;
 
-      console.dir(data);
-
       setHistoryRequests(data);
     } catch (error) {
       console.error(error);
