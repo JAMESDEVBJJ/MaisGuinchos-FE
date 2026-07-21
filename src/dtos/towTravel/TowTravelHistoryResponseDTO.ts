@@ -17,7 +17,7 @@ export interface TowTravelHistoryResponseDTO {
   finalPrice: number;
 
   originAddress: string;
-  destinationAddress: string
+  destinationAddress: string;
 
   distanceToPickupKm: number | null;
   timeToPickupMin: number | null;
