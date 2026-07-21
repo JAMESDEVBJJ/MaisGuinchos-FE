@@ -7,11 +7,17 @@ export interface TowTravelHistoryResponseDTO {
 
   driverId: string;
   driverName: string;
+  driverPhone: string;
+  driverTowModel: string;
+  driverTowPlate: string;
 
   clientId: string;
   clientName: string;
 
   finalPrice: number;
+
+  originAddress: string;
+  destinationAddress: string
 
   distanceToPickupKm: number | null;
   timeToPickupMin: number | null;

@@ -40,13 +40,13 @@ function TravelsGridRow({ travel }: Props) {
 
         <div>
           <strong>Telefone</strong>
-          <span>{travel.driverName}</span>
+          <span>{travel.driverPhone}</span>
         </div>
 
         <div>
           <strong>Guincho</strong>
           <span>
-            {} • {}
+            {travel.driverTowModel} • {travel.driverTowPlate}
           </span>
         </div>
 
@@ -67,12 +67,12 @@ function TravelsGridRow({ travel }: Props) {
 
         <div>
           <strong>Origem</strong>
-          <span>{}</span>
+          <span>{travel.originAddress}</span>
         </div>
 
         <div>
           <strong>Destino</strong>
-          <span>{}</span>
+          <span>{travel.destinationAddress}</span>
         </div>
 
         {travel.cancellationReason && (
