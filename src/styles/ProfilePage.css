@@ -70,9 +70,6 @@
   background: #f59e0b;
 }
 
-/* =========================
-   PROFILE INFO
-========================= */
 
 .profile-info {
   display: grid;
@@ -87,12 +84,10 @@
   gap: 28px;
 }
 
-/* Motorista */
 .profile-info.has-avatar {
   grid-template-columns: 120px minmax(0, 1fr);
 }
 
-/* Cliente e Empresa */
 .profile-info.no-avatar {
   grid-template-columns: 1fr;
 }
@@ -105,9 +100,6 @@
   grid-column: 1;
 }
 
-/* =========================
-     AVATAR
-  ========================= */
 
 .profile-avatar-container {
   display: flex;
@@ -142,7 +134,6 @@
   overflow: visible;
 }
 
-/* Botão pequeno de editar avatar */
 
 .avatar-edit-button {
   position: absolute;
@@ -173,7 +164,6 @@
   transform: scale(1.05);
 }
 
-/* Botão de upload */
 
 .avatar-upload-button {
   width: 32px;
@@ -198,10 +188,6 @@
   background: #dfe7ed;
   transform: translateY(-1px);
 }
-
-/* =========================
-     CAMPOS
-  ========================= */
 
 .profile-fields {
   display: grid;
@@ -257,6 +243,23 @@
   box-shadow: 0 0 0 2px rgba(240, 173, 44, 0.12);
 }
 
+.profile-field input:-webkit-autofill,
+.profile-field input:-webkit-autofill:hover,
+.profile-field input:-webkit-autofill:focus,
+.profile-field input:-webkit-autofill:active {
+  -webkit-text-fill-color: #e7edf2;
+
+  -webkit-box-shadow: 0 0 0 1000px #101e2b inset;
+
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+.profile-field input:disabled:-webkit-autofill {
+  -webkit-text-fill-color: #8d9aa5;
+
+  -webkit-box-shadow: 0 0 0 1000px #1a2937 inset;
+}
+
 /* Campos bloqueados */
 
 .profile-field input:disabled {
@@ -269,8 +272,6 @@
   border-color: #304456;
 }
 
-/* CPF somente leitura */
-
 .profile-field small {
   margin-top: -3px;
 
@@ -279,9 +280,6 @@
   font-size: 9px;
 }
 
-/* =========================
-     AÇÕES
-  ========================= */
 
 .profile-actions {
   grid-column: 2;
@@ -292,8 +290,6 @@
 
   padding-top: 2px;
 }
-
-/* Botão Editar */
 
 .edit-button,
 .save-button {
@@ -311,8 +307,6 @@
   transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Editar */
-
 .edit-button {
   border: 1px solid #aeb9c3;
 
@@ -326,8 +320,6 @@
 
   transform: translateY(-1px);
 }
-
-/* Salvar */
 
 .save-button {
   border: 1px solid #e2a12b;
