@@ -1,9 +1,10 @@
 import { ChevronDown } from "lucide-react";
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import "../../styles/ProfilePage.css";
 import ProfileInfo from "./Profile/ProfileInfo";
 import { api } from "../../services/api";
+import Security from "./Profile/Security";
 
 type UserProfile = {
   name: string;
@@ -21,19 +22,20 @@ function Profile() {
   const [openedSections, setOpenedSections] = useState({
     profileInfo: false,
     security: false,
+    tow: false,
   });
 
   useEffect(() => {
     async function loadProfile() {
       const response = await api.get("/user/me");
-  
+
       setProfile(response.data);
     }
-  
+
     loadProfile();
   }, []);
 
-  const toggleSection = async (section: "profileInfo" | "security") => {
+  const toggleSection = async (section: "profileInfo" | "security" | "tow") => {
     const willOpen = !openedSections[section];
 
     setOpenedSections((prev) => ({
@@ -62,7 +64,9 @@ function Profile() {
             openedSections.profileInfo ? "open" : ""
           }`}
         >
-          {openedSections.profileInfo && profile && <ProfileInfo user={profile} />}
+          {openedSections.profileInfo && profile && (
+            <ProfileInfo user={profile} />
+          )}
         </div>
       </div>
 
@@ -80,11 +84,30 @@ function Profile() {
         </button>
 
         <div
-          className={`perfil-content ${openedSections.security ? "open" : ""}`} ////{openedSections.security}
+          className={`perfil-content ${openedSections.security ? "open" : ""}`}
         >
-          
+          <Security></Security>
         </div>
       </div>
+      {user?.isDriver && (
+        <div className="perfil-section">
+          <button
+            className="perfil-header"
+            onClick={() => toggleSection("tow")}
+          >
+            <span>Guincho</span>
+
+            <ChevronDown
+              size={20}
+              className={openedSections.tow ? "arrow open" : "arrow"}
+            />
+          </button>
+
+          <div className={`perfil-content ${openedSections.tow ? "open" : ""}`}>
+            {openedSections.tow && profile && <ProfileInfo user={profile} />}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -4,6 +4,15 @@
   gap: 18px;
 }
 
+h1 {
+  color: #ffffff;
+  font-size: 26px; 
+  font-weight: 700; 
+  font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+  letter-spacing: -0.02em; 
+  margin-bottom: 14px; 
+}
+
 .perfil-section {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.05);
@@ -70,7 +79,6 @@
   background: #f59e0b;
 }
 
-
 .profile-info {
   display: grid;
   column-gap: 28px;
@@ -80,7 +88,6 @@
 }
 
 .profile-info {
-  display: grid;
   gap: 28px;
 }
 
@@ -100,11 +107,13 @@
   grid-column: 1;
 }
 
-
 .profile-avatar-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
+
+  align-items: center;    
+  justify-content: center; 
+
   gap: 12px;
 
   padding-top: 10px;
@@ -134,7 +143,6 @@
   overflow: visible;
 }
 
-
 .avatar-edit-button {
   position: absolute;
 
@@ -163,7 +171,6 @@
   background: #213b52;
   transform: scale(1.05);
 }
-
 
 .avatar-upload-button {
   width: 32px;
@@ -210,9 +217,11 @@
 
 .profile-field label {
   color: #c7d2dc;
-
-  font-size: 11px;
+  font-size: 12px; 
   font-weight: 500;
+  font-family: "Inter", system-ui, -apple-system, sans-serif; 
+  display: block; 
+  margin-bottom: 6px; 
 }
 
 .profile-field input {
@@ -260,8 +269,6 @@
   -webkit-box-shadow: 0 0 0 1000px #1a2937 inset;
 }
 
-/* Campos bloqueados */
-
 .profile-field input:disabled {
   cursor: not-allowed;
 
@@ -279,7 +286,6 @@
 
   font-size: 9px;
 }
-
 
 .profile-actions {
   grid-column: 2;
@@ -335,4 +341,56 @@
   background: #f2bd4d;
 
   transform: translateY(-1px);
+}
+
+.security-section {
+  padding: 24px 28px;
+}
+
+.security-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.security-fields {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.password-confirm-field {
+  position: relative;
+}
+
+.password-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-input-wrapper input {
+  width: 100%;
+  padding-right: 42px;
+}
+
+.password-status {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.password-status.success {
+  color: #42d392;
+}
+
+.password-status.error {
+  color: #ff5c5c;
+}
+
+.save-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
