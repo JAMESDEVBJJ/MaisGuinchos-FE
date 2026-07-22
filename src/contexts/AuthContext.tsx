@@ -1,6 +1,5 @@
-import { createContext, useContext, useEffect, useState  } from "react";
-import type {ReactNode}  from "react";
-
+import { createContext, useContext, useEffect, useState } from "react";
+import type { ReactNode } from "react";
 
 type User = {
   id: string;
@@ -63,7 +62,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
       {children}
     </AuthContext.Provider>
   );
-
 }
 
 export function useAuth() {
