@@ -5,6 +5,8 @@ import "../../styles/ProfilePage.css";
 import ProfileInfo from "./Profile/ProfileInfo";
 import { api } from "../../services/api";
 import Security from "./Profile/Security";
+import type { TowDTO } from "../../dtos/TowDTO";
+import ProfileTow from "./Profile/ProfileTow";
 
 type UserProfile = {
   name: string;
@@ -13,6 +15,7 @@ type UserProfile = {
   numeroTelefone: string;
   cpf: string;
   tipo: string;
+  guincho?: TowDTO;
 };
 
 function Profile() {
@@ -30,6 +33,7 @@ function Profile() {
       const response = await api.get("/user/me");
 
       setProfile(response.data);
+      console.dir(response.data);
     }
 
     loadProfile();
@@ -45,7 +49,7 @@ function Profile() {
   };
   return (
     <div className="perfil-page">
-      <h1>Página de Perfil</h1>
+      <h1>Perfil</h1>
       <div className="perfil-section">
         <button
           className="perfil-header"
@@ -65,7 +69,7 @@ function Profile() {
           }`}
         >
           {openedSections.profileInfo && profile && (
-            <ProfileInfo user={profile} />
+            <ProfileInfo user={profile} setProfile={setProfile} />
           )}
         </div>
       </div>
@@ -89,7 +93,7 @@ function Profile() {
           <Security></Security>
         </div>
       </div>
-      {user?.isDriver && (
+      {user?.isDriver && profile?.guincho && (
         <div className="perfil-section">
           <button
             className="perfil-header"
@@ -104,7 +108,9 @@ function Profile() {
           </button>
 
           <div className={`perfil-content ${openedSections.tow ? "open" : ""}`}>
-            {openedSections.tow && profile && <ProfileInfo user={profile} />}
+            {openedSections.tow && profile && (
+              <ProfileTow guincho={profile.guincho} />
+            )}
           </div>
         </div>
       )}

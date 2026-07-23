@@ -1,18 +1,24 @@
 import { Pencil, Upload } from "lucide-react";
 import { useState } from "react";
-
-type ProfileInfoProps = {
-  user: {
-    name: string;
-    userName: string;
-    email: string;
-    numeroTelefone: string;
-    cpf: string;
-    tipo: string;
-  };
+import type { TowDTO } from "../../../dtos/TowDTO";
+import { api } from "../../../services/api";
+import { toast } from "react-toastify";
+type UserProfile = {
+  name: string;
+  userName: string;
+  email: string;
+  numeroTelefone: string;
+  cpf: string;
+  tipo: string;
+  guincho?: TowDTO;
 };
 
-function ProfileInfo({ user }: ProfileInfoProps) {
+type ProfileInfoProps = {
+  user: UserProfile;
+  setProfile: React.Dispatch<React.SetStateAction<UserProfile | null>>;
+};
+
+function ProfileInfo({ user, setProfile }: ProfileInfoProps) {
   const [isEditing, setIsEditing] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -46,16 +52,53 @@ function ProfileInfo({ user }: ProfileInfoProps) {
     setIsEditing(false);
   };
 
+  async function handleSave() {
+    try {
+      const updatedUser = await updateUserProfile();
+
+      setIsEditing(false);
+
+      setProfile(updatedUser);
+
+      toast.success("Perfil atualizado com sucesso!");
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ||
+        error?.response?.data?.title ||
+        "Erro inesperado. Tente novamente.";
+
+      toast.error(message);
+    }
+  }
+
+  async function updateUserProfile() {
+    const response = await api.put("/user/profile", {
+      name: formData.name,
+      userName: formData.userName,
+      email: formData.email,
+      numeroTelefone: formData.numeroTelefone,
+    });
+
+    return response.data;
+  }
+
   return (
     <div
       className={`profile-info ${
         user.tipo === "Motorista" ? "has-avatar" : "no-avatar"
       }`}
     >
-      {user.tipo === "Motorista" && (
+      {user.tipo === "Motorista" && user.guincho && (
         <div className="profile-avatar-container">
           <div className="profile-avatar">
-            <span>{user.name?.charAt(0).toUpperCase()}</span>
+            {user.guincho.photo ? (
+              <img
+                src={`https://localhost:7120${user.guincho.photo}`}
+                alt="Foto do guincho"
+              />
+            ) : (
+              <span>{user.name?.charAt(0).toUpperCase()}</span>
+            )}
 
             <button className="avatar-edit-button">
               <Pencil size={13} />
@@ -138,7 +181,9 @@ function ProfileInfo({ user }: ProfileInfoProps) {
         </button>
 
         {isEditing && (
-          <button className="save-button">Salvar alterações</button>
+          <button className="save-button" onClick={handleSave}>
+            Salvar alterações
+          </button>
         )}
       </div>
     </div>
