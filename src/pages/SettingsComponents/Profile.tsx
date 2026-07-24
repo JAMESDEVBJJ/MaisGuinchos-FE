@@ -90,7 +90,7 @@ function Profile() {
         <div
           className={`perfil-content ${openedSections.security ? "open" : ""}`}
         >
-          <Security></Security>
+          {openedSections.security && <Security></Security>}
         </div>
       </div>
       {user?.isDriver && profile?.guincho && (

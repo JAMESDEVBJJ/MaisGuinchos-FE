@@ -15,7 +15,7 @@ export type GuinchosDto = {
   available: boolean;
   color: string;
   model: string;
-  distanceKm: number;
+  distanceKm?: number;
 };
 
 export type Position = {

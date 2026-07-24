@@ -23,6 +23,7 @@ import { mapToTowRequest } from "../../mappers/TowRequestMapper";
 import type { TowRequestReceiveDto } from "../../dtos/TowRequestReceiveDTO";
 import { SettingsButton } from "./SettingsButton";
 import { ArrowLeft } from "lucide-react";
+import { useLocation } from "react-router-dom";
 
 interface CoordinateDto {
   lat: number;
@@ -168,6 +169,23 @@ export function ClientSideBar(props: ClientBarProps) {
 
   const { activeTowsRequests } = useTowRequest();
 
+  const location = useLocation();
+
+  useEffect(() => {
+    const driverId = location.state?.driverId;
+
+    if (!driverId) return;
+
+    async function loadDriver() {
+      const guincho: GuinchosDto | undefined = await getGuinchoByDriverId(
+        driverId
+      );
+      if (guincho) props.setSelectedGuincho(guincho);
+    }
+
+    loadDriver();
+  }, [location.state]);
+
   useEffect(() => {
     async function loadTowRequest() {
       const selectedDriver = props.selectedGuincho;
@@ -178,6 +196,7 @@ export function ClientSideBar(props: ClientBarProps) {
       );
 
       if (!activeTow) return;
+
       const status = mapTowRequestStatus(activeTow.status);
       props.setHasActiveTowRequest(true);
       props.setRequestStatus(status);
@@ -211,6 +230,35 @@ export function ClientSideBar(props: ClientBarProps) {
 
     loadTowRequest();
   }, [props.selectedGuincho, activeTowsRequests]);
+
+  async function getGuinchoByDriverId(driverId: string) {
+    try {
+      const response = await api.get<GuinchosDto>(`/user/driver/${driverId}`);
+
+      const driver = response.data;
+
+      if (driver) {
+        return driver;
+      }
+
+      toast.error("Não foi possível encontrar o motorista da solicitação.");
+    } catch (error: any) {
+      const data = error.response?.data;
+
+      if (data?.errors) {
+        Object.values(data.errors).forEach((messages: any) => {
+          messages.forEach((message: string) => {
+            toast.error(message);
+          });
+        });
+      } else if (data?.error) {
+        toast.error(data.error);
+      } else {
+        toast.error("Erro ao buscar guincho solicitado.");
+      }
+    }
+  }
+
   function mapTowRequestStatus(status: number) {
     switch (status) {
       case 1:
@@ -298,7 +346,9 @@ export function ClientSideBar(props: ClientBarProps) {
     connection.on("TowRequestAccepted", (data: AcceptTowRequestResponseDTO) => {
       props.setRequestStatus("accepted");
 
-      setActiveTowsRequests((prev) => prev.filter((x) => x.id !== data.towRequestId));
+      setActiveTowsRequests((prev) =>
+        prev.filter((x) => x.id !== data.towRequestId)
+      );
 
       const towTravel: TowTravelDTO = {
         towRequestId: data.towRequestId,
@@ -588,7 +638,7 @@ export function ClientSideBar(props: ClientBarProps) {
     clearTowTravel();
     if (props.hasActiveTowRequest) {
       props.setHasActiveTowRequest(false);
-      props.setRoute(null)
+      props.setRoute(null);
     }
 
     props.setPriceG(null);
@@ -651,7 +701,7 @@ export function ClientSideBar(props: ClientBarProps) {
     try {
       const response = await api.post("/towrequests", towRequestDto);
       const data = response.data as TowRequestReceiveDto;
-      setActiveTowsRequests(prev => [...prev, data]);
+      setActiveTowsRequests((prev) => [...prev, data]);
 
       setShowModal(false);
       setVehicleType("");
@@ -730,7 +780,6 @@ export function ClientSideBar(props: ClientBarProps) {
   return (
     <>
       <aside className="sidebar" style={{ width: props.sidebarW }}>
-
         {props.selectedGuincho == null && !towTravel ? (
           <>
             <SettingsButton />
@@ -757,9 +806,7 @@ export function ClientSideBar(props: ClientBarProps) {
                   <img src={iconDestination} className="input-icon" />
                 </div>
 
-                <button onClick={props.buscarGuinchos}>
-                  Buscar guinchos
-                </button>
+                <button onClick={props.buscarGuinchos}>Buscar guinchos</button>
               </div>
             </div>
 
@@ -790,14 +837,15 @@ export function ClientSideBar(props: ClientBarProps) {
               {(!towTravel ||
                 towTravel.status === TowTravelStatus.Cancelled ||
                 towTravel.status === TowTravelStatus.Finished) && (
-                  <button className="back-button" onClick={handleBackToList}>
-                    <ArrowLeft size={22} />
-                  </button>
-                )}
+                <button className="back-button" onClick={handleBackToList}>
+                  <ArrowLeft size={22} />
+                </button>
+              )}
               <div className="detail-top">
                 <img
-                  className={`detail-photo ${isDefault ? "default-photo" : ""
-                    } ${props.hideDriverPhoto ? "hide" : ""}`}
+                  className={`detail-photo ${
+                    isDefault ? "default-photo" : ""
+                  } ${props.hideDriverPhoto ? "hide" : ""}`}
                   src={
                     isDefault ? defaultUserPng : `https://localhost:7120${foto}`
                   }
@@ -805,8 +853,9 @@ export function ClientSideBar(props: ClientBarProps) {
                 />
 
                 <div
-                  className={`detail-info ${props.hideDriverPhoto ? "only-content" : ""
-                    }`}
+                  className={`detail-info ${
+                    props.hideDriverPhoto ? "only-content" : ""
+                  }`}
                 >
                   {towTravel ? (
                     <h3>{getStatusMessage(towTravel.status, driverName)}</h3>
@@ -958,25 +1007,26 @@ export function ClientSideBar(props: ClientBarProps) {
             </div>
 
             <button
-              className={`secondary fullwidth ${props.requestStatus === "waitingDriver"
-                ? "waiting"
-                : props.routeG && props.route
+              className={`secondary fullwidth ${
+                props.requestStatus === "waitingDriver"
+                  ? "waiting"
+                  : props.routeG && props.route
                   ? "contact-enabled"
                   : ""
-                }`}
+              }`}
               disabled={
                 serviceIsDisabled || props.requestStatus === "waitingDriver"
               }
               onClick={handleConfirmSend}
             >
               {props.requestStatus === "waitingDriver" ||
-                props.requestStatus === "counterOfferRejected"
+              props.requestStatus === "counterOfferRejected"
                 ? `Aguardando motorista${dots}`
                 : props.requestStatus === "counterOfferReceived"
-                  ? "Contraproposta recebida!"
-                  : props.requestStatus === "sending"
-                    ? "Enviando..."
-                    : "Solicitar Guincho"}
+                ? "Contraproposta recebida!"
+                : props.requestStatus === "sending"
+                ? "Enviando..."
+                : "Solicitar Guincho"}
             </button>
           </div>
         </div>

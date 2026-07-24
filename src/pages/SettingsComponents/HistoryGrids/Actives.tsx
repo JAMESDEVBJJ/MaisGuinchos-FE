@@ -5,7 +5,7 @@ import {
   formatMinutes,
 } from "../../../utils/formatMin";
 import { getTowRequestStatusInfo } from "../../../utils/towsRequestsUtils";
-import HistoryGridRow from "./HistoryGridRow";
+import ActivesGridRow from "./ActivesGridRow";
 
 function ActiveRequestsGrid() {
   const { activeTowsRequests } = useTowRequest();
@@ -22,13 +22,14 @@ function ActiveRequestsGrid() {
 
       <div className="history-grid-body">
         {activeTowsRequests.map((tow) => (
-          <HistoryGridRow
+          <ActivesGridRow
             key={tow.id}
             status={getTowRequestStatusInfo(tow.status)}
             driver={tow.driverName}
             distance={`${formatDistance(tow.totalDistanceKm)} Km`}
             time={`${formatMinutes(tow.durationMinutes)}`}
             price={` ${formatCurrency(tow.suggestedPrice)}`}
+            driverId={tow.driverId}
           />
         ))}
       </div>

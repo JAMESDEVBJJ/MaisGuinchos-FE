@@ -17,6 +17,8 @@ import { useTowTravel } from "../contexts/TowTravelContext";
 import { flyToTarget } from "../utils/mapUtils";
 import { useAuth } from "../contexts/AuthContext";
 import { TowTravelStatus } from "../utils/enums/TowTravelStatus";
+import { useTowRequest } from "../contexts/TowRequestsContext";
+import type { TowRequestReceiveDto } from "../dtos/TowRequestReceiveDTO";
 
 function MapController({ mapRef }: { mapRef: React.RefObject<L.Map | null> }) {
   const map = useMap();
@@ -51,11 +53,19 @@ export function Maps({
   distanceKmG,
   durationMinG,
   setHasActiveTowRequest,
-  hasActiveTowRequest
+  hasActiveTowRequest,
 }: MapProps) {
   const lastUserPosRef = useRef<[number, number] | null>(null);
 
   const { user } = useAuth();
+
+  const { activeTowsRequests } = useTowRequest();
+
+  const activeTowRequest = selectedGuincho
+    ? activeTowsRequests.find(
+        (p) => p.driverId === selectedGuincho.motorista.userId
+      ) ?? null
+    : null;
 
   const [isRoutePanelOpen, setIsRoutePanelOpen] = useState(false);
 
@@ -178,7 +188,17 @@ export function Maps({
               );
             })}
 
-          {user?.isDriver ? (
+          {activeTowRequest ? (
+            <>
+              <Marker
+                position={[
+                  activeTowRequest.pickupLat,
+                  activeTowRequest.pickupLon,
+                ]}
+                icon={userIcon}
+              ></Marker>
+            </>
+          ) : user?.isDriver ? (
             <Marker
               position={[userPosition.lat, userPosition.lon]}
               icon={guinchoIcon}
@@ -228,14 +248,23 @@ export function Maps({
             routeG.length > 0 &&
             (!towTravel ||
               towTravel.status == TowTravelStatus.GoingToClient) && (
-              <Polyline
-                positions={routeG}
-                pathOptions={{
-                  color: "yellow",
-                  weight: 4,
-                  opacity: 0.85,
-                }}
-              />
+              <>
+                <Polyline
+                  positions={routeG}
+                  pathOptions={{
+                    color: "yellow",
+                    weight: 4,
+                    opacity: 0.85,
+                  }}
+                />
+
+                {activeTowRequest && (
+                  <Marker
+                    position={[routeG[0][0], routeG[0][1]] as [number, number]}
+                    icon={guinchoIcon}
+                  ></Marker>
+                )}
+              </>
             )}
           {priceEstimate && !isRoutePanelOpen && !towTravel && (
             <div

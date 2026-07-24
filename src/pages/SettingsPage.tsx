@@ -7,7 +7,7 @@ import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 function SettingsPage() {
-  const [selectedTab, setSelectedTab] = useState("historico");
+  const [selectedTab, setSelectedTab] = useState("perfil");
 
   const navigate = useNavigate();
 

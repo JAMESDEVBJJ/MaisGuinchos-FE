@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   status: {
@@ -7,17 +8,36 @@ type Props = {
     color: string;
   };
   driver: string;
+  driverId: string;
   distance: string;
   time: string;
   price: string;
 };
 
-function HistoryGridRow({ status, driver, distance, time, price }: Props) {
+function ActivesGridRow({
+  status,
+  driver,
+  distance,
+  time,
+  price,
+  driverId,
+}: Props) {
   const Icon = status.icon;
+
+  const navigate = useNavigate();
   return (
     <div className="history-grid-item">
-      <div className="history-grid-row-header">
-        <td className="status-history-row">  
+      <div
+        className="history-grid-row-header"
+        onClick={() =>
+          navigate("/homepage", {
+            state: {
+              driverId: driverId,
+            },
+          })
+        }
+      >
+        <td className="status-history-row">
           <span>{status.label}</span>
           <Icon size={16} color={status.color} strokeWidth={2.3} />
         </td>
@@ -30,4 +50,4 @@ function HistoryGridRow({ status, driver, distance, time, price }: Props) {
   );
 }
 
-export default HistoryGridRow;
+export default ActivesGridRow;

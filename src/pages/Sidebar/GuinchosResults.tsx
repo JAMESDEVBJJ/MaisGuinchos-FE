@@ -47,7 +47,7 @@ export default function GuinchosResults({
           <div className="card-main">
             <div className="left">
               {!isCompact && <span className="title">{g.model}</span>}
-              <span className="distance">{g.distanceKm.toFixed(1)} km</span>
+              <span className="distance">{g.distanceKm!.toFixed(1)} km</span>
             </div>
 
             <div

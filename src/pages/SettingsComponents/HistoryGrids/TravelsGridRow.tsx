@@ -1,7 +1,12 @@
 import { useState } from "react";
 import type { TowTravelHistoryResponseDTO } from "../../../dtos/towTravel/TowTravelHistoryResponseDTO";
 import { getTowTravelStatusInfo } from "../../../utils/towTravelUtils";
-import { formatDate } from "../../../utils/formatMin";
+import {
+  formatCurrency,
+  formatDate,
+  formatDistance,
+  formatMinutes,
+} from "../../../utils/formatMin";
 
 type Props = {
   travel: TowTravelHistoryResponseDTO;
@@ -12,6 +17,16 @@ function TravelsGridRow({ travel }: Props) {
 
   const status = getTowTravelStatusInfo(travel.status);
   const Icon = status.icon;
+
+  const distance =
+    travel.distanceToDestinationKm && travel.distanceToPickupKm
+      ? travel.distanceToDestinationKm + travel.distanceToPickupKm
+      : null;
+
+  const min =
+    travel.timeToPickupMin && travel.timeToDestinationMin
+      ? travel.timeToDestinationMin + travel.timeToPickupMin
+      : null;
 
   return (
     <div className="history-grid-item">
@@ -25,9 +40,9 @@ function TravelsGridRow({ travel }: Props) {
         </td>
 
         <span>{travel.driverName}</span>
-        <span>{} Km</span>
-        <span>{} min</span>
-        <span>{} R$</span>
+        <span>{distance ? formatDistance(distance) : "-"} Km</span>
+        <span>{min ? formatMinutes(min) : "-"}</span>
+        <span>{formatCurrency(travel.finalPrice)}</span>
 
         <span className={`arrow ${expanded ? "open" : ""}`}>▼</span>
       </div>

@@ -158,8 +158,6 @@ const HomePage = () => {
           toast.error("Erro ao buscar última localização");
         }
 
-        console.error("Erro ao buscar última localização", error);
-
         setUserLocation({ lat: -9.854179, lon: -51.648332 });
       }
     }
