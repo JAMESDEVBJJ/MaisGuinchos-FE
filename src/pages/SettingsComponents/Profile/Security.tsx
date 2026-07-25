@@ -1,5 +1,7 @@
 import { Check, X } from "lucide-react";
 import { useState } from "react";
+import { api } from "../../../services/api";
+import { toast } from "react-toastify";
 
 export default function Security() {
   const [passwordData, setPasswordData] = useState({
@@ -25,15 +27,46 @@ export default function Security() {
     }));
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
     if (!passwordsMatch) {
+      toast.error("As senhas não coincidem.");
       return;
     }
 
-    // futuramente:
-    // chamar API para alterar a senha
+    try {
+      await updatePassword();
+
+      toast.success("Senha atualizada!");
+
+      setPasswordData({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+    } catch (error: any) {
+      console.log("ERRO REAL:", error);
+
+      const message =
+        error?.response?.data?.message ||
+        error?.response?.data?.title ||
+        error?.response?.data?.error ||
+        "Erro inesperado. Tente novamente.";
+
+        
+      toast.error(message);
+    }
+  }
+
+  async function updatePassword() {
+    const response = await api.put("/user/password", {
+      currentPassword: passwordData.currentPassword,
+      newPassword: passwordData.newPassword,
+      confirmPassword: passwordData.confirmPassword,
+    });
+
+    return response.data;
   }
 
   return (
