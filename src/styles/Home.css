@@ -175,7 +175,7 @@ input {
   width: 90%;
   align-self: center;
 
-  background-color: rgb(236, 116, 30);
+  background-color: #f26419;
 
   border: none;
   border-radius: 12px;
@@ -275,6 +275,14 @@ input {
   transform: scale(0.97);
 }
 
+.card-main svg {
+  width: 30;
+  height: 30px;
+  flex-shrink: 0;
+  margin-left: 15px;
+  margin-right: 5px;
+}
+
 .left {
   display: flex;
   align-items: center;
@@ -293,7 +301,7 @@ input {
 
 .status .dot {
   display: inline-block;
-  width: 8px;
+  width: 18px;
   height: 8px;
   border-radius: 40%;
 }
@@ -352,7 +360,7 @@ input {
 
   font-family: "Inter", "Segoe UI", system-ui, sans-serif;
 
-  padding: 6px 10px;
+  padding: 6px 0px 6px 10px;
 
   transition: color 0.2s ease, transform 0.15s ease, background-color 0.2s ease;
 }
@@ -394,7 +402,6 @@ input {
 .distance {
   font-size: 0.95rem;
   opacity: 0.85;
-  padding-left: 0px;
   color: rgba(255, 136, 73, 0.998);
 }
 

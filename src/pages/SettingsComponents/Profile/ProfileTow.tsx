@@ -1,11 +1,24 @@
 import { useEffect, useState } from "react";
 import type { TowDTO } from "../../../dtos/TowDTO";
+import { api } from "../../../services/api";
+import { toast } from "react-toastify";
+
+type UserProfile = {
+  name: string;
+  userName: string;
+  email: string;
+  numeroTelefone: string;
+  cpf: string;
+  tipo: string;
+  guincho?: TowDTO;
+};
 
 type ProfileTowProps = {
   guincho: TowDTO;
+  setProfile: React.Dispatch<React.SetStateAction<UserProfile | null>>;
 };
 
-function ProfileTow({ guincho }: ProfileTowProps) {
+function ProfileTow({ guincho, setProfile }: ProfileTowProps) {
   const [isEditing, setIsEditing] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -41,13 +54,40 @@ function ProfileTow({ guincho }: ProfileTowProps) {
     setIsEditing(false);
   }
 
-  function handleSave() {
-    console.log("Dados do guincho:", formData);
+  async function handleSave() {
+    try {
+      const updatedUser: UserProfile = await updateUserProfile();
 
-    // Depois você pode fazer:
-    // await updateTow(formData);
+      console.log("PUT retornou:", updatedUser);
 
-    setIsEditing(false);
+      setProfile(updatedUser);
+
+      console.log("setProfile executado");
+
+      setIsEditing(false);
+
+      toast.success("Perfil atualizado com sucesso!");
+    } catch (error: any) {
+      console.log("ERRO REAL:", error);
+
+      const message =
+        error?.response?.data?.message ||
+        error?.response?.data?.title ||
+        "Erro inesperado. Tente novamente.";
+
+      toast.error(message);
+    }
+  }
+  async function updateUserProfile() {
+    const data = new FormData();
+
+    data.append("guincho.model", formData.model);
+    data.append("guincho.plate", formData.plate);
+    data.append("guincho.color", formData.color);
+
+    const response = await api.put("/user/profile", data);
+
+    return response.data;
   }
 
   return (

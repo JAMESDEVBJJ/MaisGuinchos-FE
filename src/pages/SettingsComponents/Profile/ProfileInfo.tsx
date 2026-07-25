@@ -21,6 +21,9 @@ type ProfileInfoProps = {
 function ProfileInfo({ user, setProfile }: ProfileInfoProps) {
   const [isEditing, setIsEditing] = useState(false);
 
+  const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
+  const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
+
   const [formData, setFormData] = useState({
     name: user.name,
     userName: user.userName,
@@ -29,6 +32,18 @@ function ProfileInfo({ user, setProfile }: ProfileInfoProps) {
     cpf: user.cpf,
     tipo: user.tipo,
   });
+
+  function handlePhotoChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    setSelectedPhoto(file);
+
+    const previewUrl = URL.createObjectURL(file);
+
+    setPreviewPhoto(previewUrl);
+  }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -49,6 +64,9 @@ function ProfileInfo({ user, setProfile }: ProfileInfoProps) {
       tipo: user.tipo,
     });
 
+    setSelectedPhoto(null);
+    setPreviewPhoto(null);
+
     setIsEditing(false);
   };
 
@@ -56,9 +74,12 @@ function ProfileInfo({ user, setProfile }: ProfileInfoProps) {
     try {
       const updatedUser = await updateUserProfile();
 
-      setIsEditing(false);
-
       setProfile(updatedUser);
+
+      setSelectedPhoto(null);
+      setPreviewPhoto(null);
+
+      setIsEditing(false);
 
       toast.success("Perfil atualizado com sucesso!");
     } catch (error: any) {
@@ -69,15 +90,20 @@ function ProfileInfo({ user, setProfile }: ProfileInfoProps) {
 
       toast.error(message);
     }
-  }
-
+  } 
   async function updateUserProfile() {
-    const response = await api.put("/user/profile", {
-      name: formData.name,
-      userName: formData.userName,
-      email: formData.email,
-      numeroTelefone: formData.numeroTelefone,
-    });
+    const data = new FormData();
+
+    data.append("name", formData.name);
+    data.append("userName", formData.userName);
+    data.append("email", formData.email);
+    data.append("numeroTelefone", formData.numeroTelefone);
+
+    if (selectedPhoto) {
+      data.append("photo", selectedPhoto);
+    }
+
+    const response = await api.put("/user/profile", data);
 
     return response.data;
   }
@@ -91,7 +117,9 @@ function ProfileInfo({ user, setProfile }: ProfileInfoProps) {
       {user.tipo === "Motorista" && user.guincho && (
         <div className="profile-avatar-container">
           <div className="profile-avatar">
-            {user.guincho.photo ? (
+            {previewPhoto ? (
+              <img src={previewPhoto} alt="Preview da foto do guincho" />
+            ) : user.guincho.photo ? (
               <img
                 src={`https://localhost:7120${user.guincho.photo}`}
                 alt="Foto do guincho"
@@ -99,10 +127,25 @@ function ProfileInfo({ user, setProfile }: ProfileInfoProps) {
             ) : (
               <span>{user.name?.charAt(0).toUpperCase()}</span>
             )}
-
-            <button className="avatar-edit-button">
-              <Pencil size={13} />
-            </button>
+            {isEditing && (
+              <>
+                <button
+                  className="avatar-edit-button"
+                  onClick={() =>
+                    document.getElementById("profile-photo-input")?.click()
+                  }
+                >
+                  <Pencil size={13} />
+                </button>
+                <input
+                  type="file"
+                  accept="image/*"
+                  id="profile-photo-input"
+                  onChange={handlePhotoChange}
+                  style={{ display: "none" }}
+                />
+              </>
+            )}
           </div>
         </div>
       )}

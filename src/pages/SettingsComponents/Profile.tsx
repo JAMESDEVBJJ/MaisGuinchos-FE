@@ -47,6 +47,7 @@ function Profile() {
       [section]: willOpen,
     }));
   };
+
   return (
     <div className="perfil-page">
       <h1>Perfil</h1>
@@ -109,7 +110,7 @@ function Profile() {
 
           <div className={`perfil-content ${openedSections.tow ? "open" : ""}`}>
             {openedSections.tow && profile && (
-              <ProfileTow guincho={profile.guincho} />
+              <ProfileTow guincho={profile.guincho} setProfile={setProfile}/>
             )}
           </div>
         </div>

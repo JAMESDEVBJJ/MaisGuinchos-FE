@@ -132,8 +132,8 @@ h1 {
   border-radius: 50%;
 
   background: linear-gradient(145deg, #40546a, #26384b);
-  border: 1px solid #52677c;
 
+  border: 1px solid #e7e7e7;
   color: #e6edf4;
   font-size: 30px;
   font-weight: 600;
