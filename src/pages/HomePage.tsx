@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type SetStateAction } from "react";
 import "../styles/Home.css";
 import { api } from "../services/api";
 import { Maps } from "./Maps";
@@ -16,7 +16,7 @@ import type { TowTravelDTO } from "../dtos/TowTravelDTO";
 import type { TowTravelResponseDTO } from "../dtos/towTravel/TowTravelResponseDTO";
 import { useTowRoutes } from "../utils/hooks/useTowRoutes";
 import { TowTravelProgress } from "./TowTravelProgress";
-import { toast } from "react-toastify/unstyled";
+import { toast } from "react-toastify";
 
 const HomePage = () => {
   const [priceEstimateG, setPriceG] = useState<number | null>(0);
@@ -53,6 +53,8 @@ const HomePage = () => {
     | "accepted"
     | "counterOfferReceived"
     | "counterOfferRejected"
+    | "rejected"
+    | "cancelled"
   >("idle");
 
   const { setTowTravel, towTravel } = useTowTravel();
@@ -60,6 +62,9 @@ const HomePage = () => {
   const { routes } = useTowRoutes(towTravel);
 
   const mapRef = useRef<L.Map | null>(null);
+
+  const [hasActiveTowRequest, setHasActiveTowRequest] =
+    useState<boolean>(false);
 
   const sideBarProps: SidebarProps = {
     locationText: locationText,
@@ -94,9 +99,13 @@ const HomePage = () => {
     setRequestStatus: setRequestStatus,
     requestStatus: requestStatus,
     setGuinchos: setGuinchos,
+    hasActiveTowRequest: hasActiveTowRequest,
+    setHasActiveTowRequest: setHasActiveTowRequest,
   };
 
   const mapsProps: MapProps = {
+    hasActiveTowRequest: hasActiveTowRequest,
+    setHasActiveTowRequest: setHasActiveTowRequest,
     motoristasPosition: guinchos,
     userPosition: userLocation,
     hoveredGuinchoId: hoveredGuinchoId,
@@ -110,6 +119,7 @@ const HomePage = () => {
     setDurationMinG: setDurationMinG,
     setHoveredGuinchoId: setHoveredGuinchoId,
     setRouteG: setRouteG,
+    setRoute: setRoute,
     route: route,
     routeG: routeG,
     priceEstimate: priceEstimate,
@@ -148,8 +158,6 @@ const HomePage = () => {
           toast.error("Erro ao buscar última localização");
         }
 
-        console.error("Erro ao buscar última localização", error);
-
         setUserLocation({ lat: -9.854179, lon: -51.648332 });
       }
     }
@@ -159,9 +167,8 @@ const HomePage = () => {
   useEffect(() => {
     const loadTow = async () => {
       const response = await api.get("/towTravel/pending");
-
+      
       const towPending: TowTravelResponseDTO | null = response.data;
-
       if (towPending) {
         const towTravel: TowTravelDTO = {
           towRequestId: towPending.towRequestId,

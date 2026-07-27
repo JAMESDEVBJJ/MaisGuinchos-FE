@@ -2,6 +2,8 @@ export interface TowRequestReceiveDto {
   id: string;
   clientName: string;
   clientId: string;
+  driverName: string;
+  driverId: string;
   pickupLat: number;
   pickupLon: number;
   dropoffLat: number;
@@ -15,4 +17,8 @@ export interface TowRequestReceiveDto {
   createdAt: number;
   status: number;
   counterOfferRecused?: boolean; 
+  counterOfferPrice?: number;
+  counterOfferPercent?: number;
+  counterOfferReason?: string;
+  counterOfferAt?: string;
 }

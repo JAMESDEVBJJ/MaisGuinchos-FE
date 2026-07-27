@@ -50,8 +50,6 @@ function Signup() {
   async function handleSubmit(e?: React.FormEvent) {
     e?.preventDefault();
 
-    console.log(form);
-
     try {
       const formData = new FormData();
 
@@ -93,8 +91,6 @@ function Signup() {
       } else {
         toast.error("Erro ao criar conta.");
       }
-
-      console.log(error);
     }
   }
 

@@ -3,9 +3,10 @@ import { api } from "../../services/api";
 import guinchoIcon from "../../assets/icons/car-breakdown-tow-svgrepo-com.svg";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { toast } from "react-toastify";
 
 const Login = () => {
-  const {login} = useAuth();
+  const { login } = useAuth();
 
   const [email, setEmail] = useState("");
 
@@ -14,17 +15,36 @@ const Login = () => {
   const navigate = useNavigate();
 
   async function handleLogin(e: React.FormEvent) {
-    e.preventDefault();
+    try {
 
-    const response = await api.post("/user/login", { email, password });
+      e.preventDefault();
 
-    const token = response.data?.token;
+      const response = await api.post("/user/login", { email, password });
 
-    if (token) {
-      login(token)
+      const token = response.data?.token;
+
+      if (token) {
+        login(token)
+      }
+
+      navigate("/homepage");
+    } catch (error: any) {
+      const data = error.response?.data;
+      if (data?.errors) {
+        Object.values(data.errors).forEach((messages: any) => {
+          messages.forEach((message: string) => {
+            toast.error(message);
+          });
+        });
+      } else if (data?.error) {
+        toast.error(data.error);
+      } else {
+        toast.error("Erro ao tentar logar.");
+      }
+
+      console.error("Erro ao tentar efetuar login", error);
+
     }
-
-    navigate("/homepage");
   }
 
   return (

@@ -8,6 +8,8 @@ import { DriverSideBar } from "./DriverSideBar";
 
 export type SidebarProps = {
   locationText: string;
+  hasActiveTowRequest: boolean;
+  setHasActiveTowRequest: React.Dispatch<React.SetStateAction<boolean>>;
   setLocationText: React.Dispatch<React.SetStateAction<string>>;
   destinationText: string;
   setDestinationText: React.Dispatch<React.SetStateAction<string>>;
@@ -45,6 +47,8 @@ export type SidebarProps = {
       | "accepted"
       | "counterOfferReceived"
       | "counterOfferRejected"
+      | "rejected"
+      | "cancelled"
     >
   >;
   requestStatus: string;

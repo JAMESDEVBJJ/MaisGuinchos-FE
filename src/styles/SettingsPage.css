@@ -1,0 +1,102 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.settings-page {
+  display: flex;
+  min-height: 100vh;
+  background: linear-gradient(90deg, #0d1b2a, #10253b);
+  color: white;
+}
+
+.sidebar-settings {
+  width: 280px;
+  padding: 40px 20px;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-settings h2 {
+  margin-bottom: 30px;
+}
+.sidebar-settings > button {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: white;
+  padding: 16px;
+  text-align: left;
+  cursor: pointer;
+  font-size: 16px;
+  margin-bottom: 8px;
+  border-left: 3px solid transparent;
+  transition: 0.2s;
+}
+
+.sidebar-settings > button:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-settings > button.active {
+  border-left: 3px solid orange;
+  color: orange;
+}
+
+.content {
+  flex: 1;
+  padding: 40px;
+}
+
+.sidebar-settings-header {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 30px;
+  height: 40px;
+}
+
+.back-button {
+  all: unset;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 36px;
+  height: 36px;
+
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+}
+.back-button {
+  all: unset;
+
+  position: absolute;
+  left: 0;
+
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  background: transparent;
+  color: white;
+
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.back-button:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateX(-2px);
+}
+
+.sidebar-settings-header h2 {
+  margin: 0;
+}
