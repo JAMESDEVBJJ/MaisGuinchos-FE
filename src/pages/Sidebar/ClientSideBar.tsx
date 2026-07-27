@@ -24,6 +24,7 @@ import type { TowRequestReceiveDto } from "../../dtos/TowRequestReceiveDTO";
 import { SettingsButton } from "./SettingsButton";
 import { ArrowLeft } from "lucide-react";
 import { useLocation } from "react-router-dom";
+import { LoadingSpinner } from "../Ui/LoadingSpinner";
 
 interface CoordinateDto {
   lat: number;
@@ -810,11 +811,7 @@ export function ClientSideBar(props: ClientBarProps) {
               </div>
             </div>
 
-            {props.loading && (
-              <>
-                <h1>LOADING...</h1>
-              </>
-            )}
+            {props.loading && <LoadingSpinner></LoadingSpinner>}
             {!props.loading && props.guinchos.length === 0 && (
               <div className="empty-state">
                 <p>Digite sua localização e procure por guinchos.</p>

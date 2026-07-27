@@ -8,6 +8,9 @@ import type { TowRequestHistoryDto } from "../../dtos/TowRequestHistoryDTO";
 import RequestsGrid from "./HistoryGrids/RequestsGrid";
 import TravelsGrid from "./HistoryGrids/TravelsGrid";
 import type { TowTravelHistoryResponseDTO } from "../../dtos/towTravel/TowTravelHistoryResponseDTO";
+import { LoadingSpinner } from "../Ui/LoadingSpinner";
+import type { PaginatedResponse } from "../../dtos/PaginatedResponse";
+import { Pagination } from "../Ui/Pagination";
 
 function History() {
   const [openedSections, setOpenedSections] = useState({
@@ -18,41 +21,52 @@ function History() {
 
   const { user } = useAuth();
 
-  const [historyRequests, setHistoryRequests] = useState<
-    TowRequestHistoryDto[]
-  >([]);
+  const [loadingRequests, setLoadingRequests] = useState(false);
+  const [loadingTravels, setLoadingTravels] = useState(false);
 
-  const [historyTravels, setHistoryTravels] = useState<
-    TowTravelHistoryResponseDTO[]
-  >([]);
+  const [historyRequests, setHistoryRequests] =
+    useState<PaginatedResponse<TowRequestHistoryDto> | null>(null);
 
-  async function loadTowRequests() {
+  const [historyTravels, setHistoryTravels] =
+    useState<PaginatedResponse<TowTravelHistoryResponseDTO> | null>(null);
+
+  async function loadTowRequests(page = 1) {
     if (!user) return;
+
+    setLoadingRequests(true);
+
     try {
-      const response = await api.get(`/towRequests/${user!.id}/all`);
+      const response = await api.get(
+        `/towRequests/${user.id}/all?page=${page}&pageSize=10`
+      );
 
-      const data: TowRequestHistoryDto[] = response.data;
-
-      setHistoryRequests(data);
+      setHistoryRequests(response.data);
     } catch (error) {
       console.error(error);
-      setHistoryRequests([]);
+      setHistoryRequests(null);
+    } finally {
+      setLoadingRequests(false);
     }
   }
-
-  async function loadTowTravels() {
+  async function loadTowTravels(page = 1) {
     if (!user) return;
+
+    setLoadingTravels(true);
+
     try {
-      const response = await api.get(`/TowTravel/${user!.id}/all`);
+      const response = await api.get(
+        `/TowTravel/${user!.id}/all?page=${page}&pageSize=10`
+      );
 
-      const data: TowTravelHistoryResponseDTO[] = response.data;
-
-      console.dir(data);
+      const data: PaginatedResponse<TowTravelHistoryResponseDTO> =
+        response.data;
 
       setHistoryTravels(data);
     } catch (error) {
       console.error(error);
-      setHistoryTravels([]);
+      setHistoryTravels(null);
+    } finally {
+      setLoadingTravels(false);
     }
   }
 
@@ -64,11 +78,19 @@ function History() {
       [section]: willOpen,
     }));
 
-    if (section === "requests" && willOpen && historyRequests.length === 0) {
+    if (
+      section === "requests" &&
+      willOpen &&
+      (!historyRequests || historyRequests.items.length === 0)
+    ) {
       await loadTowRequests();
     }
 
-    if (section === "travels" && willOpen && historyTravels.length === 0) {
+    if (
+      section === "travels" &&
+      willOpen &&
+      (!historyTravels || historyTravels.items.length === 0)
+    ) {
       await loadTowTravels();
     }
   };
@@ -117,8 +139,26 @@ function History() {
         <div
           className={`history-content ${openedSections.requests ? "open" : ""}`}
         >
-          <RequestsGrid requests={historyRequests} />
+          {loadingRequests ? (
+            <LoadingSpinner />
+          ) : (
+            <>
+              <RequestsGrid requests={historyRequests?.items ?? []} />
+            </>
+          )}
         </div>
+        {openedSections.requests &&
+          historyRequests &&
+          historyRequests.totalPages > 1 && (
+            <Pagination
+              page={historyRequests.page}
+              totalPages={historyRequests.totalPages}
+              totalItems={historyRequests.totalItems}
+              pageSize={historyRequests.pageSize}
+              onPageChange={loadTowRequests}
+              isLoading={loadingRequests}
+            />
+          )}
       </div>
 
       <div className="history-section">
@@ -137,8 +177,26 @@ function History() {
         <div
           className={`history-content ${openedSections.travels ? "open" : ""}`}
         >
-          <TravelsGrid travels={historyTravels} />
+          {loadingTravels ? (
+            <LoadingSpinner />
+          ) : (
+            <>
+              <TravelsGrid travels={historyTravels?.items ?? []} />
+            </>
+          )}
         </div>
+        {openedSections.travels &&
+          historyTravels &&
+          historyTravels.totalPages > 1 && (
+            <Pagination
+              page={historyTravels.page}
+              totalPages={historyTravels.totalPages}
+              totalItems={historyTravels.totalItems}
+              pageSize={historyTravels.pageSize}
+              onPageChange={loadTowTravels}
+              isLoading={loadingTravels}
+            />
+          )}
       </div>
     </div>
   );

@@ -642,7 +642,7 @@ input {
 }
 
 button.primary {
-  background: linear-gradient(135deg, #ff7a2d, #ff5e00);
+  background: linear-gradient(135deg, #f16a20, #f26419);
   color: #fff;
   padding: 12px;
   border-radius: 10px;
@@ -1082,4 +1082,130 @@ button.waiting:hover {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+}
+
+.loading-spinner {
+  animation: spin 0.9s linear infinite, opacityPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes opacityPulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+.pagination-base {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.pagination-info {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.pagination-pages {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pagination-page-btn,
+.pagination-nav-btn {
+  height: 38px;
+  min-width: 38px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(229, 118, 57, 0.22);
+  background: rgba(15, 23, 42, 0.65);
+  color: #f8e7d8;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.pagination-page-btn:hover,
+.pagination-nav-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(229, 118, 57, 0.45);
+  background: rgba(229, 118, 57, 0.12);
+}
+
+.pagination-page-btn.active {
+  background: linear-gradient(
+    180deg,
+    rgba(229, 118, 57, 0.95),
+    rgba(180, 86, 41, 0.95)
+  );
+  color: #fff;
+  border-color: rgba(229, 118, 57, 0.95);
+  box-shadow: 0 0 0 1px rgba(229, 118, 57, 0.18);
+}
+
+.pagination-page-btn:disabled,
+.pagination-nav-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.pagination-dots {
+  color: rgba(255, 255, 255, 0.55);
+  padding: 0 4px;
+  font-weight: 700;
+}
+
+@media (max-width: 700px) {
+  .pagination-base {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pagination-controls {
+    justify-content: center;
+  }
+
+  .pagination-info {
+    text-align: center;
+  }
 }
