@@ -1130,6 +1130,7 @@ button.waiting:hover {
   color: rgba(255, 255, 255, 0.78);
   font-size: 14px;
   font-weight: 500;
+  padding-left: 10px;
 }
 
 .pagination-controls {
@@ -1148,14 +1149,15 @@ button.waiting:hover {
 
 .pagination-page-btn,
 .pagination-nav-btn {
-  height: 38px;
-  min-width: 38px;
+  height: 28px;
+  min-width: 35px;
   padding: 0 12px;
   border-radius: 10px;
   border: 1px solid rgba(229, 118, 57, 0.22);
   background: rgba(15, 23, 42, 0.65);
   color: #f8e7d8;
   font-weight: 600;
+  font-size: 12px;
   cursor: pointer;
   transition: 0.2s ease;
   display: inline-flex;
@@ -1174,8 +1176,8 @@ button.waiting:hover {
 .pagination-page-btn.active {
   background: linear-gradient(
     180deg,
-    rgba(229, 118, 57, 0.95),
-    rgba(180, 86, 41, 0.95)
+    rgba(221, 110, 50, 0.55),
+    rgba(173, 76, 30, 0.55)
   );
   color: #fff;
   border-color: rgba(229, 118, 57, 0.95);

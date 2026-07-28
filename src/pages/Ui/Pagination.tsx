@@ -16,18 +16,32 @@ function getVisiblePages(page: number, totalPages: number) {
 
   const pages: (number | "...")[] = [1];
 
-  if (page > 3) pages.push("...");
+  if (page > 4) {
+    pages.push("...");
+  } else if (page === 4) {
+    pages.push(2);
+  }
 
   const start = Math.max(2, page - 1);
   const end = Math.min(totalPages - 1, page + 1);
 
   for (let i = start; i <= end; i++) {
-    pages.push(i);
+    if (!pages.includes(i)) {
+      pages.push(i);
+    }
   }
 
-  if (page < totalPages - 2) pages.push("...");
+  if (page < totalPages - 3) {
+    pages.push("...");
+  } else if (page === totalPages - 3) {
+    if (!pages.includes(totalPages - 1)) {
+      pages.push(totalPages - 1);
+    }
+  }
 
-  pages.push(totalPages);
+  if (!pages.includes(totalPages)) {
+    pages.push(totalPages);
+  }
 
   return pages;
 }

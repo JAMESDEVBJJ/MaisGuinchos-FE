@@ -10,7 +10,7 @@ import ActivesGridRow from "./ActivesGridRow";
 function ActiveRequestsGrid() {
   const { activeTowsRequests } = useTowRequest();
 
-  return (
+  return activeTowsRequests.length > 0 ? (
     <div className="history-grid">
       <div className="history-grid-header">
         <span>Status</span>
@@ -33,12 +33,9 @@ function ActiveRequestsGrid() {
           />
         ))}
       </div>
-
-      {/* Caso não exista nenhuma solicitação */}
-      {/* <div className="history-grid-empty">
-        Nenhuma solicitação ativa.
-      </div> */}
     </div>
+  ) : (
+    <div className="history-grid-placeholder">Sem solicitações pendentes.</div>
   );
 }
 
