@@ -329,6 +329,11 @@ h3 {
   transition: transform 0.2s ease, background 0.2s ease, opacity 0.2s ease;
 }
 
+.back-button-detail {
+  left: 36px;
+  top: 20px;
+}
+
 .back-button:hover {
   transform: translateX(-3px);
 }

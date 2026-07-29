@@ -15,7 +15,8 @@ import type { TowTravelDTO } from "../../dtos/TowTravelDTO";
 import { RouteType, type RouteRealtimeDTO } from "../../dtos/RouteRealtimeDTO";
 import iconGuincho from "../../assets/icons/guinchoMarkup.png";
 import { toast } from "react-toastify";
-import{ SettingsButton } from "./SettingsButton";
+import { SettingsButton } from "./SettingsButton";
+import { LoadingSpinner } from "../Ui/LoadingSpinner";
 
 type DriverSideProps = {
   locationText: string;
@@ -61,6 +62,23 @@ export function DriverSideBar(props: DriverSideProps) {
     iconSize: [32, 32],
     iconAnchor: [16, 32],
   });
+
+  const [loadingStatus, setLoadingStatus] = useState(true);
+
+  useEffect(() => {
+    async function loadStatus() {
+      try {
+        const response = await api.get("/user/status");
+        setIsAvailable(response.data.status);
+      } catch (error) {
+        toast.error("Erro ao carregar status.");
+      } finally {
+        setLoadingStatus(false);
+      }
+    }
+
+    loadStatus();
+  }, []);
 
   const handleToggle = async () => {
     try {
@@ -277,8 +295,9 @@ export function DriverSideBar(props: DriverSideProps) {
   const buttonCounterClass = () => {
     if (selectedTow?.counterOfferRecused) return "secondary fullwidth disabled";
 
-    return `counter-btn sendButton  fullwidth  ${selectedTow?.status === 2 && "success"
-      }`;
+    return `counter-btn sendButton  fullwidth  ${
+      selectedTow?.status === 2 && "success"
+    }`;
   };
 
   const getTravelMessage = () => {
@@ -351,7 +370,9 @@ export function DriverSideBar(props: DriverSideProps) {
           return { ...prev, status: 4 };
         });
 
-        setTowsReceive((prev) => prev.filter((t) => t.id !== data.towRequestId));
+        setTowsReceive((prev) =>
+          prev.filter((t) => t.id !== data.towRequestId)
+        );
 
         setTowTravel(towTravel);
 
@@ -371,9 +392,7 @@ export function DriverSideBar(props: DriverSideProps) {
         }
 
         console.error("Erro ao tentar aceitar pedido de reboque", error);
-
       }
-
     }
   }
 
@@ -506,16 +525,22 @@ export function DriverSideBar(props: DriverSideProps) {
           <>
             <div className="sidebar-header">
               <SettingsButton />
-              <span className="status-label">
-                {isAvailable ? "Disponível" : "Indisponível"}
-              </span>
-
-              <div
-                className={`toggle ${isAvailable ? "active" : ""}`}
-                onClick={handleToggle}
-              >
-                <div className="toggle-circle" />
-              </div>
+              {loadingStatus && (
+                <LoadingSpinner size={25} padding={0}></LoadingSpinner>
+              )}
+              {!loadingStatus && (
+                <>
+                  <span className="status-label">
+                    {isAvailable ? "Disponível" : "Indisponível"}
+                  </span>
+                  <div
+                    className={`toggle ${isAvailable ? "active" : ""}`}
+                    onClick={handleToggle}
+                  >
+                    <div className="toggle-circle" />
+                  </div>
+                </>
+              )}
             </div>
             <div className="search">
               <InputLocation
@@ -564,24 +589,24 @@ export function DriverSideBar(props: DriverSideProps) {
             {(!towTravel ||
               towTravel?.status === TowTravelStatus.Finished ||
               towTravel?.status === TowTravelStatus.Cancelled) && (
-                <button
-                  className="back"
-                  onClick={() => {
-                    setSelectedTow(null);
-                    props.setRoute(null);
-                    props.setRouteG(null);
-                    setTowTravel(null);
+              <button
+                className="back"
+                onClick={() => {
+                  setSelectedTow(null);
+                  props.setRoute(null);
+                  props.setRouteG(null);
+                  setTowTravel(null);
 
-                    const maps = props.mapRef.current;
-                    if (driverMarkerRef.current && maps) {
-                      maps.removeLayer(driverMarkerRef.current);
-                      driverMarkerRef.current = null;
-                    }
-                  }}
-                >
-                  ⬅
-                </button>
-              )}
+                  const maps = props.mapRef.current;
+                  if (driverMarkerRef.current && maps) {
+                    maps.removeLayer(driverMarkerRef.current);
+                    driverMarkerRef.current = null;
+                  }
+                }}
+              >
+                ⬅
+              </button>
+            )}
 
             <h3 className="solicith3">{getTravelMessage()}</h3>
 
@@ -666,14 +691,14 @@ export function DriverSideBar(props: DriverSideProps) {
 
                   {towTravel.status ===
                     TowTravelStatus.ArrivedAtDestination && (
-                      <button
-                        disabled={loading}
-                        className={`accept-btn secondary contact-enabled`}
-                        onClick={() => finishTravel(towTravel)}
-                      >
-                        Finalizar serviço
-                      </button>
-                    )}
+                    <button
+                      disabled={loading}
+                      className={`accept-btn secondary contact-enabled`}
+                      onClick={() => finishTravel(towTravel)}
+                    >
+                      Finalizar serviço
+                    </button>
+                  )}
                 </>
               )}
               {!towTravel && selectedTow !== null && (
@@ -700,17 +725,18 @@ export function DriverSideBar(props: DriverSideProps) {
 
                   {(selectedTow.status !== 2 ||
                     selectedTow.counterOfferRecused) && (
-                      <button
-                        className={`accept-btn secondary contact-enabled margin-top ${selectedTow!.status === 4 && "accepted"
-                          }`}
-                        onClick={() => acceptTowRequest()}
-                        disabled={selectedTow.status === 4}
-                      >
-                        {selectedTow.status === 4
-                          ? "Solicitação aceita!"
-                          : "Aceitar"}
-                      </button>
-                    )}
+                    <button
+                      className={`accept-btn secondary contact-enabled margin-top ${
+                        selectedTow!.status === 4 && "accepted"
+                      }`}
+                      onClick={() => acceptTowRequest()}
+                      disabled={selectedTow.status === 4}
+                    >
+                      {selectedTow.status === 4
+                        ? "Solicitação aceita!"
+                        : "Aceitar"}
+                    </button>
+                  )}
 
                   {selectedTow.status != 4 && (
                     <button
@@ -724,12 +750,12 @@ export function DriverSideBar(props: DriverSideProps) {
                       {selectedTow.counterOfferRecused
                         ? "Countra proposta recusada!"
                         : selectedTow.status !== 2
-                          ? "Enviar contraproposta"
-                          : selectedTow.status === 2
-                            ? "Contraproposta enviada!"
-                            : selectedTow.status === 4
-                              ? "Contra proposta aceita!"
-                              : ""}
+                        ? "Enviar contraproposta"
+                        : selectedTow.status === 2
+                        ? "Contraproposta enviada!"
+                        : selectedTow.status === 4
+                        ? "Contra proposta aceita!"
+                        : ""}
                     </button>
                   )}
                 </>

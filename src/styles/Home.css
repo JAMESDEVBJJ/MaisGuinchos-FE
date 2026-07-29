@@ -1014,6 +1014,7 @@ button.waiting:hover {
   gap: 18px;
 }
 
+
 .detail-info {
   display: flex;
   flex-direction: column;
@@ -1023,14 +1024,31 @@ button.waiting:hover {
   margin-left: auto;
 }
 
+.detail-info.only-content {
+  padding-left: 10px;
+  flex: 1;
+  text-align: left;
+}
+
 .detail {
   padding-top: 15px;
+}
+
+.detail-with-back {
+  padding-top: 50px;
 }
 
 .driver-data {
   margin-left: 15px;
 }
 
+.detail-info.only-content .driver-data {
+  margin-left: 0px;
+}
+
+.detail-info.only-content .driver-data .phone {
+  padding-left: 0px;
+}
 .tow-extra {
   margin-top: 14px;
   display: flex;

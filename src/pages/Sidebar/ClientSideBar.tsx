@@ -839,7 +839,9 @@ export function ClientSideBar(props: ClientBarProps) {
               </div>
             </div>
 
-            {props.loading && <LoadingSpinner></LoadingSpinner>}
+            {props.loading && (
+              <LoadingSpinner size={65} padding={"35px 0px"}></LoadingSpinner>
+            )}
             {!props.loading && props.guinchos.length === 0 && (
               <div className="empty-state">
                 <p>Digite sua localização e procure por guinchos.</p>
@@ -858,14 +860,17 @@ export function ClientSideBar(props: ClientBarProps) {
           </>
         ) : (
           <div className="tow-details">
-            <div className="detail">
-              {(!towTravel ||
-                towTravel.status === TowTravelStatus.Cancelled ||
-                towTravel.status === TowTravelStatus.Finished) && (
-                <button className="back-button" onClick={handleBackToList}>
-                  <ArrowLeft size={22} />
-                </button>
-              )}
+            {(!towTravel ||
+              towTravel.status === TowTravelStatus.Cancelled ||
+              towTravel.status === TowTravelStatus.Finished) && (
+              <button
+                className="back-button back-button-detail"
+                onClick={handleBackToList}
+              >
+                <ArrowLeft size={22} />
+              </button>
+            )}
+            <div className="detail detail-with-back">
               <div className="detail-top">
                 <img
                   className={`detail-photo ${
@@ -925,7 +930,7 @@ export function ClientSideBar(props: ClientBarProps) {
                 )}
               </div>
               {loadingDriver || loadingRoute ? (
-                <LoadingSpinner></LoadingSpinner>
+                <LoadingSpinner size={65}></LoadingSpinner>
               ) : (
                 props.routeG &&
                 props.distanceKmG != null &&
