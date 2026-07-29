@@ -172,61 +172,79 @@ export function ClientSideBar(props: ClientBarProps) {
 
   const location = useLocation();
 
+  const [loadingDriver, setLoadingDriver] = useState(false);
+
   useEffect(() => {
     const driverId = location.state?.driverId;
 
     if (!driverId) return;
 
     async function loadDriver() {
-      const guincho: GuinchosDto | undefined = await getGuinchoByDriverId(
-        driverId
-      );
-      if (guincho) props.setSelectedGuincho(guincho);
+      try {
+        setLoadingDriver(true);
+
+        const guincho: GuinchosDto | undefined = await getGuinchoByDriverId(
+          driverId
+        );
+
+        if (guincho) {
+          props.setSelectedGuincho(guincho);
+        }
+      } finally {
+        setLoadingDriver(false);
+      }
     }
 
     loadDriver();
   }, [location.state]);
 
+  const [loadingRoute, setLoadingRoute] = useState(false);
+
   useEffect(() => {
     async function loadTowRequest() {
-      const selectedDriver = props.selectedGuincho;
-      if (!selectedDriver) return;
+      try {
+        setLoadingRoute(true);
 
-      const activeTow = activeTowsRequests.find(
-        (x) => x.driverId === selectedDriver.motorista.userId
-      );
+        const selectedDriver = props.selectedGuincho;
+        if (!selectedDriver) return;
 
-      if (!activeTow) return;
+        const activeTow = activeTowsRequests.find(
+          (x) => x.driverId === selectedDriver.motorista.userId
+        );
 
-      const status = mapTowRequestStatus(activeTow.status);
-      props.setHasActiveTowRequest(true);
-      props.setRequestStatus(status);
-      setTowRequest(mapToTowRequest(activeTow));
+        if (!activeTow) return;
 
-      const routes: {
-        toPickup: RouteDTO;
-        toDestination: RouteDTO;
-      } | null = await calculateRoutes(
-        selectedDriver.motorista.lat,
-        selectedDriver.motorista.lon,
+        const status = mapTowRequestStatus(activeTow.status);
+        props.setHasActiveTowRequest(true);
+        props.setRequestStatus(status);
+        setTowRequest(mapToTowRequest(activeTow));
 
-        activeTow.pickupLat,
-        activeTow.pickupLon,
+        const routes: { toPickup: RouteDTO; toDestination: RouteDTO } | null =
+          await calculateRoutes(
+            selectedDriver.motorista.lat,
+            selectedDriver.motorista.lon,
+            activeTow.pickupLat,
+            activeTow.pickupLon,
+            activeTow.dropoffLat,
+            activeTow.dropoffLon
+          );
 
-        activeTow.dropoffLat,
-        activeTow.dropoffLon
-      );
-      if (!routes) return;
+        if (!routes) return;
 
-      setRoutes(routes);
-      props.setDistanceKmG(routes.toPickup.distanceKm);
-      props.setPriceG(routes.toPickup.priceEstimate);
-      props.setDurationMinG(routes.toPickup.durationMinutes);
-      props.setRouteG(
-        routes.toPickup.polyline.map((c) => {
-          return [c.lat, c.lon] as [number, number];
-        })
-      );
+        setRoutes(routes);
+        props.setDistanceKmG(routes.toPickup.distanceKm);
+        props.setPriceG(routes.toPickup.priceEstimate);
+        props.setDurationMinG(routes.toPickup.durationMinutes);
+        props.setRouteG(
+          routes.toPickup.polyline.map(
+            (c) => [c.lat, c.lon] as [number, number]
+          )
+        );
+      } catch (error) {
+        toast.error("Erro ao carregar a rota.");
+      } finally {
+        setLoadingRoute(false);
+      }
     }
 
     loadTowRequest();
@@ -896,7 +914,10 @@ export function ClientSideBar(props: ClientBarProps) {
                   </button>
                 )}
               </div>
-              {props.routeG &&
+              {loadingDriver || loadingRoute ? (
+                <LoadingSpinner></LoadingSpinner>
+              ) : (
+                props.routeG &&
                 props.distanceKmG != null &&
                 props.durationMinG != null &&
                 props.priceEstimateG != null &&
@@ -926,7 +947,8 @@ export function ClientSideBar(props: ClientBarProps) {
                       {buttonCounterAndSubmitText()}
                     </button>
                   </>
-                )}
+                )
+              )}
               {towTravel && (
                 <>
                   <TowRequestData
