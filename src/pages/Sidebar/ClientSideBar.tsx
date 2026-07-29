@@ -591,45 +591,55 @@ export function ClientSideBar(props: ClientBarProps) {
   async function calcularRotaComGuincho() {
     if (!props.selectedGuincho) return;
 
-    const origemLat = props.selectedGuincho.motorista.lat;
-    const origemLon = props.selectedGuincho.motorista.lon;
+    try {
+      setLoadingRoute(true);
 
-    const destino = props.userLocation;
+      const origemLat = props.selectedGuincho.motorista.lat;
+      const origemLon = props.selectedGuincho.motorista.lon;
 
-    const response = await api.post("/maps/route/calculate/driver", {
-      originLat: origemLat,
-      originLon: origemLon,
-      destinationLat: destino?.lat,
-      destinationLon: destino?.lon,
-    });
+      const destino = props.userLocation;
 
-    const route = response.data;
+      const response = await api.post("/maps/route/calculate/driver", {
+        originLat: origemLat,
+        originLon: origemLon,
+        destinationLat: destino?.lat,
+        destinationLon: destino?.lon,
+      });
 
-    const routePositions = route.polyline.map((p: CoordinateDto) => [
-      p.lat,
-      p.lon,
-    ]);
+      const route = response.data;
 
-    props.setRouteG(routePositions);
-    props.setDistanceKmG(route.distanceKm);
-    props.setDurationMinG(route.durationMinutes);
-    props.setPriceG(route.priceEstimate);
+      const routePositions = route.polyline.map((p: CoordinateDto) => [
+        p.lat,
+        p.lon,
+      ]);
 
-    const map = props.mapRef.current;
-    if (!map) return;
+      props.setRouteG(routePositions);
+      props.setDistanceKmG(route.distanceKm);
+      props.setDurationMinG(route.durationMinutes);
+      props.setPriceG(route.priceEstimate);
 
-    if (routeLayerRef.current) {
-      map.removeLayer(routeLayerRef.current);
-      routeLayerRef.current = null;
+      const map = props.mapRef.current;
+      if (!map) return;
+
+      if (routeLayerRef.current) {
+        map.removeLayer(routeLayerRef.current);
+        routeLayerRef.current = null;
+      }
+
+      const poly = L.polyline(routePositions, {
+        weight: 4,
+        opacity: 0.6,
+      });
+
+      map.flyToBounds(poly.getBounds(), {
+        padding: [60, 60],
+        duration: 0.5,
+      });
+    } catch (error) {
+      toast.error("Erro ao calcular a rota.");
+    } finally {
+      setLoadingRoute(false);
     }
-
-    const poly = L.polyline(routePositions, { weight: 4, opacity: 0.6 });
-
-    map.flyToBounds(poly.getBounds(), {
-      padding: [60, 60],
-      duration: 0.5,
-    });
-    console.dir(props.route);
   }
 
   function handleBackToList() {
