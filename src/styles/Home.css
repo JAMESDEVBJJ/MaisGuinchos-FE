@@ -128,6 +128,7 @@ input:focus {
   box-shadow: 0 0 0 2px rgb(234, 84, 3, 0.7), 0 4px 10px rgba(0, 0, 0, 0.3);
   border-color: var(--primary);
 }
+
 input {
   padding: 12px;
   border-radius: 8px;
@@ -171,19 +172,29 @@ input {
 }
 
 .search button {
-  height: 40px;
-  width: 90%;
-  align-self: center;
 
-  background-color: #f26419;
+  height: 48px;
+  width: calc(100% - 34px);
+  margin: 10px auto 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 
+  background: linear-gradient(160deg,
+      #ff7b2c 10%,
+      #f26419 100%);
   border: none;
   border-radius: 12px;
+  box-shadow:
+    0 4px 10px rgba(242, 100, 25, .25);
 
   font-family: "Inter", sans-serif;
   font-size: 17.5px;
-  font-weight: 700;
-  letter-spacing: 1px;
+  font-weight: 600;
+  letter-spacing: 0.9px;
+  text-align: center;
+  text-transform: uppercase;
 
   color: white;
 
@@ -194,10 +205,13 @@ input {
 
 .search button:hover {
   filter: brightness(0.79);
+  box-shadow:
+    0 4px 10px rgba(242, 100, 25, 0);
 }
 
-.search button:active {
-  transform: scale(0.96);
+.search button:active{
+
+    transform:translateY(1px) scale(.98);
 }
 
 .empty-state {
@@ -265,6 +279,7 @@ input {
 
   transition: box-shadow 0.25s ease, transform 0.15s ease, filter 0.2s ease;
 }
+
 .result-card:hover {
   transform: scale(1.02);
   filter: brightness(1.08);
@@ -370,6 +385,7 @@ input {
   font-weight: 700;
   color: aliceblue;
 }
+
 .driver-card {
   border-left: 4px solid #ff7a00;
 }
@@ -399,6 +415,7 @@ input {
   color: #3a4a55;
   margin: 0 6px;
 }
+
 .distance {
   font-size: 0.95rem;
   opacity: 0.85;
@@ -485,10 +502,12 @@ input {
 .search {
   margin-bottom: 12px;
 }
+
 .input-wrapper {
   position: relative;
   margin-bottom: 8px;
 }
+
 .input-wrapper input {
   width: 100%;
   padding: 10px 40px 10px 12px;
@@ -496,6 +515,7 @@ input {
   border: none;
   font-size: 14px;
 }
+
 .input-icon {
   position: absolute;
   right: 10px;
@@ -524,6 +544,7 @@ input {
   gap: 8px;
   margin-top: 8px;
 }
+
 .card {
   display: flex;
   gap: 10px;
@@ -533,18 +554,22 @@ input {
   border-radius: 8px;
   cursor: pointer;
 }
+
 .card-thumb {
   width: 54px;
   height: 54px;
   border-radius: 50%;
   object-fit: cover;
 }
+
 .card-body {
   flex: 1;
 }
+
 .card-name {
   font-weight: 700;
 }
+
 .card-sub {
   font-size: 12px;
   opacity: 0.7;
@@ -656,6 +681,7 @@ button.primary {
   cursor: pointer;
   transition: filter 0.2s ease, transform 0.1s ease;
 }
+
 button.primary:hover {
   filter: brightness(0.8);
 }
@@ -741,6 +767,7 @@ button.waiting:hover {
   display: inline-block;
   transform: translateY(1px);
 }
+
 .yellow {
   color: yellow;
 }
@@ -963,6 +990,7 @@ button.waiting:hover {
 .tow-details {
   color: white;
 }
+
 .solicith3 {
   padding-bottom: 40px;
   font-size: 22px;
@@ -1049,6 +1077,7 @@ button.waiting:hover {
 .detail-info.only-content .driver-data .phone {
   padding-left: 0px;
 }
+
 .tow-extra {
   margin-top: 14px;
   display: flex;
@@ -1124,6 +1153,7 @@ button.waiting:hover {
 }
 
 @keyframes opacityPulse {
+
   0%,
   100% {
     opacity: 0.6;
@@ -1192,11 +1222,9 @@ button.waiting:hover {
 }
 
 .pagination-page-btn.active {
-  background: linear-gradient(
-    180deg,
-    rgba(221, 110, 50, 0.55),
-    rgba(173, 76, 30, 0.55)
-  );
+  background: linear-gradient(180deg,
+      rgba(221, 110, 50, 0.55),
+      rgba(173, 76, 30, 0.55));
   color: #fff;
   border-color: rgba(229, 118, 57, 0.95);
   box-shadow: 0 0 0 1px rgba(229, 118, 57, 0.18);

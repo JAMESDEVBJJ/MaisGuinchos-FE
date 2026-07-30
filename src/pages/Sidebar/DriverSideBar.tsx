@@ -68,7 +68,7 @@ export function DriverSideBar(props: DriverSideProps) {
   useEffect(() => {
     async function loadStatus() {
       try {
-        const response = await api.get("/user/status");
+        const response = await api.get("/guincho/status");
         setIsAvailable(response.data.status);
       } catch (error) {
         toast.error("Erro ao carregar status.");
@@ -295,9 +295,8 @@ export function DriverSideBar(props: DriverSideProps) {
   const buttonCounterClass = () => {
     if (selectedTow?.counterOfferRecused) return "secondary fullwidth disabled";
 
-    return `counter-btn sendButton  fullwidth  ${
-      selectedTow?.status === 2 && "success"
-    }`;
+    return `counter-btn sendButton  fullwidth  ${selectedTow?.status === 2 && "success"
+      }`;
   };
 
   const getTravelMessage = () => {
@@ -551,7 +550,7 @@ export function DriverSideBar(props: DriverSideProps) {
               />
             </div>
 
-            {towReceived && towsReceive.length > 0 && (
+            {towReceived && towsReceive.length > 0 ? (
               <>
                 <span className="results-title">Pedidos de reboque</span>
 
@@ -581,6 +580,16 @@ export function DriverSideBar(props: DriverSideProps) {
                   })}
                 </div>
               </>
+            ) : (
+              <>
+                <div className="results-title">
+                  Nenhum pedido de reboque recebido.
+                </div>
+                <div className="results">
+
+                </div>
+              </>
+
             )}
           </>
         )}
@@ -589,24 +598,24 @@ export function DriverSideBar(props: DriverSideProps) {
             {(!towTravel ||
               towTravel?.status === TowTravelStatus.Finished ||
               towTravel?.status === TowTravelStatus.Cancelled) && (
-              <button
-                className="back"
-                onClick={() => {
-                  setSelectedTow(null);
-                  props.setRoute(null);
-                  props.setRouteG(null);
-                  setTowTravel(null);
+                <button
+                  className="back"
+                  onClick={() => {
+                    setSelectedTow(null);
+                    props.setRoute(null);
+                    props.setRouteG(null);
+                    setTowTravel(null);
 
-                  const maps = props.mapRef.current;
-                  if (driverMarkerRef.current && maps) {
-                    maps.removeLayer(driverMarkerRef.current);
-                    driverMarkerRef.current = null;
-                  }
-                }}
-              >
-                ⬅
-              </button>
-            )}
+                    const maps = props.mapRef.current;
+                    if (driverMarkerRef.current && maps) {
+                      maps.removeLayer(driverMarkerRef.current);
+                      driverMarkerRef.current = null;
+                    }
+                  }}
+                >
+                  ⬅
+                </button>
+              )}
 
             <h3 className="solicith3">{getTravelMessage()}</h3>
 
@@ -691,14 +700,14 @@ export function DriverSideBar(props: DriverSideProps) {
 
                   {towTravel.status ===
                     TowTravelStatus.ArrivedAtDestination && (
-                    <button
-                      disabled={loading}
-                      className={`accept-btn secondary contact-enabled`}
-                      onClick={() => finishTravel(towTravel)}
-                    >
-                      Finalizar serviço
-                    </button>
-                  )}
+                      <button
+                        disabled={loading}
+                        className={`accept-btn secondary contact-enabled`}
+                        onClick={() => finishTravel(towTravel)}
+                      >
+                        Finalizar serviço
+                      </button>
+                    )}
                 </>
               )}
               {!towTravel && selectedTow !== null && (
@@ -725,18 +734,17 @@ export function DriverSideBar(props: DriverSideProps) {
 
                   {(selectedTow.status !== 2 ||
                     selectedTow.counterOfferRecused) && (
-                    <button
-                      className={`accept-btn secondary contact-enabled margin-top ${
-                        selectedTow!.status === 4 && "accepted"
-                      }`}
-                      onClick={() => acceptTowRequest()}
-                      disabled={selectedTow.status === 4}
-                    >
-                      {selectedTow.status === 4
-                        ? "Solicitação aceita!"
-                        : "Aceitar"}
-                    </button>
-                  )}
+                      <button
+                        className={`accept-btn secondary contact-enabled margin-top ${selectedTow!.status === 4 && "accepted"
+                          }`}
+                        onClick={() => acceptTowRequest()}
+                        disabled={selectedTow.status === 4}
+                      >
+                        {selectedTow.status === 4
+                          ? "Solicitação aceita!"
+                          : "Aceitar"}
+                      </button>
+                    )}
 
                   {selectedTow.status != 4 && (
                     <button
@@ -750,12 +758,12 @@ export function DriverSideBar(props: DriverSideProps) {
                       {selectedTow.counterOfferRecused
                         ? "Countra proposta recusada!"
                         : selectedTow.status !== 2
-                        ? "Enviar contraproposta"
-                        : selectedTow.status === 2
-                        ? "Contraproposta enviada!"
-                        : selectedTow.status === 4
-                        ? "Contra proposta aceita!"
-                        : ""}
+                          ? "Enviar contraproposta"
+                          : selectedTow.status === 2
+                            ? "Contraproposta enviada!"
+                            : selectedTow.status === 4
+                              ? "Contra proposta aceita!"
+                              : ""}
                     </button>
                   )}
                 </>
