@@ -209,9 +209,8 @@ input {
     0 4px 10px rgba(242, 100, 25, 0);
 }
 
-.search button:active{
-
-    transform:translateY(1px) scale(.98);
+.search button:active {
+  transform: translateY(1px) scale(.98);
 }
 
 .empty-state {

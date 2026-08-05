@@ -140,8 +140,6 @@ const HomePage = () => {
             lat: response.data.latitude,
             lon: response.data.longitude,
           });
-        } else {
-          setUserLocation({ lat: -9.854179, lon: -51.648332 });
         }
       } catch (error: any) {
         const data = error.response?.data;
@@ -157,8 +155,6 @@ const HomePage = () => {
         } else {
           toast.error("Erro ao buscar última localização");
         }
-
-        setUserLocation({ lat: -9.854179, lon: -51.648332 });
       }
     }
     loadLastLocation();
@@ -167,7 +163,7 @@ const HomePage = () => {
   useEffect(() => {
     const loadTow = async () => {
       const response = await api.get("/towTravel/pending");
-      
+
       const towPending: TowTravelResponseDTO | null = response.data;
       if (towPending) {
         const towTravel: TowTravelDTO = {
