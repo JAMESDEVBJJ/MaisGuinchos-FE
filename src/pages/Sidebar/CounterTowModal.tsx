@@ -41,7 +41,6 @@ export default function CounterOfferModal({
   setTowsReceived,
 }: CounterOfferModalProps) {
   const [percent, setPercent] = useState(5);
-  const [reason, setReason] = useState("");
   const [customReason, setCustomReason] = useState("");
   const [reasonsSelected, setReasonsSelected] = useState<string[]>([]);
 
@@ -79,8 +78,6 @@ export default function CounterOfferModal({
       if (!reasonString.endsWith(".")) {
         reasonString += ".";
       }
-
-      setReason(reasonString);
 
       const response = await api.put(
         `/towRequests/${towRequest.id}/counter-offer`,

@@ -189,7 +189,6 @@ input {
   box-shadow:
     0 4px 10px rgba(242, 100, 25, .25);
 
-  font-family: "Inter", sans-serif;
   font-size: 17.5px;
   font-weight: 600;
   letter-spacing: 0.9px;
@@ -665,30 +664,47 @@ input {
   gap: 10px;
 }
 
+
 button.primary {
-  background: linear-gradient(135deg, #f16a20, #f26419);
-  color: #fff;
+  background: linear-gradient(160deg, #ff7b2c 10%, #f26419 100%);
+  color: white;
   padding: 12px;
-  border-radius: 10px;
   border: none;
+  border-radius: 12px;
   cursor: pointer;
   font-weight: 600;
-  letter-spacing: 0.5px;
-  font-family: "Lucida Sans", sans-serif;
-  font-size: 17px;
-  color: white;
-  cursor: pointer;
+  letter-spacing: 0.9px;
+  font-size: 14.5px;
   transition: filter 0.2s ease, transform 0.1s ease;
+
+  height: 40px;
+  width: calc(100% - 34px);
+  margin: 10px auto 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 4px 10px rgba(242, 100, 25, .25);
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.btn-search {
+  justify-content: space-between;
 }
 
 button.primary:hover {
-  filter: brightness(0.8);
+  filter: brightness(0.79);
+  box-shadow:
+    0 4px 10px rgba(242, 100, 25, 0);
 }
 
 button.primary:active {
-  transform: scale(0.97);
+  transform: translateY(1px) scale(.98);
 }
 
+
+/*
 button.secondary {
   background: transparent;
   color: #cbd5e1;
@@ -735,6 +751,60 @@ button.waiting {
 button.waiting:hover {
   filter: none;
   cursor: default;
+}
+*/
+
+
+.btn {
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: filter 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.btn:hover {
+  filter: brightness(1.1);
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn:disabled {
+  cursor: default;
+  filter: none;
+  opacity: 0.6;
+}
+
+.accept-btn {
+  margin-top: 20px;
+  background: linear-gradient(135deg, #1ead52, #16a34a);
+  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.16);
+  letter-spacing: 0.5px;
+}
+
+.counter-btn {
+  margin-top: 10px;
+  background: linear-gradient(135deg, #f2b632, #d99a1e);
+  color: #1f2937;
+  box-shadow: 0 4px 14px rgba(242, 182, 50, 0.15);
+}
+
+.btn.sendButton.counter-btn:active {
+  transform: none;
+}
+
+.btn.counter-btn:active {
+  transform: none;
 }
 
 .route-summary {
@@ -1008,27 +1078,6 @@ button.waiting:hover {
   display: flex;
   flex-direction: column;
   gap: 20px;
-}
-
-.accept-btn {
-  margin-top: 20px;
-  width: 100%;
-  padding: 10px;
-  background: #3bb273;
-  border: none;
-  border-radius: 6px;
-  color: white;
-  cursor: pointer;
-}
-
-.counter-btn {
-  margin-top: 10px;
-  width: 100%;
-  padding: 10px;
-  background: #f2b632;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
 }
 
 .client-data {

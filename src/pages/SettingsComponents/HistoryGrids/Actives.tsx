@@ -40,28 +40,3 @@ function ActiveRequestsGrid() {
 }
 
 export default ActiveRequestsGrid;
-
-function getTowRequestStatus(status: number): string {
-  switch (status) {
-    case 1:
-      return "Aguardando resposta do motorista";
-
-    case 2:
-      return "Contraproposta enviada";
-
-    case 3:
-      return "Contraproposta recusada";
-
-    case 4:
-      return "Aceita";
-
-    case 5:
-      return "Recusada";
-
-    case 6:
-      return "Cancelada";
-
-    default:
-      return "Status desconhecido";
-  }
-}

@@ -1,4 +1,3 @@
-import { FaTruckPickup } from "react-icons/fa6";
 
 type TowTruckIconProps = {
   size?: number;

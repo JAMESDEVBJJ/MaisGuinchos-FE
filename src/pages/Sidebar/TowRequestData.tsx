@@ -26,7 +26,7 @@ export function TowRequestData({
   distanceKmG,
   durationMinG,
   priceEstimateG,
-  modelo, //trazer e mostra
+  //modelo, //trazer e mostra
   totalDistanceKm,
   suggestedPrice,
 }: TowRequestDataProps) {

@@ -293,9 +293,9 @@ export function DriverSideBar(props: DriverSideProps) {
   }, []);
 
   const buttonCounterClass = () => {
-    if (selectedTow?.counterOfferRecused) return "secondary fullwidth disabled";
+    if (selectedTow?.counterOfferRecused) return "btn fullwidth disabled";
 
-    return `counter-btn sendButton  fullwidth  ${selectedTow?.status === 2 && "success"
+    return `btn counter-btn sendButton  fullwidth  ${selectedTow?.status === 2 && "success"
       }`;
   };
 
@@ -691,7 +691,7 @@ export function DriverSideBar(props: DriverSideProps) {
                   {towTravel.status === TowTravelStatus.ArrivedAtPickup && (
                     <button
                       disabled={loading}
-                      className={`accept-btn secondary contact-enabled`}
+                      className={`btn accept-btn secondary contact-enabled`}
                       onClick={() => startJourney(towTravel)}
                     >
                       Iniciar trajeto
@@ -702,7 +702,7 @@ export function DriverSideBar(props: DriverSideProps) {
                     TowTravelStatus.ArrivedAtDestination && (
                       <button
                         disabled={loading}
-                        className={`accept-btn secondary contact-enabled`}
+                        className={`btn accept-btn contact-enabled`}
                         onClick={() => finishTravel(towTravel)}
                       >
                         Finalizar serviço
@@ -735,7 +735,7 @@ export function DriverSideBar(props: DriverSideProps) {
                   {(selectedTow.status !== 2 ||
                     selectedTow.counterOfferRecused) && (
                       <button
-                        className={`accept-btn secondary contact-enabled margin-top ${selectedTow!.status === 4 && "accepted"
+                        className={`btn accept-btn contact-enabled margin-top ${selectedTow!.status === 4 && "accepted"
                           }`}
                         onClick={() => acceptTowRequest()}
                         disabled={selectedTow.status === 4}

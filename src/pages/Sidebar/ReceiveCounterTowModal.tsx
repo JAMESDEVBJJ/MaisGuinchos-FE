@@ -83,11 +83,9 @@ export default function ReceiveCounterTowModal({
     try {
       if (!props.towCounterReceived?.id) return;
 
-      const response = await api.put(
+      await api.put(
         `/towRequests/${props.towCounterReceived.id}/reject-counter-offer`
       );
-
-      const { status } = response.data;
 
       props.setShowGetCounterModal(false);
       props.setRequestStatus("counterOfferRejected");
@@ -137,13 +135,13 @@ export default function ReceiveCounterTowModal({
         </div>
 
         <button
-          className={`secondary fullwidth ${"contact-enabled"}`}
+          className={`btn accept-btn fullwidth contact-enabled`}
           onClick={submit}
         >
           Aceitar
         </button>
 
-        <button className="sendButton" onClick={cancel}>
+        <button className="btn sendButton" onClick={cancel}>
           Recusar (manter anterior)
         </button>
       </div>

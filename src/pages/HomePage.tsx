@@ -1,4 +1,4 @@
-import { useEffect, useState, type SetStateAction } from "react";
+import { useEffect, useState  } from "react";
 import "../styles/Home.css";
 import { api } from "../services/api";
 import { Maps } from "./Maps";

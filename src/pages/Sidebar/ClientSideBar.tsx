@@ -775,19 +775,19 @@ export function ClientSideBar(props: ClientBarProps) {
       props.requestStatus === "waitingDriver" ||
       props.requestStatus === "counterOfferRejected"
     )
-      return "secondary fullwidth waiting";
+      return "btn counter-btn fullwidth waiting";
 
     if (props.requestStatus === "counterOfferReceived")
-      return "secondary fullwidth contact-enabled ";
+      return "btn accept-btn fullwidth contact-enabled ";
 
     if (props.requestStatus === "accepted") {
-      return "secondary contact-enabled accepted fullwidth";
+      return "btn contact-enabled accepted fullwidth";
     }
 
     if (props.routeG && props.route)
-      return "secondary fullwidth contact-enabled";
+      return "btn accept-btn fullwidth contact-enabled";
 
-    return "secondary fullwidth";
+    return "btn accept-btn fullwidth";
   };
 
   const getStatusMessage = (
@@ -835,7 +835,13 @@ export function ClientSideBar(props: ClientBarProps) {
                   <img src={iconDestination} className="input-icon" />
                 </div>
 
-                <button onClick={props.buscarGuinchos}>Buscar guinchos</button>
+                <button onClick={props.buscarGuinchos} className="btn-search">
+                  Buscar guinchos
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                </button>
               </div>
             </div>
 
@@ -863,19 +869,18 @@ export function ClientSideBar(props: ClientBarProps) {
             {(!towTravel ||
               towTravel.status === TowTravelStatus.Cancelled ||
               towTravel.status === TowTravelStatus.Finished) && (
-              <button
-                className="back-button back-button-detail"
-                onClick={handleBackToList}
-              >
-                <ArrowLeft size={22} />
-              </button>
-            )}
+                <button
+                  className="back-button back-button-detail"
+                  onClick={handleBackToList}
+                >
+                  <ArrowLeft size={22} />
+                </button>
+              )}
             <div className="detail detail-with-back">
               <div className="detail-top">
                 <img
-                  className={`detail-photo ${
-                    isDefault ? "default-photo" : ""
-                  } ${props.hideDriverPhoto ? "hide" : ""}`}
+                  className={`detail-photo ${isDefault ? "default-photo" : ""
+                    } ${props.hideDriverPhoto ? "hide" : ""}`}
                   src={
                     isDefault ? defaultUserPng : `https://localhost:7120${foto}`
                   }
@@ -883,9 +888,8 @@ export function ClientSideBar(props: ClientBarProps) {
                 />
 
                 <div
-                  className={`detail-info ${
-                    props.hideDriverPhoto ? "only-content" : ""
-                  }`}
+                  className={`detail-info ${props.hideDriverPhoto ? "only-content" : ""
+                    }`}
                 >
                   {towTravel ? (
                     <h3>{getStatusMessage(towTravel.status, driverName)}</h3>
@@ -922,9 +926,14 @@ export function ClientSideBar(props: ClientBarProps) {
               <div className="detail-actions">
                 {!towTravel && !props.hasActiveTowRequest && (
                   <button
-                    className="primary fullwidth"
+                    className="btn primary fullwidth"
                     onClick={calcularRotaComGuincho}
                   >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="6" cy="19" r="3" />
+                      <path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15" />
+                      <circle cx="18" cy="5" r="3" />
+                    </svg>
                     Calcular rota
                   </button>
                 )}
@@ -1041,26 +1050,25 @@ export function ClientSideBar(props: ClientBarProps) {
             </div>
 
             <button
-              className={`secondary fullwidth ${
-                props.requestStatus === "waitingDriver"
-                  ? "waiting"
-                  : props.routeG && props.route
+              className={`btn counter-btn fullwidth ${props.requestStatus === "waitingDriver"
+                ? "waiting"
+                : props.routeG && props.route
                   ? "contact-enabled"
                   : ""
-              }`}
+                }`}
               disabled={
                 serviceIsDisabled || props.requestStatus === "waitingDriver"
               }
               onClick={handleConfirmSend}
             >
               {props.requestStatus === "waitingDriver" ||
-              props.requestStatus === "counterOfferRejected"
+                props.requestStatus === "counterOfferRejected"
                 ? `Aguardando motorista${dots}`
                 : props.requestStatus === "counterOfferReceived"
-                ? "Contraproposta recebida!"
-                : props.requestStatus === "sending"
-                ? "Enviando..."
-                : "Solicitar Guincho"}
+                  ? "Contraproposta recebida!"
+                  : props.requestStatus === "sending"
+                    ? "Enviando..."
+                    : "Solicitar Guincho"}
             </button>
           </div>
         </div>
