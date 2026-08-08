@@ -17,6 +17,7 @@ import iconGuincho from "../../assets/icons/guinchoMarkup.png";
 import { toast } from "react-toastify";
 import { SettingsButton } from "./SettingsButton";
 import { LoadingSpinner } from "../Ui/LoadingSpinner";
+import { TowRequestStatus } from "../../utils/towsRequestsUtils";
 
 type DriverSideProps = {
   locationText: string;
@@ -293,9 +294,9 @@ export function DriverSideBar(props: DriverSideProps) {
   }, []);
 
   const buttonCounterClass = () => {
-    if (selectedTow?.counterOfferRecused) return "btn fullwidth disabled";
+    if (selectedTow?.status === TowRequestStatus.CounterOfferRejected) return "btn fullwidth disabled counter-btn";
 
-    return `btn counter-btn sendButton  fullwidth  ${selectedTow?.status === 2 && "success"
+    return `btn counter-btn sendButton  fullwidth  ${selectedTow?.status === TowRequestStatus.Accepted && "success"
       }`;
   };
 
@@ -746,24 +747,21 @@ export function DriverSideBar(props: DriverSideProps) {
                       </button>
                     )}
 
-                  {selectedTow.status != 4 && (
+                  {selectedTow.status != TowRequestStatus.Accepted && (
                     <button
                       className={buttonCounterClass()}
                       onClick={() => setShowCounterModal(!showCounterModal)}
                       disabled={
-                        selectedTow.status === 2 ||
+                        selectedTow.status === TowRequestStatus.CounterOfferRejected ||
                         selectedTow.counterOfferRecused
                       }
                     >
-                      {selectedTow.counterOfferRecused
-                        ? "Countra proposta recusada!"
-                        : selectedTow.status !== 2
+                      {selectedTow.status === TowRequestStatus.CounterOfferRejected
+                        ? "Contra proposta recusada!"
+                        : selectedTow.status === TowRequestStatus.WaitingDriverResponse
                           ? "Enviar contraproposta"
-                          : selectedTow.status === 2
-                            ? "Contraproposta enviada!"
-                            : selectedTow.status === 4
-                              ? "Contra proposta aceita!"
-                              : ""}
+                          : selectedTow.status === TowRequestStatus.CounterOfferSent
+                            ? "Contraproposta enviada!" : ""}
                     </button>
                   )}
                 </>

@@ -168,6 +168,8 @@ export function ClientSideBar(props: ClientBarProps) {
     popupAnchor: [0, -36],
   });
 
+  const abortControllerRef = useRef<AbortController | null>(null);
+
   const { activeTowsRequests } = useTowRequest();
 
   const location = useLocation();
@@ -588,8 +590,24 @@ export function ClientSideBar(props: ClientBarProps) {
     props.setIsResizing(true);
   }
 
+  useEffect(() => {
+    return () => {
+      abortControllerRef.current?.abort();
+      props.setRouteG(null);
+      props.setDistanceKmG(null);
+      props.setDurationMinG(null);
+      props.setPriceG(null);
+    };
+  }, []);
+
   async function calcularRotaComGuincho() {
     if (!props.selectedGuincho) return;
+
+    abortControllerRef.current?.abort();
+
+    const abortController = new AbortController();
+
+    abortControllerRef.current = abortController;
 
     try {
       setLoadingRoute(true);
@@ -604,7 +622,11 @@ export function ClientSideBar(props: ClientBarProps) {
         originLon: origemLon,
         destinationLat: destino?.lat,
         destinationLon: destino?.lon,
+      }, {
+        signal: abortController.signal,
       });
+
+      if (abortController.signal.aborted) return;
 
       const route = response.data;
 
@@ -635,10 +657,18 @@ export function ClientSideBar(props: ClientBarProps) {
         padding: [60, 60],
         duration: 0.5,
       });
-    } catch (error) {
+    } catch (error: any) {
+
+      if (error?.code === "ERR_CANCELED") {
+        return;
+      }
+
       toast.error("Erro ao calcular a rota.");
+
     } finally {
-      setLoadingRoute(false);
+      if (!abortController.signal.aborted) {
+        setLoadingRoute(false);
+      }
     }
   }
 
@@ -669,6 +699,11 @@ export function ClientSideBar(props: ClientBarProps) {
       props.setHasActiveTowRequest(false);
       props.setRoute(null);
     }
+
+
+    abortControllerRef.current?.abort();
+    setLoadingRoute(false);
+
 
     props.setPriceG(null);
     props.setDistanceKmG(null);
@@ -1050,10 +1085,10 @@ export function ClientSideBar(props: ClientBarProps) {
             </div>
 
             <button
-              className={`btn counter-btn fullwidth ${props.requestStatus === "waitingDriver"
-                ? "waiting"
+              className={`btn fullwidth ${props.requestStatus === "waitingDriver"
+                ? "counter-btn  waiting"
                 : props.routeG && props.route
-                  ? "contact-enabled"
+                  ? "contact-enabled accept-btn"
                   : ""
                 }`}
               disabled={

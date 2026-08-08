@@ -2,6 +2,9 @@ import { useState } from "react";
 import { useTowTravel } from "../../contexts/TowTravelContext";
 import { useAuth } from "../../contexts/AuthContext";
 import { TowTravelStatus } from "../../utils/enums/TowTravelStatus";
+import { LongArrow } from "../Ui/LongArrow";
+
+
 type TowRequestDataProps = {
   distanceKm: number;
   durationMin: number;
@@ -126,11 +129,10 @@ export function TowRequestData({
 
       {showDetails && user?.isClient && !towTravel && (
         <div className="route-breakdown">
-          {" "}
           <p>
             <strong>
               Guincho
-              <span className="arrow yellow"> → </span>
+              <LongArrow className="arrow-yellow" />
               Você
             </strong>{" "}
             {priceEstimateG.toFixed(0)} R$ {distanceKmG.toFixed(0)} km
@@ -138,7 +140,7 @@ export function TowRequestData({
           <p>
             <strong>
               Você
-              <span className="arrow orange"> → </span>
+              <LongArrow className="arrow-orange" />
               Destino
             </strong>{" "}
             {priceEstimate.toFixed(0)} R$ {distanceKm.toFixed(0)} km
