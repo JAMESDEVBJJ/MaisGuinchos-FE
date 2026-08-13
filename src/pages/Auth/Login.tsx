@@ -56,9 +56,9 @@ const Login = () => {
 
         <form className="login-form" onSubmit={handleLogin}>
           <label className="field">
-            <span>Email:</span>
+            <span>E-mail:</span>
             <input
-              placeholder="Email"
+              placeholder="Digite seu email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -68,7 +68,7 @@ const Login = () => {
             <span>Senha:</span>
             <input
               type="password"
-              placeholder="Password"
+              placeholder="Digite sua senha"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -78,7 +78,7 @@ const Login = () => {
             Esqueceu a senha?
           </a>
 
-          <button type="submit" className="login-btn">
+          <button type="submit" className="loginBtn">
             LOGIN
           </button>
         </form>

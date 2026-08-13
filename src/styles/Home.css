@@ -183,7 +183,8 @@ input {
   pointer-events: none;
 }
 
-.search button {
+.search button,
+.loginBtn {
 
   height: 44px;
   width: calc(100% - 34px);
@@ -214,13 +215,19 @@ input {
   transition: filter 0.2s ease, transform 0.1s ease;
 }
 
-.search button:hover {
+.loginBtn {
+  margin-bottom: 5px;
+}
+
+.search button:hover,
+.loginBtn:hover {
   filter: brightness(0.79);
   box-shadow:
     0 4px 10px rgba(242, 100, 25, 0);
 }
 
-.search button:active {
+.search button:active,
+.loginBtn:active {
   transform: translateY(1px) scale(.98);
 }
 
