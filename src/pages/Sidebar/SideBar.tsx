@@ -5,6 +5,7 @@ import type { GuinchosDto, Position } from "../../dtos/MapPropsDTO";
 import { useAuth } from "../../contexts/AuthContext";
 import { ClientSideBar } from "./ClientSideBar";
 import { DriverSideBar } from "./DriverSideBar";
+import type { FiltroId } from "./Filtros";
 
 export type SidebarProps = {
   locationText: string;
@@ -52,6 +53,8 @@ export type SidebarProps = {
     >
   >;
   requestStatus: string;
+  setActiveFilters: React.Dispatch<React.SetStateAction<FiltroId[]>>;
+  activeFilters: FiltroId[];
 };
 
 export function Sidebar(props: SidebarProps) {

@@ -25,6 +25,7 @@ import { SettingsButton } from "./SettingsButton";
 import { ArrowLeft } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { LoadingSpinner } from "../Ui/LoadingSpinner";
+import Filtro, { type FiltroId } from "./Filtros";
 
 interface CoordinateDto {
   lat: number;
@@ -109,6 +110,8 @@ type ClientBarProps = {
   hideDriverPhoto: boolean;
   hasActiveTowRequest: boolean;
   setHasActiveTowRequest: React.Dispatch<React.SetStateAction<boolean>>;
+  activeFilters: FiltroId[];
+  setActiveFilters: React.Dispatch<React.SetStateAction<FiltroId[]>>;
 };
 export function ClientSideBar(props: ClientBarProps) {
   const token = localStorage.getItem("token");
@@ -201,6 +204,7 @@ export function ClientSideBar(props: ClientBarProps) {
   }, [location.state]);
 
   const [loadingRoute, setLoadingRoute] = useState(false);
+
 
   useEffect(() => {
     async function loadTowRequest() {
@@ -879,6 +883,11 @@ export function ClientSideBar(props: ClientBarProps) {
                 </button>
               </div>
             </div>
+
+            <Filtro
+              activeFilters={props.activeFilters}
+              onFiltersChange={props.setActiveFilters}
+            />
 
             {props.loading && (
               <LoadingSpinner size={65} padding={"35px 0px"}></LoadingSpinner>

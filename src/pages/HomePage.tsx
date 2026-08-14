@@ -1,4 +1,4 @@
-import { useEffect, useState  } from "react";
+import { useEffect, useState } from "react";
 import "../styles/Home.css";
 import { api } from "../services/api";
 import { Maps } from "./Maps";
@@ -17,6 +17,7 @@ import type { TowTravelResponseDTO } from "../dtos/towTravel/TowTravelResponseDT
 import { useTowRoutes } from "../utils/hooks/useTowRoutes";
 import { TowTravelProgress } from "./TowTravelProgress";
 import { toast } from "react-toastify";
+import type { FiltroId } from "./Sidebar/Filtros";
 
 const HomePage = () => {
   const [priceEstimateG, setPriceG] = useState<number | null>(0);
@@ -66,6 +67,8 @@ const HomePage = () => {
   const [hasActiveTowRequest, setHasActiveTowRequest] =
     useState<boolean>(false);
 
+  const [activeFilters, setActiveFilters] = useState<FiltroId[]>([]);
+
   const sideBarProps: SidebarProps = {
     locationText: locationText,
     setLocationText: setLocationText,
@@ -101,6 +104,8 @@ const HomePage = () => {
     setGuinchos: setGuinchos,
     hasActiveTowRequest: hasActiveTowRequest,
     setHasActiveTowRequest: setHasActiveTowRequest,
+    setActiveFilters: setActiveFilters,
+    activeFilters: activeFilters,
   };
 
   const mapsProps: MapProps = {
@@ -243,13 +248,21 @@ const HomePage = () => {
     }
   }, [routes]);
 
-  async function buscarGuinchos() {
+  const hasSearched = useRef(false);
+
+  async function buscarGuinchos(filtrosParaUsar: FiltroId[] = activeFilters) {
     setLoading(true);
 
     let response = null;
 
     try {
-      response = await api.get("/user/proximos");
+      const params = new URLSearchParams();
+      if (filtrosParaUsar.length > 0) {
+        params.set("filtros", filtrosParaUsar.join(","));
+      }
+      const query = params.toString();
+
+      response = await api.get(`/user/proximos${query ? `?${query}` : ""}`);
     } catch (error: any) {
       const message =
         error?.response?.data?.message ||
@@ -262,8 +275,14 @@ const HomePage = () => {
     if (response?.data) {
       setGuinchos(response.data);
     }
+    hasSearched.current = true;
     setLoading(false);
   }
+
+  useEffect(() => {
+    if (!hasSearched.current) return;
+    buscarGuinchos(activeFilters);
+  }, [activeFilters]);
 
   async function calculateRoute(origin: Position | null, destination: string) {
     const response = await api.post("/maps/route/calculate", {
