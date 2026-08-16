@@ -13,7 +13,7 @@ type Props = {
 export default function SignStepGuincho({
   form,
   setForm,
-  onBack, //fazer
+  //onBack, //fazer
   onSubmit,
   setFile
 }: Props) {

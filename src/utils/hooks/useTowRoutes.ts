@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import type { TowTravelDTO } from "../../dtos/TowTravelDTO";
 import { TowTravelStatus } from "../enums/TowTravelStatus";
 import { api } from "../../services/api";

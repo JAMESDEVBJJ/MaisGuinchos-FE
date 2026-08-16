@@ -18,7 +18,6 @@ import { flyToTarget } from "../utils/mapUtils";
 import { useAuth } from "../contexts/AuthContext";
 import { TowTravelStatus } from "../utils/enums/TowTravelStatus";
 import { useTowRequest } from "../contexts/TowRequestsContext";
-import type { TowRequestReceiveDto } from "../dtos/TowRequestReceiveDTO";
 
 function MapController({ mapRef }: { mapRef: React.RefObject<L.Map | null> }) {
   const map = useMap();
@@ -55,6 +54,11 @@ export function Maps({
   setHasActiveTowRequest,
   hasActiveTowRequest,
 }: MapProps) {
+  const DEFAULT_CENTER = {
+    lat: -9.854179,
+    lon: -51.648332,
+  };
+
   const lastUserPosRef = useRef<[number, number] | null>(null);
 
   const { user } = useAuth();
@@ -63,8 +67,8 @@ export function Maps({
 
   const activeTowRequest = selectedGuincho
     ? activeTowsRequests.find(
-        (p) => p.driverId === selectedGuincho.motorista.userId
-      ) ?? null
+      (p) => p.driverId === selectedGuincho.motorista.userId
+    ) ?? null
     : null;
 
   const [isRoutePanelOpen, setIsRoutePanelOpen] = useState(false);
@@ -119,199 +123,194 @@ export function Maps({
 
   return (
     <div style={{ height: "100vh", width: "100%" }}>
-      {userPosition && (
-        <MapContainer
-          center={[userPosition.lat, userPosition.lon]}
-          zoom={13}
-          style={{ height: "100%", width: "100%" }}
+
+      <MapContainer
+        center={userPosition ? [userPosition.lat, userPosition.lon] : [DEFAULT_CENTER.lat, DEFAULT_CENTER.lon]}
+        zoom={5}
+        style={{ height: "100%", width: "100%" }}
+      >
+        <MapController mapRef={mapRef} />
+        {isDarkTheme ? (
+          <TileLayer url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png" />
+        ) : (
+          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        )}
+        <button
+          onClick={() => setIsDark(!isDarkTheme)}
+          className="map-theme-toggle"
         >
-          <MapController mapRef={mapRef} />
           {isDarkTheme ? (
-            <TileLayer url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png" />
+            <Sun size={30} fill="white" color="white" />
           ) : (
-            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+            <Moon size={27} fill="black" />
           )}
-          <button
-            onClick={() => setIsDark(!isDarkTheme)}
-            className="map-theme-toggle"
-          >
-            {isDarkTheme ? (
-              <Sun size={30} fill="white" color="white" />
-            ) : (
-              <Moon size={27} fill="black" />
-            )}
-          </button>
-          {!towTravel &&
-            motoristasPosition.map((m) => {
-              const motorista = m.motorista;
+        </button>
+        {!towTravel &&
+          motoristasPosition.map((m) => {
+            const motorista = m.motorista;
 
-              if (
-                (motorista.lat === 0 && motorista.lon === 0) ||
-                motorista.lon == undefined ||
-                motorista.lat == undefined
-              ) {
-                return null;
-              }
+            if (
+              (motorista.lat === 0 && motorista.lon === 0) ||
+              motorista.lon == undefined ||
+              motorista.lat == undefined
+            ) {
+              return null;
+            }
 
-              const isHovered =
-                hoveredGuinchoId === motorista.userId ||
-                selectedGuincho?.motorista.userId === motorista.userId;
+            const isHovered =
+              hoveredGuinchoId === motorista.userId ||
+              selectedGuincho?.motorista.userId === motorista.userId;
 
-              return (
-                <Marker
-                  key={motorista.userId}
-                  position={[motorista.lat, motorista.lon]}
-                  icon={isHovered ? guinchoHoverIcon : guinchoIcon}
-                  eventHandlers={{
-                    click: () => {
-                      if (!m.available) return;
-                      setSelectedGuincho(m);
-                      setPriceG(null);
-                      setDistanceKmG(null);
-                      setDurationMinG(null);
-                      setRouteG(null);
-                      setHoveredGuinchoId(null);
-                      setRequestStatus("idle");
-                      if (hasActiveTowRequest) {
-                        setHasActiveTowRequest(false);
-                        setRoute(null);
-                      }
-                      flyToTarget(
-                        mapRef.current,
-                        motorista.lat,
-                        motorista.lon,
-                        null
-                      );
-                    },
-                  }}
-                />
-              );
-            })}
-
-          {activeTowRequest ? (
-            <>
+            return (
               <Marker
-                position={[
-                  activeTowRequest.pickupLat,
-                  activeTowRequest.pickupLon,
-                ]}
-                icon={userIcon}
+                key={motorista.userId}
+                position={[motorista.lat, motorista.lon]}
+                icon={isHovered ? guinchoHoverIcon : guinchoIcon}
+                eventHandlers={{
+                  click: () => {
+                    if (!m.available) return;
+                    setSelectedGuincho(m);
+                    setPriceG(null);
+                    setDistanceKmG(null);
+                    setDurationMinG(null);
+                    setRouteG(null);
+                    setHoveredGuinchoId(null);
+                    setRequestStatus("idle");
+                    if (hasActiveTowRequest) {
+                      setHasActiveTowRequest(false);
+                      setRoute(null);
+                    }
+                    flyToTarget(
+                      mapRef.current,
+                      motorista.lat,
+                      motorista.lon,
+                      null
+                    );
+                  },
+                }}
+              />
+            );
+          })}
+
+        {activeTowRequest ? (
+          <>
+            <Marker
+              position={[
+                activeTowRequest.pickupLat,
+                activeTowRequest.pickupLon,
+              ]}
+              icon={userIcon}
+            ></Marker>
+          </>
+        ) : userPosition && (
+          <Marker
+            position={[userPosition.lat, userPosition.lon]}
+            icon={user?.isDriver ? guinchoIcon : userIcon}
+          />
+        )}
+
+        {route &&
+          route.length > 0 &&
+          (!towTravel ||
+            (towTravel.status !== TowTravelStatus.ArrivedAtDestination &&
+              towTravel.status !== TowTravelStatus.Cancelled &&
+              towTravel.status !== TowTravelStatus.Finished)) && (
+            <>
+              <Polyline
+                positions={route}
+                pathOptions={{
+                  color: "darkorange",
+                  weight: 4,
+                  opacity: 0.8,
+                }}
+              />
+              <Marker
+                position={route[route.length - 1]}
+                icon={destinationIconMarkup}
               ></Marker>
             </>
-          ) : user?.isDriver ? (
-            <Marker
-              position={[userPosition.lat, userPosition.lon]}
-              icon={guinchoIcon}
-            ></Marker>
-          ) : (
-            <Marker
-              position={[userPosition.lat, userPosition.lon]}
-              icon={userIcon}
-            ></Marker>
           )}
 
-          {route &&
-            route.length > 0 &&
-            (!towTravel ||
-              (towTravel.status !== TowTravelStatus.ArrivedAtDestination &&
-                towTravel.status !== TowTravelStatus.Cancelled &&
-                towTravel.status !== TowTravelStatus.Finished)) && (
-              <>
-                <Polyline
-                  positions={route}
-                  pathOptions={{
-                    color: "darkorange",
-                    weight: 4,
-                    opacity: 0.8,
-                  }}
-                />
+        {towTravel && (
+          <Marker
+            position={
+              [towTravel.pickup.latitude, towTravel.pickup.longitude] as [
+                number,
+                number
+              ]
+            }
+            icon={userIcon}
+          ></Marker>
+        )}
+
+        {routeG &&
+          routeG.length > 0 &&
+          (!towTravel ||
+            towTravel.status == TowTravelStatus.GoingToClient) && (
+            <>
+              <Polyline
+                positions={routeG}
+                pathOptions={{
+                  color: "yellow",
+                  weight: 4,
+                  opacity: 0.85,
+                }}
+              />
+
+              {activeTowRequest && (
                 <Marker
-                  position={route[route.length - 1]}
-                  icon={destinationIconMarkup}
+                  position={[routeG[0][0], routeG[0][1]] as [number, number]}
+                  icon={guinchoIcon}
                 ></Marker>
-              </>
-            )}
-
-          {towTravel && (
-            <Marker
-              position={
-                [towTravel.pickup.latitude, towTravel.pickup.longitude] as [
-                  number,
-                  number
-                ]
-              }
-              icon={userIcon}
-            ></Marker>
+              )}
+            </>
           )}
+        {priceEstimate && !isRoutePanelOpen && !towTravel && (
+          <div
+            className="price-hud"
+            onClick={() => setIsRoutePanelOpen(true)}
+          >
+            R${" "}
+            {priceEstimateG
+              ? (priceEstimate + priceEstimateG).toFixed(2)
+              : priceEstimate.toFixed(2)}
+          </div>
+        )}
+        {isRoutePanelOpen && !towTravel && (
+          <div
+            className="route-overlay"
+            onClick={() => setIsRoutePanelOpen(false)}
+          >
+            <div className="route-panel" onClick={(e) => e.stopPropagation()}>
+              <h3>Detalhes da viagem</h3>
+              <p>
+                Distância:{" "}
+                {distanceKmG
+                  ? (distanceKm + distanceKmG).toFixed(1)
+                  : distanceKm.toFixed(1)}{" "}
+                km
+              </p>
+              <p>
+                Duração: {durationMinG ? duration + durationMinG : duration}{" "}
+                min
+              </p>
+              <p>
+                Preço estimado: R${" "}
+                {priceEstimateG
+                  ? (priceEstimate + priceEstimateG).toFixed(2)
+                  : priceEstimate.toFixed(2)}
+              </p>
 
-          {routeG &&
-            routeG.length > 0 &&
-            (!towTravel ||
-              towTravel.status == TowTravelStatus.GoingToClient) && (
-              <>
-                <Polyline
-                  positions={routeG}
-                  pathOptions={{
-                    color: "yellow",
-                    weight: 4,
-                    opacity: 0.85,
-                  }}
-                />
-
-                {activeTowRequest && (
-                  <Marker
-                    position={[routeG[0][0], routeG[0][1]] as [number, number]}
-                    icon={guinchoIcon}
-                  ></Marker>
-                )}
-              </>
-            )}
-          {priceEstimate && !isRoutePanelOpen && !towTravel && (
-            <div
-              className="price-hud"
-              onClick={() => setIsRoutePanelOpen(true)}
-            >
-              R${" "}
-              {priceEstimateG
-                ? (priceEstimate + priceEstimateG).toFixed(2)
-                : priceEstimate.toFixed(2)}
+              {false && (
+                <p>
+                  Preço com { }: R$ { }
+                </p>
+              )}
             </div>
-          )}
-          {isRoutePanelOpen && !towTravel && (
-            <div
-              className="route-overlay"
-              onClick={() => setIsRoutePanelOpen(false)}
-            >
-              <div className="route-panel" onClick={(e) => e.stopPropagation()}>
-                <h3>Detalhes da viagem</h3>
-                <p>
-                  Distância:{" "}
-                  {distanceKmG
-                    ? (distanceKm + distanceKmG).toFixed(1)
-                    : distanceKm.toFixed(1)}{" "}
-                  km
-                </p>
-                <p>
-                  Duração: {durationMinG ? duration + durationMinG : duration}{" "}
-                  min
-                </p>
-                <p>
-                  Preço estimado: R${" "}
-                  {priceEstimateG
-                    ? (priceEstimate + priceEstimateG).toFixed(2)
-                    : priceEstimate.toFixed(2)}
-                </p>
+          </div>
+        )}
+      </MapContainer>
 
-                {false && (
-                  <p>
-                    Preço com {}: R$ {}
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
-        </MapContainer>
-      )}
     </div>
   );
 }

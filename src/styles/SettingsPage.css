@@ -91,7 +91,9 @@
   cursor: pointer;
   transition: background-color 0.2s, transform 0.2s;
 }
-
+.back-button-detail {
+  left: 10px;
+}
 .back-button:hover {
   background: rgba(255, 255, 255, 0.08);
   transform: translateX(-2px);

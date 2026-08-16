@@ -1,4 +1,4 @@
-import { Pencil, Upload } from "lucide-react";
+import { Pencil } from "lucide-react";
 import { useState } from "react";
 import type { TowDTO } from "../../../dtos/TowDTO";
 import { api } from "../../../services/api";

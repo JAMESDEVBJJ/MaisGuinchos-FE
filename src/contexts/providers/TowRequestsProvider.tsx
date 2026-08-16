@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { TowRequestContext } from "../TowRequestsContext";
 import { api } from "../../services/api";
 import type { TowRequestReceiveDto } from "../../dtos/TowRequestReceiveDTO";
+import { useAuth } from "../AuthContext";
 
 export function TowRequestProvider({
   children,
@@ -9,6 +10,7 @@ export function TowRequestProvider({
   children: React.ReactNode;
 }) {
   const [activeTowsRequests, setActiveTowsRequests] = useState<TowRequestReceiveDto[]>([]);
+  const { user } = useAuth();
 
   useEffect(() => {
     async function loadActiveTows() {
@@ -21,8 +23,10 @@ export function TowRequestProvider({
       }
     }
 
-    loadActiveTows();
-  }, []);
+    if (user?.isClient) {
+      loadActiveTows();
+    }
+  }, [user]);
   const hasActive = activeTowsRequests.length > 0;
   return (
     <TowRequestContext.Provider

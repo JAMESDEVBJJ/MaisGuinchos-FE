@@ -16,7 +16,8 @@
   padding: 24px;
   border-radius: 12px;
 
-  background: linear-gradient(180deg, #1f2b38, #1a2430);
+  background: linear-gradient(90deg, #0e1e30, #10253b);
+
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 
   color: white;
@@ -85,13 +86,11 @@
 .sliderSection input[type="range"]::-webkit-slider-runnable-track {
   height: 6px;
 
-  background: linear-gradient(
-    to right,
-    #f59e0b 0%,
-    #f59e0b var(--progress),
-    #2a3644 var(--progress),
-    #2a3644 100%
-  );
+  background: linear-gradient(to right,
+      #f59e0b 0%,
+      #f59e0b var(--progress),
+      #2a3644 var(--progress),
+      #2a3644 100%);
 
   border-radius: 3px;
 }
@@ -113,8 +112,7 @@
 .sliderSection input[type="range"]::-webkit-slider-runnable-track {
   height: 6px;
 
-  background: linear-gradient(#f59e0b, #f59e0b) 0 / var(--progress) 100%
-      no-repeat,
+  background: linear-gradient(#f59e0b, #f59e0b) 0 / var(--progress) 100% no-repeat,
     #2e3a48;
 
   border-radius: 3px;
@@ -143,7 +141,7 @@
   font-size: 12px;
   border-radius: 6px;
   border: none;
-  background: #2a3644;
+  background: #192e44;
   color: white;
   cursor: pointer;
 }
@@ -180,6 +178,7 @@
   border: 2px solid #4caf50;
   color: #4caf50;
 }
+
 .sendButton.success:hover {
   cursor: initial;
 }
@@ -200,9 +199,13 @@
 .field textarea {
   padding: 8px 10px;
   border-radius: 6px;
-  border: 1px solid #2f3e4e;
-  background-color: #22313f;
+  background-color: #192e44;
   color: white;
   font-size: 0.9rem;
   outline: none;
+}
+
+.sliderSection input {
+  border: none;
+
 }

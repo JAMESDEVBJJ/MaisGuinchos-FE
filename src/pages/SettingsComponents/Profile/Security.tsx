@@ -46,16 +46,16 @@ export default function Security() {
         confirmPassword: "",
       });
     } catch (error: any) {
-      console.log("ERRO REAL:", error);
+      const data = error?.response?.data;
 
-      const message =
-        error?.response?.data?.message ||
-        error?.response?.data?.title ||
-        error?.response?.data?.error ||
-        "Erro inesperado. Tente novamente.";
+      let message = data?.error || data?.message;
 
-        
-      toast.error(message);
+      if (!message && data?.errors) {
+        const firstKey = Object.keys(data.errors)[0];
+        message = data.errors[firstKey][0];
+      }
+
+      toast.error(message || "Erro inesperado.");
     }
   }
 
