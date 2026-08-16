@@ -884,11 +884,6 @@ export function ClientSideBar(props: ClientBarProps) {
               </div>
             </div>
 
-            <Filtro
-              activeFilters={props.activeFilters}
-              onFiltersChange={props.setActiveFilters}
-            />
-
             {props.loading && (
               <LoadingSpinner size={65} padding={"35px 0px"}></LoadingSpinner>
             )}
@@ -898,14 +893,21 @@ export function ClientSideBar(props: ClientBarProps) {
               </div>
             )}
 
+            {props.guinchos.length >= 1 && (<Filtro
+              activeFilters={props.activeFilters}
+              onFiltersChange={props.setActiveFilters}
+            />)}
+
             {!props.loading && props.guinchos.length >= 1 && (
-              <GuinchosResults
-                isCompact={props.isCompact}
-                guinchos={props.guinchos}
-                setHovered={props.setHoveredGuinchoId}
-                mapRef={props.mapRef}
-                setSelectedGuincho={props.setSelectedGuincho}
-              ></GuinchosResults>
+              <>
+                <GuinchosResults
+                  isCompact={props.isCompact}
+                  guinchos={props.guinchos}
+                  setHovered={props.setHoveredGuinchoId}
+                  mapRef={props.mapRef}
+                  setSelectedGuincho={props.setSelectedGuincho}
+                ></GuinchosResults>
+              </>
             )}
           </>
         ) : (
