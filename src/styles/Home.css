@@ -1315,3 +1315,10 @@ button.waiting:hover {
     text-align: center;
   }
 }
+
+.detail-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}

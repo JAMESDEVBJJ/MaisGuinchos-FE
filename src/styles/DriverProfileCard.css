@@ -1,0 +1,100 @@
+.driver-profile {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 16px;
+    padding: 20px;
+    width: 100%;
+    max-width: 384px;
+}
+
+.driver-profile__title {
+    font-size: 13px;
+    color: #9ca3af;
+    margin: 0 0 16px;
+}
+
+.driver-profile__main {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.driver-profile__avatar {
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    border: 2px solid #f97316;
+    background-color: #1e293b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.driver-profile__info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.driver-profile__name {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    align-self: flex-start;
+}
+
+.driver-profile__rating {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.driver-profile__stars {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.star-icon {
+    fill: #fb923c;
+    color: #fb923c;
+}
+
+.driver-profile__rating-number {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.driver-profile__reviews {
+    color: #9ca3af;
+    font-size: 12px;
+}
+
+.driver-profile__contact {
+    margin-top: 20px;
+}
+
+.driver-profile__contact-label {
+    margin: 0 0 4px;
+    color: #9ca3af;
+    font-size: 12px;
+}
+
+.driver-profile__phone {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+    font-size: 14px;
+}

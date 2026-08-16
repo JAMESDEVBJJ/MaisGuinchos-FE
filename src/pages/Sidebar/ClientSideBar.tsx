@@ -3,7 +3,6 @@ import iconDestination from "../../assets/icons/detinIcon.png";
 import GuinchosResults from "./GuinchosResults";
 import { api } from "../../services/api";
 import L from "leaflet";
-import defaultUserPng from "../../assets/defaultUser.png";
 import type { GuinchosDto, Position } from "../../dtos/MapPropsDTO";
 import { InputLocation } from "./InputLocation";
 import * as signalR from "@microsoft/signalr";
@@ -26,6 +25,9 @@ import { ArrowLeft } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { LoadingSpinner } from "../Ui/LoadingSpinner";
 import Filtro, { type FiltroId } from "./Filtros";
+import DriverProfileCard from "./DriverProfileCard";
+import VehicleInfo from "./VehicleInfo";
+import TripDetails from "./TripDetails";
 
 interface CoordinateDto {
   lat: number;
@@ -115,6 +117,8 @@ type ClientBarProps = {
 };
 export function ClientSideBar(props: ClientBarProps) {
   const token = localStorage.getItem("token");
+
+  const [showDetails, setShowDetails] = useState(false);
 
   const distanceRouteTotal =
     props.distanceKm + (props.distanceKmG ? props.distanceKmG : 0);
@@ -663,11 +667,19 @@ export function ClientSideBar(props: ClientBarProps) {
       });
     } catch (error: any) {
 
-      if (error?.code === "ERR_CANCELED") {
-        return;
-      }
+      const data = error.response?.data;
 
-      toast.error("Erro ao calcular a rota.");
+      if (data?.errors) {
+        Object.values(data.errors).forEach((messages: any) => {
+          messages.forEach((message: string) => {
+            toast.error(message);
+          });
+        });
+      } else if (data?.error) {
+        toast.error(data.error);
+      } else {
+        toast.error("Erro ao calcular a rota.");
+      }
 
     } finally {
       if (!abortController.signal.aborted) {
@@ -924,52 +936,39 @@ export function ClientSideBar(props: ClientBarProps) {
               )}
             <div className="detail detail-with-back">
               <div className="detail-top">
-                <img
-                  className={`detail-photo ${isDefault ? "default-photo" : ""
-                    } ${props.hideDriverPhoto ? "hide" : ""}`}
-                  src={
-                    isDefault ? defaultUserPng : `https://localhost:7120${foto}`
+                <DriverProfileCard
+                  initials={
+                    props.selectedGuincho?.motorista?.name
+                      ?.split(" ")
+                      .filter(Boolean)
+                      .map((n) => n[0])
+                      .slice(0, 2)
+                      .join("")
+                      .toUpperCase() ?? ""
                   }
-                  alt={props.selectedGuincho?.motorista?.name}
+                  name={props.selectedGuincho?.motorista.name ?? ""}
+                  rating={props.selectedGuincho?.stars ?? 0}
+                  reviewsCount={props.selectedGuincho?.stars ?? 0}
+                  phone={props.selectedGuincho?.motorista.number ?? ""}
+                />
+              </div>
+
+              <div className="detail-stack">
+
+                <VehicleInfo
+                  model={
+                    towTravel ? towTravel.truck.model : props.selectedGuincho?.model ?? ""
+                  }
+                  plate={
+                    towTravel
+                      ? towTravel.truck.plate
+                      : props.selectedGuincho?.motorista.placa ?? ""
+                  }
+                  color={
+                    towTravel ? towTravel.truck.color : props.selectedGuincho?.color ?? ""
+                  }
                 />
 
-                <div
-                  className={`detail-info ${props.hideDriverPhoto ? "only-content" : ""
-                    }`}
-                >
-                  {towTravel ? (
-                    <h3>{getStatusMessage(towTravel.status, driverName)}</h3>
-                  ) : (
-                    <h3>{props.selectedGuincho?.motorista.name}</h3>
-                  )}
-
-                  {!towTravel ? (
-                    <>
-                      <div className="rating-row">
-                        {renderStars(props.selectedGuincho?.stars)}{" "}
-                        <span className="rating-number">
-                          {props.selectedGuincho?.stars.toFixed(1)}
-                        </span>
-                      </div>
-
-                      <div className="driver-data">
-                        <span className="phone">
-                          {props.selectedGuincho?.motorista.number}
-                        </span>
-
-                        <div>Modelo: {props.selectedGuincho?.model}</div>
-                        <div>
-                          Placa: {props.selectedGuincho?.motorista.placa}
-                        </div>
-                        <div>Cor: {props.selectedGuincho?.color}</div>
-                      </div>
-                    </>
-                  ) : (
-                    <></>
-                  )}
-                </div>
-              </div>
-              <div className="detail-actions">
                 {!towTravel && !props.hasActiveTowRequest && (
                   <button
                     className="btn primary fullwidth"
@@ -983,56 +982,48 @@ export function ClientSideBar(props: ClientBarProps) {
                     Calcular rota
                   </button>
                 )}
-              </div>
-              {loadingDriver || loadingRoute ? (
-                <LoadingSpinner size={65}></LoadingSpinner>
-              ) : (
-                props.routeG &&
-                props.distanceKmG != null &&
-                props.durationMinG != null &&
-                props.priceEstimateG != null &&
-                !towTravel && (
-                  <>
-                    <TowRequestData
-                      distanceKm={props.distanceKm}
-                      durationMin={props.durationMinTotal}
-                      priceEstimate={props.priceEstimate}
-                      distanceKmG={props.distanceKmG}
-                      durationMinG={props.durationMinG}
-                      priceEstimateG={props.priceEstimateG}
-                      suggestedPrice={null}
-                      routeG={props.routeG}
-                      modelo={null}
-                      totalDistanceKm={null}
-                    />
-                    <button
-                      className={buttonCounterClass()}
-                      disabled={serviceIsDisabled}
-                      onClick={
-                        props.requestStatus === "counterOfferReceived"
-                          ? () => setShowGetCounterModal(true)
-                          : () => setShowModal(true)
-                      }
-                    >
-                      {buttonCounterAndSubmitText()}
-                    </button>
-                  </>
-                )
-              )}
-              {towTravel && (
-                <>
+
+                {loadingDriver || loadingRoute ? (
+                  <LoadingSpinner size={65}></LoadingSpinner>
+                ) : (
+                  props.routeG &&
+                  props.distanceKmG != null &&
+                  props.durationMinG != null &&
+                  props.priceEstimateG != null &&
+                  !towTravel && (
+                    <>
+                      <TripDetails
+                        distanceKm={props.distanceKm + props.distanceKmG}
+                        durationHours={(props.durationMinTotal + props.durationMinG) / 60}
+                        priceEstimate={props.priceEstimate + props.priceEstimateG}
+                        onMoreDetails={() => setShowDetails(!showDetails)}
+                      />
+                      <button
+                        className={buttonCounterClass()}
+                        disabled={serviceIsDisabled}
+                        onClick={
+                          props.requestStatus === "counterOfferReceived"
+                            ? () => setShowGetCounterModal(true)
+                            : () => setShowModal(true)
+                        }
+                      >
+                        {buttonCounterAndSubmitText()}
+                      </button>
+                    </>
+                  )
+                )}
+
+                {towTravel && (
                   <TowRequestData
                     distanceKm={
-                      towTravel.distanceToPickupKm +
-                      towTravel.distanceToDestinationKm
+                      towTravel.distanceToPickupKm + towTravel.distanceToDestinationKm
                     }
                     durationMin={
                       towTravel.timeToDestinationMin + towTravel.timeToPickupMin
                     }
                     priceEstimate={towTravel.finalPrice}
                     distanceKmG={
-                      towTravel.distanceToPickupKm +
-                      towTravel.distanceToDestinationKm
+                      towTravel.distanceToPickupKm + towTravel.distanceToDestinationKm
                     }
                     durationMinG={
                       towTravel.timeToDestinationMin + towTravel.timeToPickupMin
@@ -1042,19 +1033,11 @@ export function ClientSideBar(props: ClientBarProps) {
                     routeG={null}
                     modelo={null}
                     totalDistanceKm={
-                      towTravel.distanceToPickupKm +
-                      towTravel.distanceToDestinationKm
+                      towTravel.distanceToPickupKm + towTravel.distanceToDestinationKm
                     }
                   />
-
-                  <div className="tow-extra">
-                    <p>Modelo: {towTravel.truck.model}</p>
-                    <p>Placa: {towTravel.truck.plate}</p>
-                    <p>Cor: {towTravel.truck.color}</p>
-                    <p>Telefone: {towTravel.driverPhone}</p>
-                  </div>
-                </>
-              )}
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -1118,15 +1101,18 @@ export function ClientSideBar(props: ClientBarProps) {
             </button>
           </div>
         </div>
-      )}
-      {showGetCounterModal && props.requestStatus !== "accepted" && (
-        <ReceiveCounterTowModal
-          onClose={() => setShowGetCounterModal(false)}
-          towCounterReceived={towRequest}
-          setShowGetCounterModal={setShowGetCounterModal}
-          setRequestStatus={props.setRequestStatus}
-        />
-      )}
+      )
+      }
+      {
+        showGetCounterModal && props.requestStatus !== "accepted" && (
+          <ReceiveCounterTowModal
+            onClose={() => setShowGetCounterModal(false)}
+            towCounterReceived={towRequest}
+            setShowGetCounterModal={setShowGetCounterModal}
+            setRequestStatus={props.setRequestStatus}
+          />
+        )
+      }
     </>
   );
 }
