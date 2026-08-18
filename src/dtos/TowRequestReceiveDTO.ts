@@ -2,6 +2,7 @@ export interface TowRequestReceiveDto {
   id: string;
   clientName: string;
   clientId: string;
+  clientPhone: string;
   driverName: string;
   driverId: string;
   pickupLat: number;

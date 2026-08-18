@@ -41,11 +41,12 @@ export default function TripDetails({
                     </span>
                 </li>
             </ul>
-
-            <button className="trip-details__more" onClick={onMoreDetails}>
-                <span>Mais detalhes</span>
-                <ChevronRight size={16} />
-            </button>
+            {onMoreDetails && (
+                <button className="trip-details__more" onClick={onMoreDetails}>
+                    <span>Mais detalhes</span>
+                    <ChevronRight size={16} />
+                </button>
+            )}
         </div>
     );
 }

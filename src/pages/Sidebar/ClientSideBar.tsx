@@ -25,9 +25,11 @@ import { ArrowLeft } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { LoadingSpinner } from "../Ui/LoadingSpinner";
 import Filtro, { type FiltroId } from "./Filtros";
-import DriverProfileCard from "./DriverProfileCard";
+import DriverProfileCard from "./UserProfileCard";
 import VehicleInfo from "./VehicleInfo";
 import TripDetails from "./TripDetails";
+import UserProfileCard from "./UserProfileCard";
+import { TowRequestStatus } from "../../utils/towsRequestsUtils";
 
 interface CoordinateDto {
   lat: number;
@@ -430,8 +432,31 @@ export function ClientSideBar(props: ClientBarProps) {
 
     connection.on("ReceiveCounterOffer", (data: TowRequestDTO) => {
       props.setRequestStatus("counterOfferReceived");
-
+      setActiveTowsRequests((prev) =>
+        prev.map((x) => (x.id === data.id ? {
+          ...x, counterOfferPrice: data.counterOfferPrice,
+          counterOfferPercent: data.counterOfferPercent, counterOfferReason: data.counterOfferReason, counterOfferAt: data.counterOfferAt
+        } : x))
+      );
+      console.dir(activeTowsRequests);
       setTowRequest(data);
+    });
+
+    connection.on("TowRequestRejected", (data: TowRequestDTO) => {
+      props.setRequestStatus("rejected");
+
+      setActiveTowsRequests((prev) =>
+        prev.map((x) =>
+          x.id === data.id
+            ? { ...x, status: TowRequestStatus.Rejected }
+            : x
+        )
+      );
+
+      setTowRequest((prev) => {
+        if (!prev || prev.id !== data.id) return prev;
+        return { ...prev, status: data.status };
+      });
     });
 
     connection.on("DriverLocationUpdated", (data: RouteRealtimeDTO) => {
@@ -936,21 +961,18 @@ export function ClientSideBar(props: ClientBarProps) {
               )}
             <div className="detail detail-with-back">
               <div className="detail-top">
-                <DriverProfileCard
-                  initials={
-                    props.selectedGuincho?.motorista?.name
-                      ?.split(" ")
-                      .filter(Boolean)
-                      .map((n) => n[0])
-                      .slice(0, 2)
-                      .join("")
-                      .toUpperCase() ?? ""
-                  }
+                <UserProfileCard
+                  initials={props.selectedGuincho?.motorista?.name
+                    ?.split(" ")
+                    .filter(Boolean)
+                    .map((n) => n[0])
+                    .slice(0, 2)
+                    .join("")
+                    .toUpperCase() ?? ""}
                   name={props.selectedGuincho?.motorista.name ?? ""}
                   rating={props.selectedGuincho?.stars ?? 0}
                   reviewsCount={props.selectedGuincho?.stars ?? 0}
-                  phone={props.selectedGuincho?.motorista.number ?? ""}
-                />
+                  phone={props.selectedGuincho?.motorista.number ?? ""} role={"Motorista"} />
               </div>
 
               <div className="detail-stack">

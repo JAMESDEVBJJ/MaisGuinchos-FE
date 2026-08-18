@@ -1,4 +1,4 @@
-.driver-profile {
+.user-profile {
     background: rgba(255, 255, 255, 0.04);
     border-radius: 16px;
     padding: 20px;
@@ -6,19 +6,19 @@
     max-width: 384px;
 }
 
-.driver-profile__title {
+.user-profile__title {
     font-size: 13px;
     color: #9ca3af;
     margin: 0 0 16px;
 }
 
-.driver-profile__main {
+.user-profile__main {
     display: flex;
     align-items: center;
     gap: 16px;
 }
 
-.driver-profile__avatar {
+.user-profile__avatar {
     width: 64px;
     height: 64px;
     flex-shrink: 0;
@@ -33,14 +33,14 @@
     font-size: 18px;
 }
 
-.driver-profile__info {
+.user-profile__info {
     display: flex;
     flex-direction: column;
     gap: 4px;
     min-width: 0;
 }
 
-.driver-profile__name {
+.user-profile__name {
     margin: 0;
     font-size: 18px;
     font-weight: 700;
@@ -52,14 +52,14 @@
     align-self: flex-start;
 }
 
-.driver-profile__rating {
+.user-profile__rating {
     display: flex;
     align-items: center;
     gap: 6px;
     flex-wrap: wrap;
 }
 
-.driver-profile__stars {
+.user-profile__stars {
     display: flex;
     align-items: center;
     gap: 2px;
@@ -70,31 +70,37 @@
     color: #fb923c;
 }
 
-.driver-profile__rating-number {
+.user-profile__rating-number {
     color: #fff;
     font-size: 14px;
     font-weight: 500;
 }
 
-.driver-profile__reviews {
+.user-profile__reviews {
     color: #9ca3af;
     font-size: 12px;
 }
 
-.driver-profile__contact {
+.user-profile__contact {
     margin-top: 20px;
 }
 
-.driver-profile__contact-label {
+.user-profile__contact-label {
     margin: 0 0 4px;
     color: #9ca3af;
     font-size: 12px;
 }
 
-.driver-profile__phone {
+.user-profile__phone {
     display: flex;
     align-items: center;
     gap: 8px;
     color: #fff;
+    font-size: 14px;
+}
+
+p {
+    font-family: "Inter", "Segoe UI", sans-serif;
+    font-weight: 400;
     font-size: 14px;
 }
