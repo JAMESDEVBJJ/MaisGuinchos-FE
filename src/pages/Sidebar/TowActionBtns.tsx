@@ -45,7 +45,7 @@ export function TowActionButtons({
 
     return (
         <div className="tow-action-buttons">
-            {showAccept && (
+            {showAccept && status !== TowRequestStatus.Rejected && (
                 <button
                     type="button"
                     className={`tow-btn tow-btn--accept ${status === TowRequestStatus.Accepted ? "tow-btn--accepted" : ""
@@ -59,7 +59,7 @@ export function TowActionButtons({
                 </button>
             )}
 
-            {showCounterOffer && (
+            {showCounterOffer && status !== TowRequestStatus.Rejected && (
                 <button
                     type="button"
                     className="tow-btn tow-btn--counter"

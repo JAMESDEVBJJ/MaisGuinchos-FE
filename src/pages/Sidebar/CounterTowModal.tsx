@@ -100,10 +100,22 @@ export default function CounterOfferModal({
       );
 
       setStatus("success");
-    } catch (error) {
-      console.error("Erro ao enviar contraproposta:", error);
-      toast.error("Erro ao enviar contraproposta");
+    } catch (error: any) {
+      const data = error.response?.data;
+      if (data?.errors) {
+        Object.values(data.errors).forEach((messages: any) => {
+          messages.forEach((message: string) => {
+            toast.error(message);
+          });
+        });
+      } else if (data?.error) {
+        toast.error(data.error);
+      } else {
+        toast.error("Erro ao enviar contraproposta.");
+      }
       setStatus("idle");
+
+      console.error("Erro ao enviar contraproposta.", error);
     }
   }
 
@@ -154,9 +166,8 @@ export default function CounterOfferModal({
             {reasons.map((r) => (
               <button
                 key={r}
-                className={`reasonButton ${
-                  reasonsSelected.includes(r) ? "active" : ""
-                }`}
+                className={`reasonButton ${reasonsSelected.includes(r) ? "active" : ""
+                  }`}
                 onClick={() => toggleReason(r)}
               >
                 {r}
@@ -177,9 +188,8 @@ export default function CounterOfferModal({
         )}
 
         <button
-          className={`sendButton ${
-            towRequest.status !== 2 ? statusSubmit : "success"
-          }`}
+          className={`sendButton ${towRequest.status !== 2 ? statusSubmit : "success"
+            }`}
           onClick={submit}
           disabled={statusSubmit !== "idle" || towRequest.status === 2}
         >

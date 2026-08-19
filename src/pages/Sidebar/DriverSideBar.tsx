@@ -521,14 +521,10 @@ export function DriverSideBar(props: DriverSideProps) {
     await calcularRotaDestino(origin, destination);
   }
 
-  function setShowDetails(arg0: boolean): void {
-    throw new Error("Function not implemented.");
-  }
-
   async function rejectTowRequest() {
     if (selectedTow) {
       try {
-        const response = await api.post(
+        const response = await api.put(
           `towrequests/${selectedTow.id}/reject-tow`
         );
 

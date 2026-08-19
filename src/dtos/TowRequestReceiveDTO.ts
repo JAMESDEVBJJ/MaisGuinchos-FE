@@ -1,3 +1,5 @@
+import type { TowRequestStatus } from "../utils/towsRequestsUtils";
+
 export interface TowRequestReceiveDto {
   id: string;
   clientName: string;
@@ -16,7 +18,7 @@ export interface TowRequestReceiveDto {
   vehicleIssue?: string | null;
   notes?: string | null;
   createdAt: number;
-  status: number;
+  status: TowRequestStatus;
   counterOfferRecused?: boolean; 
   counterOfferPrice?: number;
   counterOfferPercent?: number;

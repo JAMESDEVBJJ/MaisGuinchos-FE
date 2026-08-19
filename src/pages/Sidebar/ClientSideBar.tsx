@@ -161,7 +161,9 @@ export function ClientSideBar(props: ClientBarProps) {
     !props.route ||
     props.requestStatus === "waitingDriver" ||
     props.requestStatus === "counterOfferRejected" ||
-    props.requestStatus === "accepted";
+    props.requestStatus === "accepted" ||
+    props.requestStatus === "rejected" ||
+    props.requestStatus === "cancelled";
 
   const [dots, setDots] = useState("");
 
@@ -230,7 +232,7 @@ export function ClientSideBar(props: ClientBarProps) {
         props.setHasActiveTowRequest(true);
         props.setRequestStatus(status);
         setTowRequest(mapToTowRequest(activeTow));
-
+        console.log("activeTow: load:", activeTow);
         const routes: { toPickup: RouteDTO; toDestination: RouteDTO } | null =
           await calculateRoutes(
             selectedDriver.motorista.lat,
@@ -361,7 +363,18 @@ export function ClientSideBar(props: ClientBarProps) {
         console.error("Erro ao conectar:", err);
       }
     }
-    startConnection();
+
+    connection.onreconnecting((error) => {
+      console.log("SignalR reconectando...", error);
+    });
+
+    connection.onreconnected((connectionId) => {
+      console.log("SignalR reconectado:", connectionId);
+    });
+
+    connection.onclose((error) => {
+      console.log("SignalR conexão fechada:", error);
+    });
 
     connection.on("GuinchoStatusUpdated", (data) => {
       props.setGuinchos((prev) =>
@@ -434,17 +447,16 @@ export function ClientSideBar(props: ClientBarProps) {
       props.setRequestStatus("counterOfferReceived");
       setActiveTowsRequests((prev) =>
         prev.map((x) => (x.id === data.id ? {
-          ...x, counterOfferPrice: data.counterOfferPrice,
+          ...x, counterOfferPrice: data.counterOfferPrice, status: TowRequestStatus.CounterOfferSent,
           counterOfferPercent: data.counterOfferPercent, counterOfferReason: data.counterOfferReason, counterOfferAt: data.counterOfferAt
         } : x))
       );
-      console.dir(activeTowsRequests);
       setTowRequest(data);
     });
 
     connection.on("TowRequestRejected", (data: TowRequestDTO) => {
       props.setRequestStatus("rejected");
-
+      console.log("TowRequestRejected: data:", data);
       setActiveTowsRequests((prev) =>
         prev.map((x) =>
           x.id === data.id
@@ -455,7 +467,7 @@ export function ClientSideBar(props: ClientBarProps) {
 
       setTowRequest((prev) => {
         if (!prev || prev.id !== data.id) return prev;
-        return { ...prev, status: data.status };
+        return { ...prev, status: TowRequestStatus.Rejected };
       });
     });
 
@@ -559,6 +571,8 @@ export function ClientSideBar(props: ClientBarProps) {
         return { ...prev, status: TowTravelStatus.Finished };
       });
     });
+
+    startConnection();
 
     return () => {
       connection.stop();
@@ -841,6 +855,10 @@ export function ClientSideBar(props: ClientBarProps) {
         return `Aguardando motorista${dots}`;
       case "accepted":
         return "Solitação aceita!";
+      case "rejected":
+        return "Solicitação rejeitada!";
+      case "cancelled":
+        return "Solicitação cancelada!";
       default:
         return "Solicitar Guincho";
     }
@@ -1020,17 +1038,39 @@ export function ClientSideBar(props: ClientBarProps) {
                         priceEstimate={props.priceEstimate + props.priceEstimateG}
                         onMoreDetails={() => setShowDetails(!showDetails)}
                       />
-                      <button
-                        className={buttonCounterClass()}
-                        disabled={serviceIsDisabled}
-                        onClick={
-                          props.requestStatus === "counterOfferReceived"
-                            ? () => setShowGetCounterModal(true)
-                            : () => setShowModal(true)
-                        }
-                      >
-                        {buttonCounterAndSubmitText()}
-                      </button>
+
+                      {props.requestStatus === "rejected" ? (
+                        <div className="proposal-rejected">
+                          <div className="proposal-rejected-icon">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" />
+                              <path
+                                d="M9.5 9.5L14.5 14.5M14.5 9.5L9.5 14.5"
+                                stroke="currentColor"
+                                strokeWidth="1.8"
+                                strokeLinecap="round"
+                              />
+                            </svg>
+                          </div>
+
+                          <div className="proposal-rejected-content">
+                            <strong>Proposta rejeitada</strong>
+                            <span>Esta solicitação não está mais disponível para negociação.</span>
+                          </div>
+                        </div>
+                      ) : (
+                        <button
+                          className={buttonCounterClass()}
+                          disabled={serviceIsDisabled}
+                          onClick={
+                            props.requestStatus === "counterOfferReceived"
+                              ? () => setShowGetCounterModal(true)
+                              : () => setShowModal(true)
+                          }
+                        >
+                          {buttonCounterAndSubmitText()}
+                        </button>
+                      )}
                     </>
                   )
                 )}
@@ -1108,7 +1148,7 @@ export function ClientSideBar(props: ClientBarProps) {
                   : ""
                 }`}
               disabled={
-                serviceIsDisabled || props.requestStatus === "waitingDriver"
+                serviceIsDisabled || props.requestStatus === "waitingDriver" || props.requestStatus === "rejected" || props.requestStatus === "cancelled"
               }
               onClick={handleConfirmSend}
             >
