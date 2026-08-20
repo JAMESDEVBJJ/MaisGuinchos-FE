@@ -1,5 +1,6 @@
 import { Star, Phone } from "lucide-react";
 import "../../styles/UserProfileCard.css";
+import { formatPhoneNumber } from "../../utils/formatMin";
 
 function getInitials(name: string) {
     const parts = (name || "").trim().split(/\s+/).filter(Boolean);
@@ -78,7 +79,7 @@ export default function UserProfileCard({
 
                 <div className="user-profile__phone">
                     <Phone size={16} />
-                    <span>{phone}</span>
+                    <span>{formatPhoneNumber(phone)}</span>
                 </div>
             </div>
         </div>
