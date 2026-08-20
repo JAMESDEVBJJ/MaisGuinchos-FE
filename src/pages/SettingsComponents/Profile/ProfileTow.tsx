@@ -58,11 +58,7 @@ function ProfileTow({ guincho, setProfile }: ProfileTowProps) {
     try {
       const updatedUser: UserProfile = await updateUserProfile();
 
-      console.log("PUT retornou:", updatedUser);
-
       setProfile(updatedUser);
-
-      console.log("setProfile executado");
 
       setIsEditing(false);
 
