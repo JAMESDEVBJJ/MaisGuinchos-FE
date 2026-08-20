@@ -308,9 +308,7 @@ export function ClientSideBar(props: ClientBarProps) {
       toDestination: responseToDestination.data,
     };
   }
-  useEffect(() => {
-    console.log("🔥 STATUS ATUAL:", props.requestStatus);
-  }, [props.requestStatus]);
+
   useEffect(() => {
     if (!token) return;
 
