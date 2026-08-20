@@ -1,0 +1,169 @@
+:root {
+  --hud-navy: #16233a;
+  --hud-navy-dark: #0e1728;
+  --hud-orange: #ff7a00;
+  --hud-white: #ffffff;
+  --hud-gray: #8e9ab3;
+}
+
+
+.price-hud {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: var(--hud-navy);
+  border-radius: 999px;
+  padding: 10px 22px 6px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  user-select: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  width: fit-content;
+}
+
+.price-hud:hover {
+  transform: translate(-50%, -1px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+
+.price-hud-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.price-hud-icon {
+  color: var(--hud-orange);
+  flex-shrink: 0;
+}
+
+.price-hud-value {
+  color: var(--hud-orange);
+  font-weight: 700;
+  font-size: 18px;
+  white-space: nowrap;
+}
+
+.price-hud-chevron {
+  color: var(--hud-orange);
+  opacity: 0.85;
+  margin-top: 2px;
+}
+
+/* ==========================================
+   Overlay + Modal de Detalhes (.route-panel)
+   ========================================== */
+.route-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.route-panel {
+  background: var(--hud-navy);
+  border: 1px solid var(--hud-orange);
+  border-radius: 16px;
+  padding: 24px;
+  width: 320px;
+  max-width: 90vw;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* Cabeçalho */
+.route-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--hud-orange);
+}
+
+.route-panel-header h3 {
+  margin: 0;
+  color: var(--hud-white);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.route-panel-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--hud-white);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: background 0.15s ease;
+}
+
+.route-panel-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Corpo */
+.route-panel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.route-panel-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.route-panel-row-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--hud-white);
+  font-size: 15px;
+}
+
+.route-panel-icon {
+  color: var(--hud-white);
+}
+
+.route-panel-row-value {
+  color: var(--hud-orange);
+  font-weight: 700;
+  font-size: 15px;
+}
+
+/* Caixa de Preço */
+.route-panel-price-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: var(--hud-navy-dark);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.route-panel-price-label {
+  color: var(--hud-gray);
+  font-size: 13px;
+}
+
+.route-panel-price-value {
+  color: var(--hud-orange);
+  font-weight: 800;
+  font-size: 28px;
+}

@@ -18,6 +18,10 @@ import { flyToTarget } from "../utils/mapUtils";
 import { useAuth } from "../contexts/AuthContext";
 import { TowTravelStatus } from "../utils/enums/TowTravelStatus";
 import { useTowRequest } from "../contexts/TowRequestsContext";
+import RoutePanel from "./Sidebar/HudRoutePanel";
+import PriceHud from "./PriceHud";
+import { TowRequestStatus } from "../utils/towsRequestsUtils";
+import "../styles/RoutePanelHud.css";
 
 function MapController({ mapRef }: { mapRef: React.RefObject<L.Map | null> }) {
   const map = useMap();
@@ -77,6 +81,29 @@ export function Maps({
 
   const [isDarkTheme, setIsDark] = useState(true);
 
+  const totalDistance = distanceKmG ? distanceKm + distanceKmG : distanceKm;
+  const totalDuration = durationMinG ? duration + durationMinG : duration;
+  const totalPrice = priceEstimateG ? priceEstimate + priceEstimateG : priceEstimate;
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    if (isRoutePanelOpen) {
+      map.dragging.disable();
+      map.scrollWheelZoom.disable();
+      map.doubleClickZoom.disable();
+      map.touchZoom.disable();
+      map.boxZoom.disable();
+      map.keyboard.disable();
+    } else {
+      map.dragging.enable();
+      map.scrollWheelZoom.enable();
+      map.doubleClickZoom.enable();
+      map.touchZoom.enable();
+      map.boxZoom.enable();
+      map.keyboard.enable();
+    }
+  }, [isRoutePanelOpen]);
   useEffect(() => {
     if (!mapRef.current) return;
     if (!userPosition) return;
@@ -175,7 +202,7 @@ export function Maps({
                     setDurationMinG(null);
                     setRouteG(null);
                     setHoveredGuinchoId(null);
-                    setRequestStatus("idle");
+                    setRequestStatus(TowRequestStatus.Idle);
                     if (hasActiveTowRequest) {
                       setHasActiveTowRequest(false);
                       setRoute(null);
@@ -265,52 +292,19 @@ export function Maps({
               )}
             </>
           )}
-        {priceEstimate && !isRoutePanelOpen && !towTravel && (
-          <div
-            className="price-hud"
-            onClick={() => setIsRoutePanelOpen(true)}
-          >
-            R${" "}
-            {priceEstimateG
-              ? (priceEstimate + priceEstimateG).toFixed(2)
-              : priceEstimate.toFixed(2)}
-          </div>
-        )}
-        {isRoutePanelOpen && !towTravel && (
-          <div
-            className="route-overlay"
-            onClick={() => setIsRoutePanelOpen(false)}
-          >
-            <div className="route-panel" onClick={(e) => e.stopPropagation()}>
-              <h3>Detalhes da viagem</h3>
-              <p>
-                Distância:{" "}
-                {distanceKmG
-                  ? (distanceKm + distanceKmG).toFixed(1)
-                  : distanceKm.toFixed(1)}{" "}
-                km
-              </p>
-              <p>
-                Duração: {durationMinG ? duration + durationMinG : duration}{" "}
-                min
-              </p>
-              <p>
-                Preço estimado: R${" "}
-                {priceEstimateG
-                  ? (priceEstimate + priceEstimateG).toFixed(2)
-                  : priceEstimate.toFixed(2)}
-              </p>
-
-              {false && (
-                <p>
-                  Preço com { }: R$ { }
-                </p>
-              )}
-            </div>
-          </div>
-        )}
       </MapContainer>
+      {isRoutePanelOpen && !towTravel && (
+        <RoutePanel
+          distanceKm={totalDistance}
+          durationMin={totalDuration}
+          price={totalPrice}
+          onClose={() => setIsRoutePanelOpen(false)}
+        />
+      )}
 
+      {priceEstimate && !isRoutePanelOpen && !towTravel && (
+        <PriceHud price={totalPrice} onClick={() => setIsRoutePanelOpen(true)} />
+      )}
     </div>
   );
 }
