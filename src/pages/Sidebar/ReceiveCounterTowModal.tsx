@@ -5,22 +5,14 @@ import type { TowTravelDTO } from "../../dtos/TowTravelDTO";
 import { api } from "../../services/api";
 import "../../styles/ConterOfferModals/ReceiveCounterTowModal.css";
 import { toast } from 'react-toastify';
+import { TowRequestStatus } from "../../utils/towsRequestsUtils";
 
 type GetCounterOfferModalProps = {
   onClose: () => void;
   towCounterReceived: TowRequestDTO | null;
   setShowGetCounterModal: React.Dispatch<React.SetStateAction<boolean>>;
   setRequestStatus: React.Dispatch<
-    React.SetStateAction<
-      | "idle"
-      | "sending"
-      | "waitingDriver"
-      | "accepted"
-      | "counterOfferReceived"
-      | "counterOfferRejected"
-      | "rejected"
-      | "cancelled"
-    >
+    React.SetStateAction<TowRequestStatus | null>
   >;
 };
 
@@ -69,7 +61,7 @@ export default function ReceiveCounterTowModal({
       };
 
       setTowTravel(towTravel);
-      props.setRequestStatus("accepted");
+      props.setRequestStatus(TowRequestStatus.Accepted);
     } catch (error) {
       const message = "Erro ao aceitar contraproposta.";
 
@@ -88,7 +80,7 @@ export default function ReceiveCounterTowModal({
       );
 
       props.setShowGetCounterModal(false);
-      props.setRequestStatus("counterOfferRejected");
+      props.setRequestStatus(TowRequestStatus.CounterOfferRejected);
     } catch (error) {
       const message = "Erro ao rejeitar contraproposta.";
 

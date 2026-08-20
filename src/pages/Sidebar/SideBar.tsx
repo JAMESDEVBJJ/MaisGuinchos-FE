@@ -6,6 +6,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { ClientSideBar } from "./ClientSideBar";
 import { DriverSideBar } from "./DriverSideBar";
 import type { FiltroId } from "./Filtros";
+import type { TowRequestStatus } from "../../utils/towsRequestsUtils";
 
 export type SidebarProps = {
   locationText: string;
@@ -41,18 +42,9 @@ export type SidebarProps = {
   destination: Position | null;
   durationMinTotal: number;
   setRequestStatus: React.Dispatch<
-    React.SetStateAction<
-      | "idle"
-      | "sending"
-      | "waitingDriver"
-      | "accepted"
-      | "counterOfferReceived"
-      | "counterOfferRejected"
-      | "rejected"
-      | "cancelled"
-    >
+    React.SetStateAction<TowRequestStatus | null>
   >;
-  requestStatus: string;
+  requestStatus: TowRequestStatus | null;
   setActiveFilters: React.Dispatch<React.SetStateAction<FiltroId[]>>;
   activeFilters: FiltroId[];
 };

@@ -531,12 +531,12 @@ export function DriverSideBar(props: DriverSideProps) {
         const data: RejectTowRequestResponseDTO = response.data;
 
         setSelectedTow((prev) => {
-          if (!prev || prev.id !== data.towRequestId) return prev;
+          if (!prev || prev.id !== data.id) return prev;
           return { ...prev, status: TowRequestStatus.Rejected };
         });
 
         setTowsReceive((prev) =>
-          prev.filter((t) => t.id !== data.towRequestId)
+          prev.filter((t) => t.id !== data.id)
         );
       } catch (error: any) {
         const data = error.response?.data;
@@ -766,6 +766,27 @@ export function DriverSideBar(props: DriverSideProps) {
                     onCounterOffer={() => setShowCounterModal(!showCounterModal)}
                     onReject={rejectTowRequest}
                   />
+
+                  {selectedTow.status === TowRequestStatus.Rejected && (
+                    <div className="proposal-rejected">
+                      <div className="proposal-rejected-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" />
+                          <path
+                            d="M9.5 9.5L14.5 14.5M14.5 9.5L9.5 14.5"
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                            strokeLinecap="round"
+                          />
+                        </svg>
+                      </div>
+
+                      <div className="proposal-rejected-content">
+                        <strong>Proposta rejeitada</strong>
+                        <span>Esta solicitação não está mais disponível para negociação.</span>
+                      </div>
+                    </div>
+                  )}
                 </>
               )}
             </div>

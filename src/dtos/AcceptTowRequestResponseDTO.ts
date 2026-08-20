@@ -41,7 +41,7 @@ export interface AcceptTowRequestResponseDTO {
   }
 
   export interface RejectTowRequestResponseDTO {
-    towRequestId: string;
+    id: string;
     towTravelId: string;  
     towRequestStatus: number;
 

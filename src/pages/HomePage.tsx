@@ -18,6 +18,7 @@ import { useTowRoutes } from "../utils/hooks/useTowRoutes";
 import { TowTravelProgress } from "./TowTravelProgress";
 import { toast } from "react-toastify";
 import type { FiltroId } from "./Sidebar/Filtros";
+import { TowRequestStatus } from "../utils/towsRequestsUtils";
 
 const HomePage = () => {
   const [priceEstimateG, setPriceG] = useState<number | null>(0);
@@ -47,16 +48,7 @@ const HomePage = () => {
 
   const [hoveredGuinchoId, setHoveredGuinchoId] = useState<string | null>(null);
 
-  const [requestStatus, setRequestStatus] = useState<
-    | "idle"
-    | "sending"
-    | "waitingDriver"
-    | "accepted"
-    | "counterOfferReceived"
-    | "counterOfferRejected"
-    | "rejected"
-    | "cancelled"
-  >("idle");
+  const [requestStatus, setRequestStatus] = useState<TowRequestStatus | null>(TowRequestStatus.Idle);
 
   const { setTowTravel, towTravel } = useTowTravel();
 
