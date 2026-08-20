@@ -1409,3 +1409,8 @@ button.waiting:hover {
     font-size: 11.5px;
   }
 }
+
+.custom-progress-bar {
+  background: #ffaa00 !important;
+  ;
+}

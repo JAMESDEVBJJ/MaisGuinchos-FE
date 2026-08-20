@@ -420,17 +420,23 @@ export function ClientSideBar(props: ClientBarProps) {
 
     connection.on("TowRequestRejected", (data: TowRequestDTO) => {
       props.setRequestStatus(TowRequestStatus.Rejected);
+
       setActiveTowsRequests((prev) =>
-        prev.map((x) =>
-          x.id === data.id
-            ? { ...x, status: TowRequestStatus.Rejected }
-            : x
-        )
+        prev.filter((x) => x.id !== data.id)
       );
 
       setTowRequest((prev) => {
         if (!prev || prev.id !== data.id) return prev;
+
         return { ...prev, status: TowRequestStatus.Rejected };
+      });
+      toast(`O motorista ${data.driverName} recusou sua solicitação de reboque.`, {
+        icon: <ExclamationIcon />,
+        style: {
+          backgroundColor: '#1E293B',
+          color: '#FFFFFF',
+        },
+        progressClassName: "custom-progress-bar"
       });
     });
 
@@ -1138,3 +1144,21 @@ export function ClientSideBar(props: ClientBarProps) {
   );
 }
 
+const ExclamationIcon = () => (
+  <svg
+    width="28"
+    height="28"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    style={{ minWidth: '32px', minHeight: '32px', width: '32px', height: '32px' }}
+  >
+    <path
+      d="M12 6V14M12 18H12.01"
+      stroke="#FF7A00"
+      strokeWidth="3"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
