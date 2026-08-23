@@ -1,0 +1,79 @@
+.route-summary {
+  border: 1px solid rgb(234, 84, 3, 0.5);
+}
+
+.summary-header {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8b95a7; /* cinza-claro */
+  margin-bottom: 14px;
+  margin-left: 4px;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0; /* zera o gap para a borda ficar centralizada */
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 14px; /* respiro dos dois lados */
+}
+
+.summary-item + .summary-item {
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.summary-item:first-child {
+  padding-left: 4px;
+}
+
+.summary-icon {
+  color: #9aa4b5;
+  margin-bottom: 4px;
+}
+
+.summary-label {
+  font-size: 14px;
+  color: #9aa4b5;
+}
+
+.summary-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.15;
+}
+
+/* Estados de mensagem (finalizado / chegou ao destino) */
+.summary-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.summary-message-text {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #f5f7fa;
+  margin: 0;
+}
+
+.summary-item--wide {
+  align-items: center;
+}
+
+/* Responsivo: empilha em telas estreitas */
+@media (max-width: 420px) {
+  .summary-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
