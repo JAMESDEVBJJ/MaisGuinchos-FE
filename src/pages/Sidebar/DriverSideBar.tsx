@@ -748,6 +748,7 @@ export function DriverSideBar(props: DriverSideProps) {
                       vehicleModel={selectedTow.vehicleType || ""}
                       notes={selectedTow.notes || ""}
                     />
+
                     <TripDetails
                       distanceKm={selectedTow.totalDistanceKm}
                       durationHours={selectedTow.durationMinutes / 60}

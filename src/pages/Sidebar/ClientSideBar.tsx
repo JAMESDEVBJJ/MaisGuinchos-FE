@@ -29,6 +29,7 @@ import TripDetails from "./TripDetails";
 import UserProfileCard from "./UserProfileCard";
 import { TowRequestStatus } from "../../utils/towsRequestsUtils";
 import { TowExtraDetails } from "./DetailRow";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface CoordinateDto {
   lat: number;
@@ -83,8 +84,11 @@ type ClientBarProps = {
   route: [number, number][] | null;
   mapRef: React.RefObject<L.Map | null>;
   loading: boolean;
+  setPrice: React.Dispatch<React.SetStateAction<number>>;
   priceEstimate: number;
+  setDistanceKm: React.Dispatch<React.SetStateAction<number>>;
   distanceKm: number;
+  setDuration: React.Dispatch<React.SetStateAction<number>>;
   duration: number;
   priceEstimateG: number | null;
   setPriceG: React.Dispatch<React.SetStateAction<number | null>>;
@@ -110,7 +114,7 @@ type ClientBarProps = {
 export function ClientSideBar(props: ClientBarProps) {
   const token = localStorage.getItem("token");
 
-  const [showDetails, setShowDetails] = useState(false);
+  const { user } = useAuth();
 
   const distanceRouteTotal =
     props.distanceKm + (props.distanceKmG ? props.distanceKmG : 0);
@@ -144,6 +148,7 @@ export function ClientSideBar(props: ClientBarProps) {
   const foto = towTravel
     ? towTravel.driverPhoto
     : props.selectedGuincho?.motorista?.foto;
+
   const isDefault = !foto || foto.trim() === "";
 
   const serviceIsDisabled =
@@ -158,6 +163,7 @@ export function ClientSideBar(props: ClientBarProps) {
   const [dots, setDots] = useState("");
 
   const driverMarkerRef = useRef<L.Marker | null>(null);
+
   const driverName = towTravel?.driverName
     ? towTravel?.driverName
     : props.selectedGuincho?.motorista.name;
@@ -233,6 +239,7 @@ export function ClientSideBar(props: ClientBarProps) {
         if (!routes) return;
 
         setRoutes(routes);
+
         props.setDistanceKmG(routes.toPickup.distanceKm);
         props.setPriceG(routes.toPickup.priceEstimate);
         props.setDurationMinG(routes.toPickup.durationMinutes);
@@ -241,6 +248,15 @@ export function ClientSideBar(props: ClientBarProps) {
             (c) => [c.lat, c.lon] as [number, number]
           )
         );
+
+        props.setRoute(
+          routes.toDestination.polyline.map(
+            (c) => [c.lat, c.lon] as [number, number]
+          )
+        );
+        props.setDistanceKm(routes.toDestination.distanceKm);
+        props.setPrice(routes.toDestination.priceEstimate);
+        props.setDuration(routes.toDestination.durationMinutes);
       } catch (error) {
         toast.error("Erro ao carregar a rota.");
       } finally {
@@ -1037,14 +1053,18 @@ export function ClientSideBar(props: ClientBarProps) {
                   !towTravel && (
                     <>
                       <TripDetails
-                        distanceKm={props.distanceKm + props.distanceKmG}
                         durationHours={
                           (props.durationMinTotal + props.durationMinG) / 60
                         }
-                        priceEstimate={
-                          props.priceEstimate + props.priceEstimateG
-                        }
-                        onMoreDetails={() => setShowDetails(!showDetails)}
+                        driverRoute={{
+                          distanceKm: props.distanceKmG,
+                          priceEstimate: props.priceEstimateG,
+                        }}
+                        userRoute={{
+                          distanceKm: props.distanceKm,
+                          priceEstimate: props.priceEstimate,
+                        }}
+                        showBreakdown={user?.isClient && !towTravel}
                       />
 
                       {props.requestStatus === TowRequestStatus.Rejected ? (

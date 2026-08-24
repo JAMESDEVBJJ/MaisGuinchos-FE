@@ -48,7 +48,9 @@ const HomePage = () => {
 
   const [hoveredGuinchoId, setHoveredGuinchoId] = useState<string | null>(null);
 
-  const [requestStatus, setRequestStatus] = useState<TowRequestStatus | null>(TowRequestStatus.Idle);
+  const [requestStatus, setRequestStatus] = useState<TowRequestStatus | null>(
+    TowRequestStatus.Idle
+  );
 
   const { setTowTravel, towTravel } = useTowTravel();
 
@@ -79,8 +81,11 @@ const HomePage = () => {
     setRoute: setRoute,
     route: route,
     loading: loading,
+    setPrice: setPrice,
     priceEstimate: priceEstimate,
+    setDistanceKm: setDistanceKm,
     distanceKm: distanceKm,
+    setDuration: setDurationMin,
     duration: durationMin,
     mapRef: mapRef,
     priceEstimateG: priceEstimateG,

@@ -30,8 +30,11 @@ export type SidebarProps = {
   route: [number, number][] | null;
   mapRef: React.RefObject<L.Map | null>;
   loading: boolean;
+  setPrice: React.Dispatch<React.SetStateAction<number>>;
   priceEstimate: number;
+  setDistanceKm: React.Dispatch<React.SetStateAction<number>>;
   distanceKm: number;
+  setDuration: React.Dispatch<React.SetStateAction<number>>;
   duration: number;
   priceEstimateG: number | null;
   setPriceG: React.Dispatch<React.SetStateAction<number | null>>;

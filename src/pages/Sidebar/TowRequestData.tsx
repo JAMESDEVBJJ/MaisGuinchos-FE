@@ -71,7 +71,6 @@ export function TowRequestData({
       <div className="summary-header">{summaryTitle}</div>
 
       {!towTravel ? (
-        // Estado inicial: 3 colunas (Distância / Tempo / Preço estimado)
         <div className="summary-grid">
           <div className="summary-item">
             <Route className="summary-icon" size={22} strokeWidth={1.75} />
@@ -110,7 +109,6 @@ export function TowRequestData({
           )}
         </div>
       ) : isMessageState ? (
-        // Estados de mensagem: caixa centralizada com valor final em destaque
         <div className="summary-message">
           <p className="summary-message-text">
             {isFinished
@@ -132,7 +130,6 @@ export function TowRequestData({
           </div>
         </div>
       ) : (
-        // Em andamento: 3 colunas (Distância restante / Tempo restante / Preço)
         <div className="summary-grid">
           <div className="summary-item">
             <Route className="summary-icon" size={22} strokeWidth={1.75} />

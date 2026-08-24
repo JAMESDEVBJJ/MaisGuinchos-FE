@@ -657,7 +657,7 @@ button.primary {
 
   height: 40px;
   width: calc(100% - 34px);
-  margin: 10px auto 18px;
+  margin: 10px auto 5px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -775,7 +775,6 @@ button.waiting:hover {
 }
 
 .accept-btn {
-  margin-top: 20px;
   background: linear-gradient(135deg, #1ead52, #16a34a);
   box-shadow: 0 4px 14px rgba(22, 163, 74, 0.16);
   letter-spacing: 0.5px;
@@ -821,12 +820,11 @@ button.waiting:hover {
 }
 
 .route-summary p {
-  padding: 10px 0px 10px 15px;
+  padding: 5px 0px 5px 0px;
 }
 
 .long-arrow {
   margin: 0 12px;
-  /* espaçamento maior dos dois lados, texto-seta-texto */
   flex-shrink: 0;
   vertical-align: middle;
 }
@@ -1061,9 +1059,7 @@ button.waiting:hover {
 }
 
 .solicith3 {
-  padding-bottom: 20px;
   font-size: 22px;
-  padding-bottom: 30px;
 }
 
 .client-info {
@@ -1081,7 +1077,7 @@ button.waiting:hover {
 }
 
 .accept-btn {
-  margin-top: 20px;
+  margin-top: 5px;
   width: 100%;
   padding: 10px;
   background: #3bb273;
@@ -1331,7 +1327,6 @@ button.waiting:hover {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  margin-top: 16px;
 }
 
 .proposal-rejected {
