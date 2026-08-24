@@ -51,7 +51,6 @@ export function TowRequestData({
     ? towTravel?.distanceToDestinationKm + towTravel?.distanceToPickupKm
     : 0;
 
-  // Título dinâmico conforme o status
   const isFinished = towTravel?.status === TowTravelStatus.Finished;
   const isArrivedClient =
     towTravel?.status === TowTravelStatus.ArrivedAtDestination &&

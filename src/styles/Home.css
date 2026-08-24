@@ -32,7 +32,6 @@
   -webkit-user-select: none;
 }
 
-
 .sidebar {
   position: relative;
 
@@ -74,8 +73,6 @@ body {
   height: 100vh;
   width: 100%;
 }
-
-
 
 .sidebar-header {
   display: flex;
@@ -161,31 +158,8 @@ input {
   padding-left: 12px;
 }
 
-.input-wrapper {
-  position: relative;
-  width: 100%;
-}
-
-.input-wrapper input {
-  width: 100%;
-  padding: 10px 40px 10px 10px;
-  border-radius: 8px;
-  font-size: 14px;
-}
-
-.input-icon {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 22px;
-  height: 22px;
-  pointer-events: none;
-}
-
 .search button,
 .loginBtn {
-
   height: 44px;
   width: calc(100% - 34px);
   margin: 10px auto 18px;
@@ -194,13 +168,10 @@ input {
   justify-content: center;
   gap: 10px;
 
-  background: linear-gradient(160deg,
-      #ff7b2c 10%,
-      #f26419 100%);
+  background: linear-gradient(160deg, #ff7b2c 10%, #f26419 100%);
   border: none;
   border-radius: 12px;
-  box-shadow:
-    0 4px 10px rgba(242, 100, 25, .25);
+  box-shadow: 0 4px 10px rgba(242, 100, 25, 0.25);
 
   font-size: 17.5px;
   font-weight: 600;
@@ -222,13 +193,12 @@ input {
 .search button:hover,
 .loginBtn:hover {
   filter: brightness(0.79);
-  box-shadow:
-    0 4px 10px rgba(242, 100, 25, 0);
+  box-shadow: 0 4px 10px rgba(242, 100, 25, 0);
 }
 
 .search button:active,
 .loginBtn:active {
-  transform: translateY(1px) scale(.98);
+  transform: translateY(1px) scale(0.98);
 }
 
 .empty-state {
@@ -296,7 +266,6 @@ input {
 
   transition: box-shadow 0.25s ease, transform 0.15s ease, filter 0.2s ease;
 }
-
 .result-card:hover {
   transform: scale(1.02);
   filter: brightness(1.08);
@@ -402,7 +371,6 @@ input {
   font-weight: 700;
   color: aliceblue;
 }
-
 .driver-card {
   border-left: 4px solid #ff7a00;
 }
@@ -432,7 +400,6 @@ input {
   color: #3a4a55;
   margin: 0 6px;
 }
-
 .distance {
   font-size: 0.95rem;
   opacity: 0.85;
@@ -481,6 +448,22 @@ input {
   background: rgba(255, 255, 255, 0.25);
 }
 
+.price-hud {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.765);
+  backdrop-filter: blur(2px);
+  padding: 10px 20px;
+  border-radius: 30px;
+  font-weight: bold;
+  font-size: 14.5px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  z-index: 1000;
+}
+
 .search {
   margin-bottom: 12px;
 }
@@ -488,6 +471,7 @@ input {
 .input-wrapper {
   position: relative;
   margin-bottom: 8px;
+  width: 100%;
 }
 
 .input-wrapper input {
@@ -496,6 +480,14 @@ input {
   border-radius: 8px;
   border: none;
   font-size: 14px;
+}
+
+.setarLocInput-wrapper {
+  margin-top: 18px;
+}
+
+.setarLocInput-wrapper .input-icon {
+  top: 50%;
 }
 
 .input-icon {
@@ -648,17 +640,19 @@ input {
   gap: 10px;
 }
 
-
 button.primary {
-  background: linear-gradient(160deg, #ff7b2c 10%, #f26419 100%);
-  color: white;
+  background: linear-gradient(135deg, #f16a20, #f26419);
+  color: #fff;
   padding: 12px;
+  border-radius: 10px;
   border: none;
-  border-radius: 12px;
   cursor: pointer;
   font-weight: 600;
-  letter-spacing: 0.9px;
-  font-size: 14.5px;
+  letter-spacing: 0.5px;
+  font-family: "Lucida Sans", sans-serif;
+  font-size: 17px;
+  color: white;
+  cursor: pointer;
   transition: filter 0.2s ease, transform 0.1s ease;
 
   height: 40px;
@@ -668,7 +662,7 @@ button.primary {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  box-shadow: 0 4px 10px rgba(242, 100, 25, .25);
+  box-shadow: 0 4px 10px rgba(242, 100, 25, 0.25);
   text-align: center;
   text-transform: uppercase;
 }
@@ -679,14 +673,12 @@ button.primary {
 
 button.primary:hover {
   filter: brightness(0.79);
-  box-shadow:
-    0 4px 10px rgba(242, 100, 25, 0);
+  box-shadow: 0 4px 10px rgba(242, 100, 25, 0);
 }
 
 button.primary:active {
-  transform: translateY(1px) scale(.98);
+  transform: translateY(1px) scale(0.98);
 }
-
 
 /*
 button.secondary {
@@ -738,6 +730,19 @@ button.waiting:hover {
 }
 */
 
+.arrow {
+  font-size: 30px;
+  font-weight: bold;
+  display: inline-block;
+  transform: translateY(1px);
+}
+.yellow {
+  color: yellow;
+}
+
+.orange {
+  color: darkorange;
+}
 
 .btn {
   width: 100%;
@@ -1075,6 +1080,27 @@ button.waiting:hover {
   gap: 20px;
 }
 
+.accept-btn {
+  margin-top: 20px;
+  width: 100%;
+  padding: 10px;
+  background: #3bb273;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+}
+
+.counter-btn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px;
+  background: #f2b632;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
 .client-data {
   text-align: left;
 }
@@ -1084,7 +1110,6 @@ button.waiting:hover {
   align-items: center;
   gap: 18px;
 }
-
 
 .detail-info {
   display: flex;
@@ -1196,7 +1221,6 @@ button.waiting:hover {
 }
 
 @keyframes opacityPulse {
-
   0%,
   100% {
     opacity: 0.6;
@@ -1265,9 +1289,11 @@ button.waiting:hover {
 }
 
 .pagination-page-btn.active {
-  background: linear-gradient(180deg,
-      rgba(221, 110, 50, 0.55),
-      rgba(173, 76, 30, 0.55));
+  background: linear-gradient(
+    180deg,
+    rgba(221, 110, 50, 0.55),
+    rgba(173, 76, 30, 0.55)
+  );
   color: #fff;
   border-color: rgba(229, 118, 57, 0.95);
   box-shadow: 0 0 0 1px rgba(229, 118, 57, 0.18);
@@ -1396,5 +1422,4 @@ button.waiting:hover {
 
 .custom-progress-bar {
   background: #ffaa00 !important;
-  ;
 }

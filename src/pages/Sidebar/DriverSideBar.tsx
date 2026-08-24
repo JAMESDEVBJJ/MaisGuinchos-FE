@@ -710,17 +710,12 @@ export function DriverSideBar(props: DriverSideProps) {
                     }
                   />
 
-                  <VehicleClientInfo
-                    model={towTravel.vehicleModelClient || ""}
-                    question={towTravel.questions || "Veículo sem questões."}
-                    notes={towTravel.notes || ""}
-                  />
-
                   <TowExtraDetails
                     questions={towTravel.questions}
                     vehicleModel={towTravel.vehicleModelClient}
                     notes={towTravel.notes}
                   />
+
                   {towTravel.status === TowTravelStatus.ArrivedAtPickup && (
                     <button
                       disabled={loading}
@@ -746,14 +741,13 @@ export function DriverSideBar(props: DriverSideProps) {
               {!towTravel && selectedTow !== null && (
                 <>
                   <div className="detail-stack">
-                    <VehicleClientInfo
-                      model={selectedTow.vehicleType || ""}
-                      question={
+                    <TowExtraDetails
+                      questions={
                         selectedTow.vehicleIssue || "Veículo sem questões."
                       }
+                      vehicleModel={selectedTow.vehicleType || ""}
                       notes={selectedTow.notes || ""}
                     />
-
                     <TripDetails
                       distanceKm={selectedTow.totalDistanceKm}
                       durationHours={selectedTow.durationMinutes / 60}
@@ -797,10 +791,6 @@ export function DriverSideBar(props: DriverSideProps) {
 
                       <div className="proposal-rejected-content">
                         <strong>Proposta rejeitada</strong>
-                        <span>
-                          Esta solicitação não está mais disponível para
-                          negociação.
-                        </span>
                       </div>
                     </div>
                   )}
