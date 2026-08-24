@@ -21,10 +21,6 @@ import type { FiltroId } from "./Sidebar/Filtros";
 import { TowRequestStatus } from "../utils/towsRequestsUtils";
 
 const HomePage = () => {
-  const [priceEstimateG, setPriceG] = useState<number | null>(0);
-  const [distanceKmG, setDistanceKmG] = useState<number | null>(0);
-  const [durationMinG, setDurationMinG] = useState<number | null>(0);
-
   const [guinchos, setGuinchos] = useState<GuinchosDto[]>([]);
 
   const [selectedGuincho, setSelectedGuincho] = useState<GuinchosDto | null>(
@@ -41,6 +37,10 @@ const HomePage = () => {
   const [routeG, setRouteG] = useState<[number, number][] | null>(null);
   const [destinationPosition, setDestinationPosition] =
     useState<Position | null>(null);
+
+  const [priceEstimateG, setPriceG] = useState<number | null>(0);
+  const [distanceKmG, setDistanceKmG] = useState<number | null>(0);
+  const [durationMinG, setDurationMinG] = useState<number | null>(0);
 
   const [priceEstimate, setPrice] = useState<number>(0);
   const [distanceKm, setDistanceKm] = useState<number>(0);

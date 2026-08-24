@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { LongArrow } from "../Ui/LongArrow";
 import "../../styles/TripDetails.css";
+import { formatMinutes } from "../../utils/formatMin";
 
 interface RouteLeg {
   distanceKm: number;
@@ -67,7 +68,7 @@ export default function TripDetails({
           <span className="trip-details__text">
             <span className="trip-details__label">Tempo médio:</span>{" "}
             <span className="trip-details__value">
-              {durationHours.toFixed(1)} h
+              {formatMinutes(durationHours * 60)}
             </span>
           </span>
         </li>

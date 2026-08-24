@@ -756,10 +756,11 @@ export function ClientSideBar(props: ClientBarProps) {
     props.setDistanceKmG(null);
     props.setDurationMinG(null);
     props.setRouteG(null);
+    props.setDuration(0);
+    props.setPrice(0);
+    props.setDistanceKm(0);
     props.setHoveredGuinchoId(null);
     props.setSelectedGuincho(null);
-    props.setDistanceKmG(null);
-    props.setDurationMinG(null);
     props.setRequestStatus(TowRequestStatus.Idle);
     setShowGetCounterModal(false);
   }
@@ -1054,7 +1055,7 @@ export function ClientSideBar(props: ClientBarProps) {
                     <>
                       <TripDetails
                         durationHours={
-                          (props.durationMinTotal + props.durationMinG) / 60
+                          (props.duration + props.durationMinG) / 60
                         }
                         driverRoute={{
                           distanceKm: props.distanceKmG,
