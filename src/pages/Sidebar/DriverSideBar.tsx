@@ -6,7 +6,10 @@ import * as signalR from "@microsoft/signalr";
 import { api } from "../../services/api";
 import { TowRequestData } from "./TowRequestData";
 import CounterOfferModal from "./CounterTowModal";
-import type { AcceptTowRequestResponseDTO } from "../../dtos/AcceptTowRequestResponseDTO";
+import type {
+  AcceptTowRequestResponseDTO,
+  RejectTowRequestResponseDTO,
+} from "../../dtos/AcceptTowRequestResponseDTO";
 import L from "leaflet";
 import iconClient from "../../assets/icons/iconUser.png";
 import { TowTravelStatus } from "../../utils/enums/TowTravelStatus";
@@ -18,6 +21,11 @@ import { toast } from "react-toastify";
 import { SettingsButton } from "./SettingsButton";
 import { LoadingSpinner } from "../Ui/LoadingSpinner";
 import { TowRequestStatus } from "../../utils/towsRequestsUtils";
+import UserProfileCard from "./UserProfileCard";
+import VehicleClientInfo from "./VehicleClientInfo";
+import TripDetails from "./TripDetails";
+import { TowActionButtons } from "./TowActionBtns";
+import { TowExtraDetails } from "./DetailRow";
 
 type DriverSideProps = {
   locationText: string;
@@ -102,7 +110,6 @@ export function DriverSideBar(props: DriverSideProps) {
   const handleNewTow = (novoTow: TowRequestReceiveDto) => {
     setTowsReceive((prev) => {
       const filtradas = prev.filter((tow) => tow.clientId !== novoTow.clientId);
-      console.dir(filtradas);
       return [novoTow, ...filtradas];
     });
   };
@@ -292,13 +299,6 @@ export function DriverSideBar(props: DriverSideProps) {
       connection.stop();
     };
   }, []);
-
-  const buttonCounterClass = () => {
-    if (selectedTow?.status === TowRequestStatus.CounterOfferRejected) return "btn fullwidth disabled counter-btn";
-
-    return `btn counter-btn sendButton  fullwidth  ${selectedTow?.status === TowRequestStatus.Accepted && "success"
-      }`;
-  };
 
   const getTravelMessage = () => {
     if (!towTravel) {
@@ -518,6 +518,39 @@ export function DriverSideBar(props: DriverSideProps) {
     await calcularRotaDestino(origin, destination);
   }
 
+  async function rejectTowRequest() {
+    if (selectedTow) {
+      try {
+        const response = await api.put(
+          `towrequests/${selectedTow.id}/reject-tow`
+        );
+
+        const data: RejectTowRequestResponseDTO = response.data;
+
+        setSelectedTow((prev) => {
+          if (!prev || prev.id !== data.id) return prev;
+          return { ...prev, status: TowRequestStatus.Rejected };
+        });
+
+        setTowsReceive((prev) => prev.filter((t) => t.id !== data.id));
+      } catch (error: any) {
+        const data = error.response?.data;
+        if (data?.errors) {
+          Object.values(data.errors).forEach((messages: any) => {
+            messages.forEach((message: string) => {
+              toast.error(message);
+            });
+          });
+        } else if (data?.error) {
+          toast.error(data.error);
+        } else {
+          toast.error("Erro ao tentar recusar pedido de reboque.");
+        }
+        console.error("Erro ao tentar recusar pedido de reboque", error);
+      }
+    }
+  }
+
   return (
     <>
       <aside className="sidebar" style={{ width: props.sideBarW }}>
@@ -586,11 +619,8 @@ export function DriverSideBar(props: DriverSideProps) {
                 <div className="results-title">
                   Nenhum pedido de reboque recebido.
                 </div>
-                <div className="results">
-
-                </div>
+                <div className="results"></div>
               </>
-
             )}
           </>
         )}
@@ -599,37 +629,48 @@ export function DriverSideBar(props: DriverSideProps) {
             {(!towTravel ||
               towTravel?.status === TowTravelStatus.Finished ||
               towTravel?.status === TowTravelStatus.Cancelled) && (
-                <button
-                  className="back"
-                  onClick={() => {
-                    setSelectedTow(null);
-                    props.setRoute(null);
-                    props.setRouteG(null);
-                    setTowTravel(null);
+              <button
+                className="back"
+                onClick={() => {
+                  setSelectedTow(null);
+                  props.setRoute(null);
+                  props.setRouteG(null);
+                  setTowTravel(null);
 
-                    const maps = props.mapRef.current;
-                    if (driverMarkerRef.current && maps) {
-                      maps.removeLayer(driverMarkerRef.current);
-                      driverMarkerRef.current = null;
-                    }
-                  }}
-                >
-                  ⬅
-                </button>
-              )}
+                  const maps = props.mapRef.current;
+                  if (driverMarkerRef.current && maps) {
+                    maps.removeLayer(driverMarkerRef.current);
+                    driverMarkerRef.current = null;
+                  }
+                }}
+              >
+                ⬅
+              </button>
+            )}
 
             <h3 className="solicith3">{getTravelMessage()}</h3>
 
-            <div className="detail-top">
-              <h3>{towTravel?.clientName || selectedTow?.clientName}</h3>
-              <div className="detail-info">
-                <div className="client-data">
-                  <span className="phone">+55 48 9 8832-2133</span>
-                </div>
-              </div>
-            </div>
-
             <div className="detail">
+              <div className="detail-top">
+                <UserProfileCard
+                  role="Cliente"
+                  initials={(
+                    towTravel?.clientName ||
+                    selectedTow?.clientName ||
+                    ""
+                  )
+                    .split(" ")
+                    .filter(Boolean)
+                    .map((n) => n[0])
+                    .slice(0, 2)
+                    .join("")
+                    .toUpperCase()}
+                  name={towTravel?.clientName || selectedTow?.clientName || ""}
+                  phone={
+                    towTravel?.clientPhone || selectedTow?.clientPhone || ""
+                  }
+                />
+              </div>
               {towTravel && (
                 <>
                   {towTravel.status !== TowTravelStatus.ArrivedAtDestination &&
@@ -669,26 +710,12 @@ export function DriverSideBar(props: DriverSideProps) {
                     }
                   />
 
-                  <div className="tow-extra">
-                    <p>
-                      Questão: {towTravel.questions ?? "Veículo sem questões."}
-                    </p>
+                  <TowExtraDetails
+                    questions={towTravel.questions}
+                    vehicleModel={towTravel.vehicleModelClient}
+                    notes={towTravel.notes}
+                  />
 
-                    <p>
-                      Modelo:{" "}
-                      {towTravel.vehicleModelClient !== ""
-                        ? towTravel.vehicleModelClient
-                        : "Sem modelo informado."}
-                    </p>
-                    {towTravel.notes && (
-                      <p>
-                        Notas:{" "}
-                        {towTravel.notes !== ""
-                          ? towTravel.notes
-                          : "Sem notas."}
-                      </p>
-                    )}
-                  </div>
                   {towTravel.status === TowTravelStatus.ArrivedAtPickup && (
                     <button
                       disabled={loading}
@@ -701,68 +728,72 @@ export function DriverSideBar(props: DriverSideProps) {
 
                   {towTravel.status ===
                     TowTravelStatus.ArrivedAtDestination && (
-                      <button
-                        disabled={loading}
-                        className={`btn accept-btn contact-enabled`}
-                        onClick={() => finishTravel(towTravel)}
-                      >
-                        Finalizar serviço
-                      </button>
-                    )}
+                    <button
+                      disabled={loading}
+                      className={`btn accept-btn contact-enabled`}
+                      onClick={() => finishTravel(towTravel)}
+                    >
+                      Finalizar serviço
+                    </button>
+                  )}
                 </>
               )}
               {!towTravel && selectedTow !== null && (
                 <>
-                  <TowRequestData
-                    distanceKm={selectedTow.totalDistanceKm}
-                    durationMin={selectedTow.durationMinutes}
-                    priceEstimate={selectedTow.suggestedPrice}
-                    distanceKmG={selectedTow.totalDistanceKm}
-                    durationMinG={selectedTow.durationMinutes}
-                    priceEstimateG={selectedTow.suggestedPrice}
-                    suggestedPrice={selectedTow.suggestedPrice}
-                    modelo={selectedTow.vehicleType}
-                    totalDistanceKm={selectedTow.totalDistanceKm}
-                  />
+                  <div className="detail-stack">
+                    <TowExtraDetails
+                      questions={
+                        selectedTow.vehicleIssue || "Veículo sem questões."
+                      }
+                      vehicleModel={selectedTow.vehicleType || ""}
+                      notes={selectedTow.notes || ""}
+                    />
 
-                  <div className="tow-extra">
-                    <p>Questão: {selectedTow.vehicleIssue}</p>
-
-                    <p>Modelo: {selectedTow.vehicleType}</p>
-
-                    {selectedTow.notes && <p>Notas: {selectedTow.notes}</p>}
+                    <TripDetails
+                      distanceKm={selectedTow.totalDistanceKm}
+                      durationHours={selectedTow.durationMinutes / 60}
+                      priceEstimate={selectedTow.suggestedPrice}
+                    />
                   </div>
 
-                  {(selectedTow.status !== 2 ||
-                    selectedTow.counterOfferRecused) && (
-                      <button
-                        className={`btn accept-btn contact-enabled margin-top ${selectedTow!.status === 4 && "accepted"
-                          }`}
-                        onClick={() => acceptTowRequest()}
-                        disabled={selectedTow.status === 4}
-                      >
-                        {selectedTow.status === 4
-                          ? "Solicitação aceita!"
-                          : "Aceitar"}
-                      </button>
-                    )}
+                  <TowActionButtons
+                    status={selectedTow.status}
+                    counterOfferRecused={selectedTow.counterOfferRecused}
+                    onAccept={acceptTowRequest}
+                    onCounterOffer={() =>
+                      setShowCounterModal(!showCounterModal)
+                    }
+                    onReject={rejectTowRequest}
+                  />
 
-                  {selectedTow.status != TowRequestStatus.Accepted && (
-                    <button
-                      className={buttonCounterClass()}
-                      onClick={() => setShowCounterModal(!showCounterModal)}
-                      disabled={
-                        selectedTow.status === TowRequestStatus.CounterOfferRejected ||
-                        selectedTow.counterOfferRecused
-                      }
-                    >
-                      {selectedTow.status === TowRequestStatus.CounterOfferRejected
-                        ? "Contra proposta recusada!"
-                        : selectedTow.status === TowRequestStatus.WaitingDriverResponse
-                          ? "Enviar contraproposta"
-                          : selectedTow.status === TowRequestStatus.CounterOfferSent
-                            ? "Contraproposta enviada!" : ""}
-                    </button>
+                  {selectedTow.status === TowRequestStatus.Rejected && (
+                    <div className="proposal-rejected">
+                      <div className="proposal-rejected-icon">
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="9"
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                          />
+                          <path
+                            d="M9.5 9.5L14.5 14.5M14.5 9.5L9.5 14.5"
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                            strokeLinecap="round"
+                          />
+                        </svg>
+                      </div>
+
+                      <div className="proposal-rejected-content">
+                        <strong>Proposta rejeitada</strong>
+                      </div>
+                    </div>
                   )}
                 </>
               )}

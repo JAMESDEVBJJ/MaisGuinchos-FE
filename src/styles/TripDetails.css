@@ -1,60 +1,137 @@
 .trip-details {
-    background: rgba(255, 255, 255, 0.04);
-    border-radius: 16px;
-    padding: 20px;
-    width: 100%;
-    max-width: 384px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 16px;
+  padding: 20px;
+  width: 100%;
+  max-width: 384px;
 }
 
 .trip-details__list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .trip-details__item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .trip-details__icon {
-    color: #9ca3af;
-    flex-shrink: 0;
+  color: #9ca3af;
+  flex-shrink: 0;
 }
 
 .trip-details__text {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 .trip-details__label {
-    color: #9ca3af;
+  color: #9ca3af;
 }
 
 .trip-details__value {
-    color: #fff;
-    font-weight: 600;
+  color: #fff;
+  font-weight: 600;
 }
 
 .trip-details__value--price {
-    color: #eab308;
-    font-weight: 700;
+  color: #eab308;
+  font-weight: 700;
 }
 
 .trip-details__more {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 16px;
+  background: none;
+  border: none;
+  padding: 0;
+  color: #cbd5e1;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.route-breakdown {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.25s ease;
+}
+
+.route-breakdown--open {
+  grid-template-rows: 1fr;
+}
+
+.route-breakdown__inner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.route-breakdown--open .route-breakdown__inner {
+  margin-top: 5px;
+}
+
+.route-breakdown__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  flex-wrap: wrap;
+  padding: 8px 0;
+}
+
+.route-breakdown__item + .route-breakdown__item {
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.route-breakdown__route {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.route-breakdown__arrow {
+  flex-shrink: 0;
+}
+
+.arrow-yellow {
+  color: #eab308;
+}
+
+.arrow-orange {
+  color: #f97316;
+}
+
+.route-breakdown__values {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.route-breakdown__price {
+  color: #eab308;
+  font-weight: 700;
+}
+
+.route-breakdown__distance {
+  color: #9ca3af;
+}
+
+@media (max-width: 360px) {
+  .route-breakdown__values {
     width: 100%;
-    margin-top: 16px;
-    background: none;
-    border: none;
-    padding: 0;
-    color: #cbd5e1;
-    font-size: 13px;
-    cursor: pointer;
-    font-family: inherit;
+    justify-content: flex-start;
+  }
 }

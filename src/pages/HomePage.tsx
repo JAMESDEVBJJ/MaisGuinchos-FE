@@ -18,12 +18,9 @@ import { useTowRoutes } from "../utils/hooks/useTowRoutes";
 import { TowTravelProgress } from "./TowTravelProgress";
 import { toast } from "react-toastify";
 import type { FiltroId } from "./Sidebar/Filtros";
+import { TowRequestStatus } from "../utils/towsRequestsUtils";
 
 const HomePage = () => {
-  const [priceEstimateG, setPriceG] = useState<number | null>(0);
-  const [distanceKmG, setDistanceKmG] = useState<number | null>(0);
-  const [durationMinG, setDurationMinG] = useState<number | null>(0);
-
   const [guinchos, setGuinchos] = useState<GuinchosDto[]>([]);
 
   const [selectedGuincho, setSelectedGuincho] = useState<GuinchosDto | null>(
@@ -41,22 +38,19 @@ const HomePage = () => {
   const [destinationPosition, setDestinationPosition] =
     useState<Position | null>(null);
 
+  const [priceEstimateG, setPriceG] = useState<number | null>(0);
+  const [distanceKmG, setDistanceKmG] = useState<number | null>(0);
+  const [durationMinG, setDurationMinG] = useState<number | null>(0);
+
   const [priceEstimate, setPrice] = useState<number>(0);
   const [distanceKm, setDistanceKm] = useState<number>(0);
   const [durationMin, setDurationMin] = useState<number>(0);
 
   const [hoveredGuinchoId, setHoveredGuinchoId] = useState<string | null>(null);
 
-  const [requestStatus, setRequestStatus] = useState<
-    | "idle"
-    | "sending"
-    | "waitingDriver"
-    | "accepted"
-    | "counterOfferReceived"
-    | "counterOfferRejected"
-    | "rejected"
-    | "cancelled"
-  >("idle");
+  const [requestStatus, setRequestStatus] = useState<TowRequestStatus | null>(
+    TowRequestStatus.Idle
+  );
 
   const { setTowTravel, towTravel } = useTowTravel();
 
@@ -87,8 +81,11 @@ const HomePage = () => {
     setRoute: setRoute,
     route: route,
     loading: loading,
+    setPrice: setPrice,
     priceEstimate: priceEstimate,
+    setDistanceKm: setDistanceKm,
     distanceKm: distanceKm,
+    setDuration: setDurationMin,
     duration: durationMin,
     mapRef: mapRef,
     priceEstimateG: priceEstimateG,

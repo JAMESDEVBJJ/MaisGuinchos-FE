@@ -40,7 +40,7 @@ export function InputLocation({
   }
 
   return (
-    <div className="input-wrapper">
+    <div className="input-wrapper setarLocInput-wrapper">
       <input
         type="text"
         placeholder="Setar localização"
@@ -52,6 +52,7 @@ export function InputLocation({
           }
         }}
       />
+
       <img src={iconLocation} className="input-icon" />
     </div>
   );

@@ -6,6 +6,7 @@ import {
   formatDate,
   formatDistance,
   formatMinutes,
+  formatPhoneNumber,
 } from "../../../utils/formatMin";
 
 type Props = {
@@ -55,7 +56,7 @@ function TravelsGridRow({ travel }: Props) {
 
         <div>
           <strong>Telefone</strong>
-          <span>{travel.driverPhone}</span>
+          <span>{formatPhoneNumber(travel.driverPhone)}</span>
         </div>
 
         <div>

@@ -1,3 +1,5 @@
+import type { TowRequestStatus } from "../utils/towsRequestsUtils";
+
 export type MotoristaDto = {
   userId: string;
   name: string;
@@ -46,18 +48,9 @@ export type MapProps = {
   setRoute: React.Dispatch<React.SetStateAction<[number, number][] | null>>;
   setHoveredGuinchoId: React.Dispatch<React.SetStateAction<string | null>>;
   setRequestStatus: React.Dispatch<
-    React.SetStateAction<
-      | "idle"
-      | "sending"
-      | "waitingDriver"
-      | "accepted"
-      | "counterOfferReceived"
-      | "counterOfferRejected"
-      | "rejected"
-      | "cancelled"
-    >
+    React.SetStateAction<TowRequestStatus | null>
   >;
-  requestStatus: string;
+  requestStatus: TowRequestStatus | null;
   route: [number, number][] | null;
   routeG: [number, number][] | null;
   priceEstimate: number;

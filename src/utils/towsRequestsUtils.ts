@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 
 export enum TowRequestStatus {
+  Idle = 0,
   WaitingDriverResponse = 1,
   CounterOfferSent = 2,
   CounterOfferRejected = 3,

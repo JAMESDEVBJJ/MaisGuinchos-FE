@@ -3,7 +3,9 @@ import { useTowTravel } from "../../contexts/TowTravelContext";
 import { useAuth } from "../../contexts/AuthContext";
 import { TowTravelStatus } from "../../utils/enums/TowTravelStatus";
 import { LongArrow } from "../Ui/LongArrow";
-
+import { Route, Clock, CircleDollarSign } from "lucide-react";
+import "../../styles/TowRequestData.css";
+import { formatMinutes } from "../../utils/formatMin";
 
 type TowRequestDataProps = {
   distanceKm: number;
@@ -50,82 +52,119 @@ export function TowRequestData({
     ? towTravel?.distanceToDestinationKm + towTravel?.distanceToPickupKm
     : 0;
 
+  const isFinished = towTravel?.status === TowTravelStatus.Finished;
+  const isArrivedClient =
+    towTravel?.status === TowTravelStatus.ArrivedAtDestination &&
+    user?.isClient;
+  const isArrivedDriver =
+    towTravel?.status === TowTravelStatus.ArrivedAtDestination &&
+    user?.isDriver;
+  const isMessageState = isFinished || isArrivedClient || isArrivedDriver;
+
+  const summaryTitle = isFinished
+    ? "SERVIÇO FINALIZADO"
+    : isMessageState
+    ? "STATUS DA CORRIDA"
+    : "RESUMO DA CORRIDA";
+
   return (
     <div className="route-summary">
-      <ul className="tow-info">
-        {!towTravel ? (
-          <>
-            <li>
-              <strong>Distância total:</strong>{" "}
+      <div className="summary-header">{summaryTitle}</div>
+
+      {!towTravel ? (
+        <div className="summary-grid">
+          <div className="summary-item">
+            <Route className="summary-icon" size={22} strokeWidth={1.75} />
+            <span className="summary-label">Distância:</span>
+            <span className="summary-value">
               {totalDistanceKm
                 ? totalDistanceKm.toFixed(1)
                 : totalDistance.toFixed(1)}{" "}
               Km
-            </li>
+            </span>
+          </div>
 
-            <li>
-              <strong>Tempo médio:</strong> {(totalDuration / 60).toFixed(1)} h
-            </li>
-          </>
-        ) : towTravel.status === TowTravelStatus.Finished ? (
-          <>
-            <strong>Serviço finalizado.</strong>
-            <strong>
-              Valor do serviço: {towTravel.finalPrice.toFixed(0)} R$
-            </strong>
-          </>
-        ) : towTravel.status === TowTravelStatus.ArrivedAtDestination &&
-          user?.isClient ? (
-          <>
-            <strong>Trajeto finalizado, aguardando término do reboque.</strong>
-            <strong>
-              Valor do serviço: {towTravel.finalPrice.toFixed(0)} R$
-            </strong>
-          </>
-        ) : towTravel.status === TowTravelStatus.ArrivedAtDestination &&
-          user?.isDriver ? (
-          <>
-            <strong>Você chegou ao destino.</strong>
-            <strong>
-              Valor do serviço: {towTravel.finalPrice.toFixed(0)} R$
-            </strong>
-          </>
-        ) : (
-          <>
-            <li>
-              <strong>Distância restante: </strong>{" "}
-              {totalDistanceTravel
-                ? totalDistanceTravel.toFixed(1)
-                : "não recebida"}{" "}
-              Km
-            </li>
+          <div className="summary-item">
+            <Clock className="summary-icon" size={22} strokeWidth={1.75} />
+            <span className="summary-label">Tempo Est.:</span>
+            <span className="summary-value">
+              {(totalDuration / 60).toFixed(1)} h
+            </span>
+          </div>
 
-            <li>
-              <strong>Tempo restante estimado: </strong>{" "}
-              {totalTimeTravel
-                ? (totalTimeTravel / 60).toFixed(1)
-                : "não recebido"}{" "}
-              h
-            </li>
-          </>
-        )}
-
-        {towTravel &&
-          towTravel.status !== TowTravelStatus.Finished &&
-          towTravel.status !== TowTravelStatus.ArrivedAtDestination && (
-            <li>
-              <strong>Preço:</strong> {towTravel.finalPrice.toFixed(0)} R$
-            </li>
+          {!showDetails && (
+            <div className="summary-item">
+              <CircleDollarSign
+                className="summary-icon"
+                size={22}
+                strokeWidth={1.75}
+              />
+              <span className="summary-label">Custo:</span>
+              <span className="summary-value">
+                R${" "}
+                {suggestedPrice
+                  ? suggestedPrice.toFixed(0)
+                  : totalPrice.toFixed(0)}
+              </span>
+            </div>
           )}
+        </div>
+      ) : isMessageState ? (
+        <div className="summary-message">
+          <p className="summary-message-text">
+            {isFinished
+              ? "Serviço finalizado."
+              : isArrivedClient
+              ? "Trajeto finalizado, aguardando término do reboque."
+              : "Você chegou ao destino."}
+          </p>
+          <div className="summary-item summary-item--wide">
+            <CircleDollarSign
+              className="summary-icon"
+              size={22}
+              strokeWidth={1.75}
+            />
+            <span className="summary-label">Valor do serviço:</span>
+            <span className="summary-value">
+              R$ {towTravel.finalPrice.toFixed(0)}
+            </span>
+          </div>
+        </div>
+      ) : (
+        <div className="summary-grid">
+          <div className="summary-item">
+            <Route className="summary-icon" size={22} strokeWidth={1.75} />
+            <span className="summary-label">Distância rest.:</span>
+            <span className="summary-value">
+              {totalDistanceTravel
+                ? `${totalDistanceTravel.toFixed(1)} Km`
+                : "não recebida"}
+            </span>
+          </div>
 
-        {!showDetails && !towTravel && (
-          <li>
-            <strong>Preço estimado:</strong>{" "}
-            {suggestedPrice ? suggestedPrice.toFixed(0) : totalPrice.toFixed(0)}{" "}
-            R$
-          </li>
-        )}
-      </ul>
+          <div className="summary-item">
+            <Clock className="summary-icon" size={22} strokeWidth={1.75} />
+            <span className="summary-label">Tempo rest.:</span>
+            <span className="summary-value">
+              {totalTimeTravel
+                ? `${formatMinutes(totalTimeTravel)}`
+                : "não recebido"}
+            </span>
+          </div>
+
+          <div className="summary-item">
+            <CircleDollarSign
+              className="summary-icon"
+              size={22}
+              strokeWidth={1.75}
+            />
+            <span className="summary-label">Preço:</span>
+            <span className="summary-value">
+              R$ {towTravel.finalPrice.toFixed(0)}
+            </span>
+          </div>
+        </div>
+      )}
 
       {showDetails && user?.isClient && !towTravel && (
         <div className="route-breakdown">

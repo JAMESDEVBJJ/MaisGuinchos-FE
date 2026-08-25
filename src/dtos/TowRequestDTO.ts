@@ -1,3 +1,5 @@
+import type { TowRequestStatus } from "../utils/towsRequestsUtils";
+
 export interface TowRequestDTO {
     id: string;
     clientId: string;
@@ -21,14 +23,7 @@ export interface TowRequestDTO {
     counterOfferReason?: string;
     counterOfferAt?: string;
   
-    status: TowStatus;
+    status: TowRequestStatus;
   
     createdAt: string;
-  }
-
-  export enum TowStatus {
-    Pending = 0,
-    Accepted = 1,
-    Rejected = 2,
-    Cancelled = 3
   }
