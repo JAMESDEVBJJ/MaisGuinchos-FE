@@ -5,6 +5,7 @@ import { TowTravelStatus } from "../../utils/enums/TowTravelStatus";
 import { LongArrow } from "../Ui/LongArrow";
 import { Route, Clock, CircleDollarSign } from "lucide-react";
 import "../../styles/TowRequestData.css";
+import { formatMinutes } from "../../utils/formatMin";
 
 type TowRequestDataProps = {
   distanceKm: number;
@@ -146,7 +147,7 @@ export function TowRequestData({
             <span className="summary-label">Tempo rest.:</span>
             <span className="summary-value">
               {totalTimeTravel
-                ? `${(totalTimeTravel / 60).toFixed(1)} h`
+                ? `${formatMinutes(totalTimeTravel)}`
                 : "não recebido"}
             </span>
           </div>

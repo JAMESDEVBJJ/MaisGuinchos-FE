@@ -211,6 +211,12 @@ export function ClientSideBar(props: ClientBarProps) {
 
   useEffect(() => {
     async function loadTowRequest() {
+      abortControllerRef.current?.abort();
+
+      const abortController = new AbortController();
+
+      abortControllerRef.current = abortController;
+
       try {
         setLoadingRoute(true);
 
@@ -233,7 +239,8 @@ export function ClientSideBar(props: ClientBarProps) {
             activeTow.pickupLat,
             activeTow.pickupLon,
             activeTow.dropoffLat,
-            activeTow.dropoffLon
+            activeTow.dropoffLon,
+            abortController.signal
           );
 
         if (!routes) return;
@@ -257,10 +264,24 @@ export function ClientSideBar(props: ClientBarProps) {
         props.setDistanceKm(routes.toDestination.distanceKm);
         props.setPrice(routes.toDestination.priceEstimate);
         props.setDuration(routes.toDestination.durationMinutes);
-      } catch (error) {
-        toast.error("Erro ao carregar a rota.");
+      } catch (error: any) {
+        const data = error.response?.data;
+
+        if (data?.errors) {
+          Object.values(data.errors).forEach((messages: any) => {
+            messages.forEach((message: string) => {
+              toast.error(message);
+            });
+          });
+        } else if (data?.error) {
+          toast.error(data.error);
+        } else {
+          toast.error("Erro ao calcular a rota.");
+        }
       } finally {
-        setLoadingRoute(false);
+        if (!abortController.signal.aborted) {
+          setLoadingRoute(false);
+        }
       }
     }
 
@@ -301,21 +322,33 @@ export function ClientSideBar(props: ClientBarProps) {
     pickupLat: number,
     pickupLon: number,
     dropoffLat: number,
-    dropoffLon: number
+    dropoffLon: number,
+    signal?: AbortSignal
   ) {
-    const responseToPickup = await api.post("/maps/route/calculate", {
-      originLat: driverLat,
-      originLon: driverLon,
-      destinationLat: pickupLat,
-      destinationLon: pickupLon,
-    });
-
-    const responseToDestination = await api.post("/maps/route/calculate", {
-      originLat: pickupLat,
-      originLon: pickupLon,
-      destinationLat: dropoffLat,
-      destinationLon: dropoffLon,
-    });
+    const responseToPickup = await api.post(
+      "/maps/route/calculate/driver",
+      {
+        originLat: driverLat,
+        originLon: driverLon,
+        destinationLat: pickupLat,
+        destinationLon: pickupLon,
+      },
+      {
+        signal: signal,
+      }
+    );
+    const responseToDestination = await api.post(
+      "/maps/route/calculate",
+      {
+        originLat: pickupLat,
+        originLon: pickupLon,
+        destinationLat: dropoffLat,
+        destinationLon: dropoffLon,
+      },
+      {
+        signal: signal,
+      }
+    );
 
     return {
       toPickup: responseToPickup.data,
