@@ -1087,6 +1087,10 @@ button.waiting:hover {
   cursor: pointer;
 }
 
+.padding-top {
+  margin-top: 15px;
+}
+
 .counter-btn {
   margin-top: 10px;
   width: 100%;
@@ -1326,7 +1330,6 @@ button.waiting:hover {
 .detail-stack {
   display: flex;
   flex-direction: column;
-  gap: 16px;
 }
 
 .proposal-rejected {

@@ -64,8 +64,6 @@ function ProfileTow({ guincho, setProfile }: ProfileTowProps) {
 
       toast.success("Perfil atualizado com sucesso!");
     } catch (error: any) {
-      console.log("ERRO REAL:", error);
-
       const message =
         error?.response?.data?.message ||
         error?.response?.data?.title ||

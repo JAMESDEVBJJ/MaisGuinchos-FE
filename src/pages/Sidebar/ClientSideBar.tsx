@@ -276,6 +276,7 @@ export function ClientSideBar(props: ClientBarProps) {
         } else if (data?.error) {
           toast.error(data.error);
         } else {
+          console.log(error);
           toast.error("Erro ao calcular a rota.");
         }
       } finally {
@@ -1044,151 +1045,139 @@ export function ClientSideBar(props: ClientBarProps) {
                 />
               </div>
 
-              <div className="detail-stack">
-                {!towTravel && (
-                  <TowExtraDetails
-                    towVehicleModel={props.selectedGuincho?.model ?? ""}
-                    towVehiclePlate={
-                      props.selectedGuincho?.motorista.placa ?? ""
-                    }
-                    towVehicleColor={props.selectedGuincho?.color ?? ""}
-                  />
-                )}
-                {!towTravel && !props.hasActiveTowRequest && (
-                  <button
-                    className="btn primary fullwidth"
-                    onClick={calcularRotaComGuincho}
+              {!towTravel && (
+                <TowExtraDetails
+                  towVehicleModel={props.selectedGuincho?.model ?? ""}
+                  towVehiclePlate={props.selectedGuincho?.motorista.placa ?? ""}
+                  towVehicleColor={props.selectedGuincho?.color ?? ""}
+                />
+              )}
+              {!towTravel && !props.hasActiveTowRequest && (
+                <button
+                  className="btn primary fullwidth"
+                  onClick={calcularRotaComGuincho}
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   >
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <circle cx="6" cy="19" r="3" />
-                      <path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15" />
-                      <circle cx="18" cy="5" r="3" />
-                    </svg>
-                    Calcular rota
-                  </button>
-                )}
+                    <circle cx="6" cy="19" r="3" />
+                    <path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15" />
+                    <circle cx="18" cy="5" r="3" />
+                  </svg>
+                  Calcular rota
+                </button>
+              )}
 
-                {loadingDriver || loadingRoute ? (
-                  <LoadingSpinner size={65}></LoadingSpinner>
-                ) : (
-                  props.routeG &&
-                  props.distanceKmG != null &&
-                  props.durationMinG != null &&
-                  props.priceEstimateG != null &&
-                  !towTravel && (
-                    <>
-                      <TripDetails
-                        durationHours={
-                          (props.duration + props.durationMinG) / 60
-                        }
-                        driverRoute={{
-                          distanceKm: props.distanceKmG,
-                          priceEstimate: props.priceEstimateG,
-                        }}
-                        userRoute={{
-                          distanceKm: props.distanceKm,
-                          priceEstimate: props.priceEstimate,
-                        }}
-                        showBreakdown={user?.isClient && !towTravel}
-                      />
-
-                      {props.requestStatus === TowRequestStatus.Rejected ? (
-                        <div className="proposal-rejected">
-                          <div className="proposal-rejected-icon">
-                            <svg
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <circle
-                                cx="12"
-                                cy="12"
-                                r="9"
-                                stroke="currentColor"
-                                strokeWidth="1.8"
-                              />
-                              <path
-                                d="M9.5 9.5L14.5 14.5M14.5 9.5L9.5 14.5"
-                                stroke="currentColor"
-                                strokeWidth="1.8"
-                                strokeLinecap="round"
-                              />
-                            </svg>
-                          </div>
-
-                          <div className="proposal-rejected-content">
-                            <strong>Proposta rejeitada</strong>
-                            <span>
-                              Esta solicitação não está mais disponível para
-                              negociação.
-                            </span>
-                          </div>
-                        </div>
-                      ) : (
-                        <button
-                          className={buttonCounterClass()}
-                          disabled={serviceIsDisabled}
-                          onClick={
-                            props.requestStatus ===
-                            TowRequestStatus.CounterOfferSent
-                              ? () => setShowGetCounterModal(true)
-                              : () => setShowModal(true)
-                          }
-                        >
-                          {buttonCounterAndSubmitText()}
-                        </button>
-                      )}
-                    </>
-                  )
-                )}
-
-                {towTravel && (
+              {loadingDriver || loadingRoute ? (
+                <LoadingSpinner size={65}></LoadingSpinner>
+              ) : (
+                props.routeG &&
+                props.distanceKmG != null &&
+                props.durationMinG != null &&
+                props.priceEstimateG != null &&
+                !towTravel && (
                   <>
-                    <TowRequestData
-                      distanceKm={
-                        towTravel.distanceToPickupKm +
-                        towTravel.distanceToDestinationKm
-                      }
-                      durationMin={
-                        towTravel.timeToDestinationMin +
-                        towTravel.timeToPickupMin
-                      }
-                      priceEstimate={towTravel.finalPrice}
-                      distanceKmG={
-                        towTravel.distanceToPickupKm +
-                        towTravel.distanceToDestinationKm
-                      }
-                      durationMinG={
-                        towTravel.timeToDestinationMin +
-                        towTravel.timeToPickupMin
-                      }
-                      priceEstimateG={towTravel.finalPrice}
-                      suggestedPrice={towTravel.finalPrice}
-                      routeG={null}
-                      modelo={null}
-                      totalDistanceKm={
-                        towTravel.distanceToPickupKm +
-                        towTravel.distanceToDestinationKm
-                      }
+                    <TripDetails
+                      durationHours={(props.duration + props.durationMinG) / 60}
+                      driverRoute={{
+                        distanceKm: props.distanceKmG,
+                        priceEstimate: props.priceEstimateG,
+                      }}
+                      userRoute={{
+                        distanceKm: props.distanceKm,
+                        priceEstimate: props.priceEstimate,
+                      }}
+                      showBreakdown={user?.isClient && !towTravel}
                     />
 
-                    <TowExtraDetails
-                      towVehicleModel={towTravel.truck.model}
-                      towVehiclePlate={towTravel.truck.plate}
-                      towVehicleColor={towTravel.truck.color}
-                    />
+                    {props.requestStatus === TowRequestStatus.Rejected ? (
+                      <div className="proposal-rejected">
+                        <div className="proposal-rejected-icon">
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <circle
+                              cx="12"
+                              cy="12"
+                              r="9"
+                              stroke="currentColor"
+                              strokeWidth="1.8"
+                            />
+                            <path
+                              d="M9.5 9.5L14.5 14.5M14.5 9.5L9.5 14.5"
+                              stroke="currentColor"
+                              strokeWidth="1.8"
+                              strokeLinecap="round"
+                            />
+                          </svg>
+                        </div>
+
+                        <div className="proposal-rejected-content">
+                          <strong>Proposta rejeitada</strong>
+                        </div>
+                      </div>
+                    ) : (
+                      <button
+                        className={buttonCounterClass()}
+                        disabled={serviceIsDisabled}
+                        onClick={
+                          props.requestStatus ===
+                          TowRequestStatus.CounterOfferSent
+                            ? () => setShowGetCounterModal(true)
+                            : () => setShowModal(true)
+                        }
+                      >
+                        {buttonCounterAndSubmitText()}
+                      </button>
+                    )}
                   </>
-                )}
-              </div>
+                )
+              )}
+
+              {towTravel && (
+                <>
+                  <TowRequestData
+                    distanceKm={
+                      towTravel.distanceToPickupKm +
+                      towTravel.distanceToDestinationKm
+                    }
+                    durationMin={
+                      towTravel.timeToDestinationMin + towTravel.timeToPickupMin
+                    }
+                    priceEstimate={towTravel.finalPrice}
+                    distanceKmG={
+                      towTravel.distanceToPickupKm +
+                      towTravel.distanceToDestinationKm
+                    }
+                    durationMinG={
+                      towTravel.timeToDestinationMin + towTravel.timeToPickupMin
+                    }
+                    priceEstimateG={towTravel.finalPrice}
+                    suggestedPrice={towTravel.finalPrice}
+                    routeG={null}
+                    modelo={null}
+                    totalDistanceKm={
+                      towTravel.distanceToPickupKm +
+                      towTravel.distanceToDestinationKm
+                    }
+                  />
+
+                  <TowExtraDetails
+                    towVehicleModel={towTravel.truck.model}
+                    towVehiclePlate={towTravel.truck.plate}
+                    towVehicleColor={towTravel.truck.color}
+                  />
+                </>
+              )}
             </div>
           </div>
         )}

@@ -1,11 +1,11 @@
 :root {
   --hud-navy: #16233a;
+  --hud-navy-semidark: #10192a;
   --hud-navy-dark: #0e1728;
   --hud-orange: #ff7a00;
   --hud-white: #ffffff;
   --hud-gray: #8e9ab3;
 }
-
 
 .price-hud {
   position: absolute;
@@ -15,51 +15,76 @@
   z-index: 1000;
 
   display: inline-flex;
-  flex-direction: column;
   align-items: center;
-  gap: 2px;
-  background: var(--hud-navy);
-  border-radius: 999px;
-  padding: 10px 22px 6px;
+  gap: 10px;
+
+  background: linear-gradient(
+    180deg,
+    var(--hud-navy) 0%,
+    var(--hud-navy-semidark) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 25px;
+  padding: 8px 14px 8px 10px;
+
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
   user-select: none;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  width: fit-content;
+  font-family: inherit;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .price-hud:hover {
   transform: translate(-50%, -1px);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  border-color: rgba(255, 122, 0, 0.35);
 }
 
-.price-hud-content {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.price-hud:active {
+  transform: translate(-50%, 0);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+}
+
+.price-hud:focus-visible {
+  outline: 2px solid var(--hud-orange);
+  outline-offset: 2px;
 }
 
 .price-hud-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(255, 122, 0, 0.14);
   color: var(--hud-orange);
   flex-shrink: 0;
+  margin-left: 5px;
 }
 
 .price-hud-value {
   color: var(--hud-orange);
   font-weight: 700;
-  font-size: 18px;
+  font-size: 17px;
+  line-height: 1;
+  letter-spacing: -0.015em;
+  font-variant-numeric: tabular-nums;
+  font-family: Trebuchet MS, sans-serif;
   white-space: nowrap;
 }
 
 .price-hud-chevron {
-  color: var(--hud-orange);
-  opacity: 0.85;
-  margin-top: 2px;
+  color: var(--hud-gray);
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
 }
 
-/* ==========================================
-   Overlay + Modal de Detalhes (.route-panel)
-   ========================================== */
+.price-hud--open .price-hud-chevron {
+  transform: rotate(180deg);
+}
+
 .route-overlay {
   position: fixed;
   inset: 0;
@@ -67,7 +92,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 1100;
 }
 
 .route-panel {
@@ -80,7 +105,6 @@
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
-/* Cabeçalho */
 .route-panel-header {
   display: flex;
   align-items: center;
@@ -134,6 +158,7 @@
   gap: 8px;
   color: var(--hud-white);
   font-size: 15px;
+  font-family: Trebuchet MS, sans-serif;
 }
 
 .route-panel-icon {
@@ -144,6 +169,7 @@
   color: var(--hud-orange);
   font-weight: 700;
   font-size: 15px;
+  font-family: Trebuchet MS, sans-serif;
 }
 
 /* Caixa de Preço */
@@ -159,11 +185,12 @@
 
 .route-panel-price-label {
   color: var(--hud-gray);
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .route-panel-price-value {
   color: var(--hud-orange);
   font-weight: 800;
   font-size: 28px;
+  font-family: Trebuchet MS, sans-serif;
 }

@@ -3,7 +3,7 @@ export function formatMinutes(minutes: number) {
   const m = minutes % 60;
 
   if (h === 0) return `${m} min`;
-  return `${h}h ${m} min`;
+  return `${h}h ${m.toFixed(0)} min`;
 }
 
 export function formatDistance(distance: number) {

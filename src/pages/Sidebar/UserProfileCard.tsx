@@ -40,7 +40,7 @@ export default function UserProfileCard({
         <div className="user-profile__avatar">
           {photo ? (
             <img
-              src={photo}
+              src={`https://localhost:7120${photo}`}
               alt={`Foto do ${role.toLowerCase()}`}
               className="user-profile__avatar-image"
             />

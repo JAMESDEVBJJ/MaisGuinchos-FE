@@ -719,7 +719,7 @@ export function DriverSideBar(props: DriverSideProps) {
                   {towTravel.status === TowTravelStatus.ArrivedAtPickup && (
                     <button
                       disabled={loading}
-                      className={`btn accept-btn secondary contact-enabled`}
+                      className={`btn accept-btn secondary contact-enabled padding-top`}
                       onClick={() => startJourney(towTravel)}
                     >
                       Iniciar trajeto
@@ -730,7 +730,7 @@ export function DriverSideBar(props: DriverSideProps) {
                     TowTravelStatus.ArrivedAtDestination && (
                     <button
                       disabled={loading}
-                      className={`btn accept-btn contact-enabled`}
+                      className={`btn accept-btn contact-enabled padding-top`}
                       onClick={() => finishTravel(towTravel)}
                     >
                       Finalizar serviço
@@ -740,21 +740,19 @@ export function DriverSideBar(props: DriverSideProps) {
               )}
               {!towTravel && selectedTow !== null && (
                 <>
-                  <div className="detail-stack">
-                    <TowExtraDetails
-                      questions={
-                        selectedTow.vehicleIssue || "Veículo sem questões."
-                      }
-                      vehicleModel={selectedTow.vehicleType || ""}
-                      notes={selectedTow.notes || ""}
-                    />
+                  <TowExtraDetails
+                    questions={
+                      selectedTow.vehicleIssue || "Veículo sem questões."
+                    }
+                    vehicleModel={selectedTow.vehicleType || ""}
+                    notes={selectedTow.notes || ""}
+                  />
 
-                    <TripDetails
-                      distanceKm={selectedTow.totalDistanceKm}
-                      durationHours={selectedTow.durationMinutes / 60}
-                      priceEstimate={selectedTow.suggestedPrice}
-                    />
-                  </div>
+                  <TripDetails
+                    distanceKm={selectedTow.totalDistanceKm}
+                    durationHours={selectedTow.durationMinutes / 60}
+                    priceEstimate={selectedTow.suggestedPrice}
+                  />
 
                   <TowActionButtons
                     status={selectedTow.status}
