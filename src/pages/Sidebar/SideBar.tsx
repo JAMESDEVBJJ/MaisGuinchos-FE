@@ -28,6 +28,22 @@ export type SidebarProps = {
   routeG: [number, number][] | null;
   setRoute: React.Dispatch<React.SetStateAction<[number, number][] | null>>;
   route: [number, number][] | null;
+  setRouteRequestDestination: React.Dispatch<
+    React.SetStateAction<[number, number][] | null>
+  >;
+  routeRequestDestination: [number, number][] | null;
+  setPriceRequestDestination: React.Dispatch<
+    React.SetStateAction<number | null>
+  >;
+  priceEstimateRequestDestination: number | null;
+  setDistanceKmRequestDestination: React.Dispatch<
+    React.SetStateAction<number | null>
+  >;
+  distanceKmRequestDestination: number | null;
+  setDurationMinRequestDestination: React.Dispatch<
+    React.SetStateAction<number | null>
+  >;
+  durationMinRequestDestination: number | null;
   mapRef: React.RefObject<L.Map | null>;
   loading: boolean;
   setPrice: React.Dispatch<React.SetStateAction<number>>;

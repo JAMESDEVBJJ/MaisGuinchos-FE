@@ -82,6 +82,22 @@ type ClientBarProps = {
   routeG: [number, number][] | null;
   setRoute: React.Dispatch<React.SetStateAction<[number, number][] | null>>;
   route: [number, number][] | null;
+  setRouteRequestDestination: React.Dispatch<
+    React.SetStateAction<[number, number][] | null>
+  >;
+  routeRequestDestination: [number, number][] | null;
+  setPriceRequestDestination: React.Dispatch<
+    React.SetStateAction<number | null>
+  >;
+  priceEstimateRequestDestination: number | null;
+  setDistanceKmRequestDestination: React.Dispatch<
+    React.SetStateAction<number | null>
+  >;
+  distanceKmRequestDestination: number | null;
+  setDurationMinRequestDestination: React.Dispatch<
+    React.SetStateAction<number | null>
+  >;
+  durationMinRequestDestination: number | null;
   mapRef: React.RefObject<L.Map | null>;
   loading: boolean;
   setPrice: React.Dispatch<React.SetStateAction<number>>;
@@ -245,8 +261,6 @@ export function ClientSideBar(props: ClientBarProps) {
 
         if (!routes) return;
 
-        setRoutes(routes);
-
         props.setDistanceKmG(routes.toPickup.distanceKm);
         props.setPriceG(routes.toPickup.priceEstimate);
         props.setDurationMinG(routes.toPickup.durationMinutes);
@@ -256,14 +270,17 @@ export function ClientSideBar(props: ClientBarProps) {
           )
         );
 
-        props.setRoute(
+        props.setRouteRequestDestination(
           routes.toDestination.polyline.map(
             (c) => [c.lat, c.lon] as [number, number]
           )
         );
-        props.setDistanceKm(routes.toDestination.distanceKm);
-        props.setPrice(routes.toDestination.priceEstimate);
-        props.setDuration(routes.toDestination.durationMinutes);
+
+        props.setPriceRequestDestination(routes.toDestination.priceEstimate);
+        props.setDistanceKmRequestDestination(routes.toDestination.distanceKm);
+        props.setDurationMinRequestDestination(
+          routes.toDestination.durationMinutes
+        );
       } catch (error: any) {
         const data = error.response?.data;
 
@@ -780,7 +797,7 @@ export function ClientSideBar(props: ClientBarProps) {
     clearTowTravel();
     if (props.hasActiveTowRequest) {
       props.setHasActiveTowRequest(false);
-      props.setRoute(null);
+      props.setRouteRequestDestination(null);
     }
 
     abortControllerRef.current?.abort();
@@ -790,9 +807,9 @@ export function ClientSideBar(props: ClientBarProps) {
     props.setDistanceKmG(null);
     props.setDurationMinG(null);
     props.setRouteG(null);
-    props.setDuration(0);
-    props.setPrice(0);
-    props.setDistanceKm(0);
+    props.setDurationMinRequestDestination(0);
+    props.setPriceRequestDestination(0);
+    props.setDistanceKmRequestDestination(0);
     props.setHoveredGuinchoId(null);
     props.setSelectedGuincho(null);
     props.setRequestStatus(TowRequestStatus.Idle);

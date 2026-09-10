@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type SetStateAction } from "react";
 import "../styles/Home.css";
 import { api } from "../services/api";
 import { Maps } from "./Maps";
@@ -33,8 +33,10 @@ const HomePage = () => {
 
   const [locationText, setLocationText] = useState<string>("");
   const [destinationText, setDestinationText] = useState<string>("");
+
   const [route, setRoute] = useState<[number, number][] | null>(null);
   const [routeG, setRouteG] = useState<[number, number][] | null>(null);
+
   const [destinationPosition, setDestinationPosition] =
     useState<Position | null>(null);
 
@@ -45,6 +47,19 @@ const HomePage = () => {
   const [priceEstimate, setPrice] = useState<number>(0);
   const [distanceKm, setDistanceKm] = useState<number>(0);
   const [durationMin, setDurationMin] = useState<number>(0);
+
+  const [routeRequestDestination, setRouteRequestDestination] = useState<
+    [number, number][] | null
+  >(null);
+
+  const [priceEstimateRequestDestination, setPriceRequestDestination] =
+    useState<number | null>(null);
+
+  const [distanceKmRequestDestination, setDistanceKmRequestDestination] =
+    useState<number | null>(null);
+
+  const [durationMinRequestDestination, setDurationMinRequestDestination] =
+    useState<number | null>(null);
 
   const [hoveredGuinchoId, setHoveredGuinchoId] = useState<string | null>(null);
 
@@ -103,6 +118,14 @@ const HomePage = () => {
     setHasActiveTowRequest: setHasActiveTowRequest,
     setActiveFilters: setActiveFilters,
     activeFilters: activeFilters,
+    setRouteRequestDestination: setRouteRequestDestination,
+    routeRequestDestination: routeRequestDestination,
+    setPriceRequestDestination: setPriceRequestDestination,
+    priceEstimateRequestDestination: priceEstimateRequestDestination,
+    setDistanceKmRequestDestination: setDistanceKmRequestDestination,
+    distanceKmRequestDestination: distanceKmRequestDestination,
+    setDurationMinRequestDestination: setDurationMinRequestDestination,
+    durationMinRequestDestination: durationMinRequestDestination,
   };
 
   const mapsProps: MapProps = {
@@ -123,6 +146,7 @@ const HomePage = () => {
     setRouteG: setRouteG,
     setRoute: setRoute,
     route: route,
+    routeRequest: routeRequestDestination,
     routeG: routeG,
     priceEstimate: priceEstimate,
     distanceKm: distanceKm,

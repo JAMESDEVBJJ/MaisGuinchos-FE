@@ -53,6 +53,7 @@ export type MapProps = {
   requestStatus: TowRequestStatus | null;
   route: [number, number][] | null;
   routeG: [number, number][] | null;
+  routeRequest: [number, number][] | null;
   priceEstimate: number;
   distanceKm: number;
   duration: number;

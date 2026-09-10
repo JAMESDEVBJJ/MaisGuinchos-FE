@@ -16,7 +16,6 @@ export function useTowRoutes(towTravel: TowTravelDTO | null) {
         var driverLocation = await api.get(
           `/maps/last-location/${towTravel!.driverId}`
         );
-          console.dir(towTravel?.status);
         let driverLocData: LocationDTO = driverLocation.data;
         if (towTravel!.status === TowTravelStatus.GoingToClient) {
           const responseToPickup = await api.post("/maps/route/calculate", {
