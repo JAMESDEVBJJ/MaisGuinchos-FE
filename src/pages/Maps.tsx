@@ -58,6 +58,8 @@ export function Maps({
   durationMinG,
   setHasActiveTowRequest,
   hasActiveTowRequest,
+  loadingDriverForCLient,
+  loadingRouteClient,
 }: MapProps) {
   const DEFAULT_CENTER = {
     lat: -9.854179,
@@ -211,7 +213,6 @@ export function Maps({
                     setRequestStatus(TowRequestStatus.Idle);
                     if (hasActiveTowRequest) {
                       setHasActiveTowRequest(false);
-                      setRoute(null);
                     }
                     flyToTarget(
                       mapRef.current,
@@ -303,21 +304,28 @@ export function Maps({
             </>
           )}
       </MapContainer>
-      {isRoutePanelOpen && !towTravel && (
-        <RoutePanel
-          distanceKm={totalDistance}
-          durationMin={totalDuration}
-          price={totalPrice}
-          onClose={() => setIsRoutePanelOpen(false)}
-        />
-      )}
+      {!loadingDriverForCLient &&
+        !loadingRouteClient &&
+        isRoutePanelOpen &&
+        !towTravel && (
+          <RoutePanel
+            distanceKm={totalDistance}
+            durationMin={totalDuration}
+            price={totalPrice}
+            onClose={() => setIsRoutePanelOpen(false)}
+          />
+        )}
 
-      {priceEstimate && !isRoutePanelOpen && !towTravel && (
-        <PriceHud
-          price={totalPrice}
-          onClick={() => setIsRoutePanelOpen(true)}
-        />
-      )}
+      {!loadingDriverForCLient &&
+        !loadingRouteClient &&
+        priceEstimate &&
+        !isRoutePanelOpen &&
+        !towTravel && (
+          <PriceHud
+            price={totalPrice}
+            onClick={() => setIsRoutePanelOpen(true)}
+          />
+        )}
     </div>
   );
 }

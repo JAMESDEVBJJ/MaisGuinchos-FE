@@ -78,7 +78,15 @@ const HomePage = () => {
 
   const [activeFilters, setActiveFilters] = useState<FiltroId[]>([]);
 
+  const [loadingRouteClient, setLoadingRouteClient] = useState(false);
+
+  const [loadingDriverForCLient, setLoadingDriverForCLient] = useState(false);
+
   const sideBarProps: SidebarProps = {
+    setLoadingDriverForCLient: setLoadingDriverForCLient,
+    setLoadingRouteClient: setLoadingRouteClient,
+    loadingRouteClient: loadingRouteClient,
+    loadingDriverForCLient: loadingDriverForCLient,
     locationText: locationText,
     setLocationText: setLocationText,
     destinationText: destinationText,
@@ -129,6 +137,10 @@ const HomePage = () => {
   };
 
   const mapsProps: MapProps = {
+    setLoadingDriverForCLient: setLoadingDriverForCLient,
+    setLoadingRouteClient: setLoadingRouteClient,
+    loadingRouteClient: loadingRouteClient,
+    loadingDriverForCLient: loadingDriverForCLient,
     hasActiveTowRequest: hasActiveTowRequest,
     setHasActiveTowRequest: setHasActiveTowRequest,
     motoristasPosition: guinchos,

@@ -65,6 +65,10 @@ interface CreateTowRequestDTO {
 }
 
 type ClientBarProps = {
+  setLoadingDriverForCLient: React.Dispatch<React.SetStateAction<boolean>>;
+  loadingDriverForCLient: boolean;
+  setLoadingRouteClient: React.Dispatch<React.SetStateAction<boolean>>;
+  loadingRouteClient: boolean;
   locationText: string;
   setLocationText: React.Dispatch<React.SetStateAction<string>>;
   destinationText: string;
@@ -197,8 +201,6 @@ export function ClientSideBar(props: ClientBarProps) {
 
   const location = useLocation();
 
-  const [loadingDriver, setLoadingDriver] = useState(false);
-
   const activeTowDetails =
     props.hasActiveTowRequest &&
     props.distanceKmG != null &&
@@ -225,7 +227,7 @@ export function ClientSideBar(props: ClientBarProps) {
 
     async function loadDriver() {
       try {
-        setLoadingDriver(true);
+        props.setLoadingDriverForCLient(true);
 
         const guincho: GuinchosDto | undefined = await getGuinchoByDriverId(
           driverId
@@ -235,14 +237,12 @@ export function ClientSideBar(props: ClientBarProps) {
           props.setSelectedGuincho(guincho);
         }
       } finally {
-        setLoadingDriver(false);
+        props.setLoadingDriverForCLient(false);
       }
     }
 
     loadDriver();
   }, [location.state]);
-
-  const [loadingRoute, setLoadingRoute] = useState(false);
 
   useEffect(() => {
     async function loadTowRequest() {
@@ -253,7 +253,7 @@ export function ClientSideBar(props: ClientBarProps) {
       abortControllerRef.current = abortController;
 
       try {
-        setLoadingRoute(true);
+        props.setLoadingRouteClient(true);
 
         const selectedDriver = props.selectedGuincho;
         if (!selectedDriver) return;
@@ -317,7 +317,7 @@ export function ClientSideBar(props: ClientBarProps) {
         }
       } finally {
         if (!abortController.signal.aborted) {
-          setLoadingRoute(false);
+          props.setLoadingRouteClient(false);
         }
       }
     }
@@ -719,7 +719,7 @@ export function ClientSideBar(props: ClientBarProps) {
     abortControllerRef.current = abortController;
 
     try {
-      setLoadingRoute(true);
+      props.setLoadingRouteClient(true);
 
       const origemLat = props.selectedGuincho.motorista.lat;
       const origemLon = props.selectedGuincho.motorista.lon;
@@ -786,7 +786,7 @@ export function ClientSideBar(props: ClientBarProps) {
       }
     } finally {
       if (!abortController.signal.aborted) {
-        setLoadingRoute(false);
+        props.setLoadingRouteClient(false);
       }
     }
   }
@@ -820,7 +820,7 @@ export function ClientSideBar(props: ClientBarProps) {
     }
 
     abortControllerRef.current?.abort();
-    setLoadingRoute(false);
+    props.setLoadingRouteClient(false);
 
     props.setPriceG(null);
     props.setDistanceKmG(null);
@@ -1111,7 +1111,7 @@ export function ClientSideBar(props: ClientBarProps) {
                 </button>
               )}
 
-              {loadingDriver || loadingRoute ? (
+              {props.loadingDriverForCLient || props.loadingRouteClient ? (
                 <LoadingSpinner size={65}></LoadingSpinner>
               ) : (
                 props.routeG &&

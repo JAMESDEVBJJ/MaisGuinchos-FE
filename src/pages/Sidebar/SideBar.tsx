@@ -11,6 +11,10 @@ import type { TowRequestStatus } from "../../utils/towsRequestsUtils";
 export type SidebarProps = {
   locationText: string;
   hasActiveTowRequest: boolean;
+  setLoadingDriverForCLient: React.Dispatch<React.SetStateAction<boolean>>;
+  loadingDriverForCLient: boolean;
+  setLoadingRouteClient: React.Dispatch<React.SetStateAction<boolean>>;
+  loadingRouteClient: boolean;
   setHasActiveTowRequest: React.Dispatch<React.SetStateAction<boolean>>;
   setLocationText: React.Dispatch<React.SetStateAction<string>>;
   destinationText: string;
