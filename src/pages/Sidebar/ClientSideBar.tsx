@@ -199,6 +199,25 @@ export function ClientSideBar(props: ClientBarProps) {
 
   const [loadingDriver, setLoadingDriver] = useState(false);
 
+  const activeTowDetails =
+    props.hasActiveTowRequest &&
+    props.distanceKmG != null &&
+    props.priceEstimateG != null &&
+    props.durationMinG != null &&
+    props.distanceKmRequestDestination != null &&
+    props.priceEstimateRequestDestination != null &&
+    props.durationMinRequestDestination != null
+      ? {
+          driverDistanceKm: props.distanceKmG,
+          driverPrice: props.priceEstimateG,
+          driverDuration: props.durationMinG,
+
+          destinationDistanceKm: props.distanceKmRequestDestination,
+          destinationPrice: props.priceEstimateRequestDestination,
+          destinationDuration: props.durationMinRequestDestination,
+        }
+      : null;
+
   useEffect(() => {
     const driverId = location.state?.driverId;
 
@@ -1101,18 +1120,38 @@ export function ClientSideBar(props: ClientBarProps) {
                 props.priceEstimateG != null &&
                 !towTravel && (
                   <>
-                    <TripDetails
-                      durationHours={(props.duration + props.durationMinG) / 60}
-                      driverRoute={{
-                        distanceKm: props.distanceKmG,
-                        priceEstimate: props.priceEstimateG,
-                      }}
-                      userRoute={{
-                        distanceKm: props.distanceKm,
-                        priceEstimate: props.priceEstimate,
-                      }}
-                      showBreakdown={user?.isClient && !towTravel}
-                    />
+                    {activeTowDetails ? (
+                      <TripDetails
+                        durationHours={
+                          (activeTowDetails.driverDuration +
+                            activeTowDetails.destinationDuration) /
+                          60
+                        }
+                        driverRoute={{
+                          distanceKm: activeTowDetails.driverDistanceKm,
+                          priceEstimate: activeTowDetails.driverPrice,
+                        }}
+                        userRoute={{
+                          distanceKm: activeTowDetails.destinationDistanceKm,
+                          priceEstimate: activeTowDetails.destinationPrice,
+                        }}
+                      />
+                    ) : (
+                      <TripDetails
+                        durationHours={
+                          (props.duration + props.durationMinG) / 60
+                        }
+                        driverRoute={{
+                          distanceKm: props.distanceKmG,
+                          priceEstimate: props.priceEstimateG,
+                        }}
+                        userRoute={{
+                          distanceKm: props.distanceKm,
+                          priceEstimate: props.priceEstimate,
+                        }}
+                        showBreakdown={user?.isClient && !towTravel}
+                      />
+                    )}
 
                     {props.requestStatus === TowRequestStatus.Rejected ? (
                       <div className="proposal-rejected">
