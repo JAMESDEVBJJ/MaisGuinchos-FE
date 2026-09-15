@@ -146,11 +146,28 @@ export function Maps({
     popupAnchor: [0, -32],
   });
 
-  const destinationIconMarkup = new L.Icon({
-    iconUrl: destinationIcon,
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
-    popupAnchor: [0, -32],
+  const destinationIconMarkup = L.divIcon({
+    className: "",
+    html: `
+      <div class="destination-marker">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="28"
+          height="28"
+          viewBox="0 0 24 24"
+          fill="orange"
+          stroke="white"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M5 22V4"/>
+          <path d="M5 4c5-3 9 3 14 0v10c-5 3-9-3-14 0"/>
+        </svg>
+      </div>
+    `,
+    iconSize: [28, 28],
+    iconAnchor: [5, 22],
   });
 
   return (
