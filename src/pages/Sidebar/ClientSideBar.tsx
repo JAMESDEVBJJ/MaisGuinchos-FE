@@ -171,9 +171,11 @@ export function ClientSideBar(props: ClientBarProps) {
 
   const isDefault = !foto || foto.trim() === "";
 
+  const hasRoute = props.route || props.routeRequestDestination;
+
   const serviceIsDisabled =
     !props.routeG ||
-    !props.route ||
+    !hasRoute ||
     props.requestStatus === TowRequestStatus.WaitingDriverResponse ||
     props.requestStatus === TowRequestStatus.CounterOfferRejected ||
     props.requestStatus === TowRequestStatus.Accepted ||
@@ -1009,9 +1011,6 @@ export function ClientSideBar(props: ClientBarProps) {
               </div>
             </div>
 
-            {props.loading && (
-              <LoadingSpinner size={65} padding={"35px 0px"}></LoadingSpinner>
-            )}
             {!props.loading && props.guinchos.length === 0 && (
               <div className="empty-state">
                 <p>Digite sua localização e procure por guinchos.</p>
@@ -1024,7 +1023,9 @@ export function ClientSideBar(props: ClientBarProps) {
                 onFiltersChange={props.setActiveFilters}
               />
             )}
-
+            {props.loading && (
+              <LoadingSpinner size={65} padding={"35px 0px"}></LoadingSpinner>
+            )}
             {!props.loading && props.guinchos.length >= 1 && (
               <>
                 <GuinchosResults
