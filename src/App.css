@@ -12,14 +12,18 @@ body {
   justify-content: center;
   align-items: center;
 
-  background: radial-gradient(circle at top left,
+  background: radial-gradient(
+      circle at top left,
       rgba(0, 0, 0, 0.55),
-      transparent 60%),
+      transparent 60%
+    ),
     radial-gradient(circle at top right, rgba(0, 0, 0, 0.4), transparent 70%),
     radial-gradient(circle at bottom left, rgba(0, 0, 0, 0.4), transparent 70%),
-    radial-gradient(circle at bottom right,
+    radial-gradient(
+      circle at bottom right,
       rgba(0, 0, 0, 0.55),
-      transparent 60%),
+      transparent 60%
+    ),
     linear-gradient(135deg, #13222f, #0d202c);
 }
 
@@ -79,15 +83,12 @@ body {
   padding: 12px;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.15);
-  /* NOVA: Borda sutil para definir o limite do input */
   background: #1b2832;
   color: #fff;
 }
 
-/* NOVO BLOCO: Controla especificamente a cor do texto "Digite seu email/senha" */
 .login-form input::placeholder {
   color: rgba(255, 255, 255, 0.6);
-  /* Branco com 60% de opacidade para ótima leitura */
 }
 
 .login-btn {
@@ -123,7 +124,7 @@ body {
 
 .forgot {
   align-self: flex-end;
-  font-size: 0.90rem;
+  font-size: 0.9rem;
   font-family: Trebuchet MS, sans-serif;
   font-weight: 500;
   color: #b0bdc9;
@@ -135,7 +136,6 @@ body {
 .forgot:hover {
   text-decoration: underline;
   color: rgb(207, 217, 228);
-
 }
 
 .signup {
@@ -256,9 +256,11 @@ h3 {
   position: absolute;
   inset: 0;
 
-  background: linear-gradient(135deg,
-      rgba(255, 255, 255, 0.057),
-      transparent 40%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.057),
+    transparent 40%
+  );
 
   opacity: 0;
 
@@ -348,4 +350,8 @@ h3 {
 
 .back-button:active {
   transform: scale(0.95);
+}
+
+.destination-marker {
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.9));
 }

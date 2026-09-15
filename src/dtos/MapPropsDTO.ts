@@ -35,6 +35,10 @@ export type UserDto = {
 export type MapProps = {
   hasActiveTowRequest: boolean;
   setHasActiveTowRequest: React.Dispatch<React.SetStateAction<boolean>>;
+  setLoadingDriverForCLient: React.Dispatch<React.SetStateAction<boolean>>;
+  loadingDriverForCLient: boolean;
+  setLoadingRouteClient: React.Dispatch<React.SetStateAction<boolean>>;
+  loadingRouteClient: boolean;
   motoristasPosition: GuinchosDto[];
   userPosition: Position | null;
   hoveredGuinchoId: string | null;
@@ -53,6 +57,7 @@ export type MapProps = {
   requestStatus: TowRequestStatus | null;
   route: [number, number][] | null;
   routeG: [number, number][] | null;
+  routeRequest: [number, number][] | null;
   priceEstimate: number;
   distanceKm: number;
   duration: number;
