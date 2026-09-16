@@ -19,6 +19,7 @@ type ProfileInfoProps = {
 };
 
 function ProfileInfo({ user, setProfile }: ProfileInfoProps) {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [isEditing, setIsEditing] = useState(false);
 
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
@@ -90,7 +91,7 @@ function ProfileInfo({ user, setProfile }: ProfileInfoProps) {
 
       toast.error(message);
     }
-  } 
+  }
   async function updateUserProfile() {
     const data = new FormData();
 
@@ -121,7 +122,7 @@ function ProfileInfo({ user, setProfile }: ProfileInfoProps) {
               <img src={previewPhoto} alt="Preview da foto do guincho" />
             ) : user.guincho.photo ? (
               <img
-                src={`https://localhost:7120${user.guincho.photo}`}
+                src={`${API_URL}/${user.guincho.photo}`}
                 alt="Foto do guincho"
               />
             ) : (

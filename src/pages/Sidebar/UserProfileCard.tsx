@@ -31,6 +31,7 @@ export default function UserProfileCard({
   photo,
 }: UserProfileCardProps) {
   const showRating = role === "Motorista"; //&& rating !== undefined && reviewsCount !== undefined;
+  const API_URL = import.meta.env.VITE_API_URL;
 
   return (
     <div className="user-profile">
@@ -40,7 +41,7 @@ export default function UserProfileCard({
         <div className="user-profile__avatar">
           {photo ? (
             <img
-              src={`https://localhost:7120${photo}`}
+              src={`${API_URL}/${photo}`}
               alt={`Foto do ${role.toLowerCase()}`}
               className="user-profile__avatar-image"
             />

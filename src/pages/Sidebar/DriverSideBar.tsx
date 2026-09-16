@@ -134,12 +134,12 @@ export function DriverSideBar(props: DriverSideProps) {
 
     getPendingTowsRequests();
   }, []);
-
+  const API_URL = import.meta.env.VITE_API_URL;
   useEffect(() => {
     if (!token) return;
 
     const connection = new signalR.HubConnectionBuilder()
-      .withUrl("https://localhost:7120/towhub", {
+      .withUrl(`${API_URL}/towhub`, {
         accessTokenFactory: () => token!,
       })
       .withAutomaticReconnect()

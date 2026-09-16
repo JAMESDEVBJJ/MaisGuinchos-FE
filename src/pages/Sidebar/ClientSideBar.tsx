@@ -203,6 +203,8 @@ export function ClientSideBar(props: ClientBarProps) {
 
   const location = useLocation();
 
+  const API_URL = import.meta.env.VITE_API_URL;
+
   const activeTowDetails =
     props.hasActiveTowRequest &&
     props.distanceKmG != null &&
@@ -399,7 +401,7 @@ export function ClientSideBar(props: ClientBarProps) {
     if (!token) return;
 
     const connection = new signalR.HubConnectionBuilder()
-      .withUrl("https://localhost:7120/towhub", {
+      .withUrl(`${API_URL}/towhub`, {
         accessTokenFactory: () => token!,
       })
       .withAutomaticReconnect()
