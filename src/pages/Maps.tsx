@@ -60,6 +60,7 @@ export function Maps({
   hasActiveTowRequest,
   loadingDriverForCLient,
   loadingRouteClient,
+  setRouteRequestDestination
 }: MapProps) {
   const DEFAULT_CENTER = {
     lat: -9.854179,
@@ -221,6 +222,12 @@ export function Maps({
                 eventHandlers={{
                   click: () => {
                     if (!m.available) return;
+                    if (
+                      activeTowRequest?.driverId === m.motorista.userId ||
+                      loadingDriverForCLient ||
+                      loadingRouteClient
+                    )
+                      return;
                     setSelectedGuincho(m);
                     setPriceG(null);
                     setDistanceKmG(null);
@@ -230,6 +237,7 @@ export function Maps({
                     setRequestStatus(TowRequestStatus.Idle);
                     if (hasActiveTowRequest) {
                       setHasActiveTowRequest(false);
+                      setRouteRequestDestination(null);
                     }
                     flyToTarget(
                       mapRef.current,

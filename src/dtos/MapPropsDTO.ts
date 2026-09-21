@@ -50,6 +50,9 @@ export type MapProps = {
   setDurationMinG: React.Dispatch<React.SetStateAction<number | null>>;
   setRouteG: React.Dispatch<React.SetStateAction<[number, number][] | null>>;
   setRoute: React.Dispatch<React.SetStateAction<[number, number][] | null>>;
+  setRouteRequestDestination: React.Dispatch<
+    React.SetStateAction<[number, number][] | null>
+  >;
   setHoveredGuinchoId: React.Dispatch<React.SetStateAction<string | null>>;
   setRequestStatus: React.Dispatch<
     React.SetStateAction<TowRequestStatus | null>

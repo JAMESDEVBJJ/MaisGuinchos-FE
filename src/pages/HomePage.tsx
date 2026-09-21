@@ -157,6 +157,7 @@ const HomePage = () => {
     setHoveredGuinchoId: setHoveredGuinchoId,
     setRouteG: setRouteG,
     setRoute: setRoute,
+    setRouteRequestDestination: setRouteRequestDestination,
     route: route,
     routeRequest: routeRequestDestination,
     routeG: routeG,
