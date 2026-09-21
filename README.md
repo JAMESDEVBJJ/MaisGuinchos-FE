@@ -147,7 +147,6 @@ A aplicação ficará disponível em:
 ```text
 http://localhost:5173
 ```
-
 ## 🔗 Backend
 
 Este frontend depende do backend do projeto **MaisGuinchos**, desenvolvido em **ASP.NET Core**.
@@ -161,7 +160,15 @@ Este frontend depende do backend do projeto **MaisGuinchos**, desenvolvido em **
 * Comunicação em tempo real
 * Integração com serviços de localização e cálculo de rotas
 
-A URL da API deve ser configurada nas variáveis de ambiente do frontend.
+**Backend em produção:**
+
+https://maisguinchos-production.up.railway.app
+
+A URL da API é configurada por meio da variável de ambiente:
+
+```env
+VITE_API_URL=https://maisguinchos-production.up.railway.app
+```
 
 ## 📌 Status do projeto
 
