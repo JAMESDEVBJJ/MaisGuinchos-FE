@@ -167,8 +167,13 @@ const HomePage = () => {
     distanceKmG: distanceKmG,
     durationMinG: durationMinG,
   };
+  const hasLoadedLastLocation = useRef(false);
 
   useEffect(() => {
+    if (hasLoadedLastLocation.current) return;
+
+    hasLoadedLastLocation.current = true;
+
     async function loadLastLocation() {
       try {
         const response = await api.get("/maps/last-location");
@@ -180,7 +185,12 @@ const HomePage = () => {
           });
         }
       } catch (error: any) {
+        const status = error.response?.status;
         const data = error.response?.data;
+
+        if (status === 404) {
+          return;
+        }
 
         if (data?.errors) {
           Object.values(data.errors).forEach((messages: any) => {
@@ -195,6 +205,7 @@ const HomePage = () => {
         }
       }
     }
+
     loadLastLocation();
   }, []);
 

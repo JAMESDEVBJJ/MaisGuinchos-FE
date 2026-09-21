@@ -31,7 +31,6 @@ function Profile() {
     async function loadProfile() {
       const response = await api.get("/user/me");
       setProfile(response.data);
-      console.dir(response.data);
     }
     loadProfile();
   }, []);

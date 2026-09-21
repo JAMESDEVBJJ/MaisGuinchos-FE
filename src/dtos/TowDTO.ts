@@ -4,5 +4,5 @@ export type TowDTO = {
   model: string;
   plate: string;
   color: string;
-  photo: string;
+  photoPath: string;
 };

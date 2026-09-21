@@ -165,11 +165,6 @@ export function ClientSideBar(props: ClientBarProps) {
     setRoutes,
   } = useTowTravel();
 
-  const foto = towTravel
-    ? towTravel.driverPhoto
-    : props.selectedGuincho?.motorista?.foto;
-
-  const isDefault = !foto || foto.trim() === "";
 
   const hasRoute = props.route || props.routeRequestDestination;
 
@@ -1054,7 +1049,7 @@ export function ClientSideBar(props: ClientBarProps) {
             )}
             <div className="detail detail-with-back">
               <div className="detail-top">
-                <UserProfileCard
+              <UserProfileCard
                   initials={
                     (
                       towTravel?.driverName ??
@@ -1079,7 +1074,8 @@ export function ClientSideBar(props: ClientBarProps) {
                     props.selectedGuincho?.motorista?.number ??
                     ""
                   }
-                  photo={towTravel?.driverPhoto}
+                  photo={towTravel?.driverPhoto ??
+                    props.selectedGuincho?.motorista.foto}
                   role="Motorista"
                 />
               </div>
