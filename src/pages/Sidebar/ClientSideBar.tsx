@@ -162,7 +162,6 @@ export function ClientSideBar(props: ClientBarProps) {
     setTowTravel,
     clearTowTravel,
     setTowTravelStatus,
-    setRoutes,
   } = useTowTravel();
 
 
@@ -180,10 +179,6 @@ export function ClientSideBar(props: ClientBarProps) {
   const [dots, setDots] = useState("");
 
   const driverMarkerRef = useRef<L.Marker | null>(null);
-
-  const driverName = towTravel?.driverName
-    ? towTravel?.driverName
-    : props.selectedGuincho?.motorista.name;
 
   const guinchoIcon = new L.Icon({
     iconUrl: iconGuincho,
@@ -222,7 +217,7 @@ export function ClientSideBar(props: ClientBarProps) {
   useEffect(() => {
     const driverId = location.state?.driverId;
 
-    if (!driverId) return;
+    if (!driverId || towTravel) return;
 
     async function loadDriver() {
       try {
@@ -942,22 +937,6 @@ export function ClientSideBar(props: ClientBarProps) {
       return "btn accept-btn fullwidth contact-enabled";
 
     return "btn accept-btn fullwidth";
-  };
-
-  const getStatusMessage = (
-    status: TowTravelStatus,
-    driverName: string | undefined
-  ) => {
-    const messages: Record<TowTravelStatus, string> = {
-      [TowTravelStatus.GoingToClient]: `${driverName} está indo até o veículo${dots}`,
-      [TowTravelStatus.ArrivedAtPickup]: `${driverName} chegou até o veículo.`,
-      [TowTravelStatus.InProgress]: `${driverName} está indo até o destino${dots}`,
-      [TowTravelStatus.ArrivedAtDestination]: `${driverName} chegou ao destino.`,
-      [TowTravelStatus.Finished]: `${driverName} finalizou o atendimento!`,
-      [TowTravelStatus.Cancelled]: `Reboque cancelado.`,
-    };
-
-    return messages[status] || `${driverName} - Status: ${status}`;
   };
 
   return (

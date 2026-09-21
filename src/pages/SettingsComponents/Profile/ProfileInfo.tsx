@@ -19,7 +19,6 @@ type ProfileInfoProps = {
 };
 
 function ProfileInfo({ user, setProfile }: ProfileInfoProps) {
-  const API_URL = import.meta.env.VITE_API_URL;
   const [isEditing, setIsEditing] = useState(false);
 
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);

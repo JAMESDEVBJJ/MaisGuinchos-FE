@@ -40,7 +40,10 @@ export function useTowRoutes(towTravel: TowTravelDTO | null) {
           });
         }
 
-        if (towTravel!.status === TowTravelStatus.InProgress || towTravel!.status === TowTravelStatus.ArrivedAtPickup) {
+        if (
+          towTravel!.status === TowTravelStatus.InProgress ||
+          towTravel!.status === TowTravelStatus.ArrivedAtPickup
+        ) {
           var responseToDestination = await api.post("/maps/route/calculate", {
             originLat: driverLocData.latitude,
             originLon: driverLocData.longitude,

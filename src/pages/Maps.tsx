@@ -10,7 +10,6 @@ import type { MapProps } from "../dtos/MapPropsDTO";
 import iconUser from "../assets/icons/iconUser.png";
 import iconGuincho from "../assets/icons/guinchoMarkup.png";
 import iconGuinchoHover from "../assets/icons/guinchomarkupHoverr.png";
-import destinationIcon from "../assets/icons/destinationMarkup.png";
 import L from "leaflet";
 import { Sun, Moon } from "lucide-react";
 import { useTowTravel } from "../contexts/TowTravelContext";
@@ -46,7 +45,6 @@ export function Maps({
   setPriceG,
   setRequestStatus,
   setRouteG,
-  setRoute,
   route,
   routeG,
   routeRequest,
@@ -60,6 +58,7 @@ export function Maps({
   hasActiveTowRequest,
   loadingDriverForCLient,
   loadingRouteClient,
+  setRouteRequestDestination,
 }: MapProps) {
   const DEFAULT_CENTER = {
     lat: -9.854179,
@@ -221,6 +220,12 @@ export function Maps({
                 eventHandlers={{
                   click: () => {
                     if (!m.available) return;
+                    if (
+                      activeTowRequest?.driverId === m.motorista.userId ||
+                      loadingDriverForCLient ||
+                      loadingRouteClient
+                    )
+                      return;
                     setSelectedGuincho(m);
                     setPriceG(null);
                     setDistanceKmG(null);
@@ -230,6 +235,7 @@ export function Maps({
                     setRequestStatus(TowRequestStatus.Idle);
                     if (hasActiveTowRequest) {
                       setHasActiveTowRequest(false);
+                      setRouteRequestDestination(null);
                     }
                     flyToTarget(
                       mapRef.current,
@@ -335,7 +341,7 @@ export function Maps({
 
       {!loadingDriverForCLient &&
         !loadingRouteClient &&
-        priceEstimate &&
+        priceEstimate > 0 &&
         !isRoutePanelOpen &&
         !towTravel && (
           <PriceHud
