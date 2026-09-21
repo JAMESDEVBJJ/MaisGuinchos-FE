@@ -22,7 +22,6 @@ import { SettingsButton } from "./SettingsButton";
 import { LoadingSpinner } from "../Ui/LoadingSpinner";
 import { TowRequestStatus } from "../../utils/towsRequestsUtils";
 import UserProfileCard from "./UserProfileCard";
-import VehicleClientInfo from "./VehicleClientInfo";
 import TripDetails from "./TripDetails";
 import { TowActionButtons } from "./TowActionBtns";
 import { TowExtraDetails } from "./DetailRow";

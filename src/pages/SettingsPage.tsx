@@ -15,7 +15,7 @@ function SettingsPage() {
 
   const navigate = useNavigate();
 
-  const { setTowTravel, towTravel } = useTowTravel();
+  const { setTowTravel } = useTowTravel();
 
   const handleBack = () => {
     navigate("/homepage");

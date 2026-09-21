@@ -10,7 +10,6 @@ import type { MapProps } from "../dtos/MapPropsDTO";
 import iconUser from "../assets/icons/iconUser.png";
 import iconGuincho from "../assets/icons/guinchoMarkup.png";
 import iconGuinchoHover from "../assets/icons/guinchomarkupHoverr.png";
-import destinationIcon from "../assets/icons/destinationMarkup.png";
 import L from "leaflet";
 import { Sun, Moon } from "lucide-react";
 import { useTowTravel } from "../contexts/TowTravelContext";
@@ -46,7 +45,6 @@ export function Maps({
   setPriceG,
   setRequestStatus,
   setRouteG,
-  setRoute,
   route,
   routeG,
   routeRequest,

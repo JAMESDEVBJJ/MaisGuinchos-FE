@@ -1,4 +1,3 @@
-import React from "react";
 import { TowRequestStatus } from "../../utils/towsRequestsUtils";
 import "../../styles/TowActionsBtns.css";
 
@@ -12,7 +11,6 @@ interface TowActionButtonsProps {
 
 function getCounterOfferLabel(
     status: TowRequestStatus,
-    counterOfferRecused?: boolean
 ): string {
     if (status === TowRequestStatus.CounterOfferRejected) {
         return "Contra proposta recusada!";
@@ -66,7 +64,7 @@ export function TowActionButtons({
                     onClick={onCounterOffer}
                     disabled={counterOfferDisabled}
                 >
-                    {getCounterOfferLabel(status, counterOfferRecused)}
+                    {getCounterOfferLabel(status)}
                 </button>
             )}
 

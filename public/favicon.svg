@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="+ Guinchos">
+    <rect width="128" height="128" rx="28" fill="#F97316" />
+    <g transform="translate(5.5 6.6) scale(.9)">
+        <g fill="#2D3748">
+            <rect x="39" y="2" width="14" height="14" rx="3" />
+            <rect x="61" y="2" width="14" height="14" rx="3" />
+            <path d="M32 20h50q3 0 3 3v13L72.5 58.5q-1 1.5-3 1.5h-25q-2 0-3-1.5L29 36V23q0-3 3-3z" />
+            <path d="M44 65h26l-1.2 4.6c-.4 1.9-2 3.4-4 3.4H49.2c-2 0-3.6-1.5-4-3.4z" />
+        </g>
+        <path d="M59 85c4 4 14.5 5 14.5 17a16.5 16.5 0 0 1-33 0" fill="none" stroke="#2D3748"
+            stroke-width="14" stroke-linecap="round" />
+        <circle cx="57" cy="32" r="6" fill="none" stroke="#fff" stroke-width="5" />
+        <g fill="#fff">
+            <rect x="80" y="72" width="36" height="12" rx="2.5" />
+            <rect x="92" y="60" width="12" height="36" rx="2.5" />
+        </g>
+    </g>
+</svg>
