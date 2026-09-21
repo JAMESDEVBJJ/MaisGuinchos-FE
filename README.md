@@ -50,7 +50,7 @@ Entre os principais fluxos da aplicação estão:
 * Cancelar solicitações
 * Visualizar solicitações ativas
 * Acompanhar corridas
-* Consultar histórico de corridas
+* Consultar histórico de corridas / solicitações 
 
 ### 🚚 Motorista / Guincho
 
