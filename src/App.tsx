@@ -9,6 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { TowRequestProvider } from "./contexts/providers/TowRequestsProvider";
 import SettingsPage from "./pages/SettingsPage";
 import { Outlet } from "react-router-dom";
+import { Analytics } from "@vercel/analytics/react";
 
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
           </Route>
         </Routes>
       </BrowserRouter>
+      <Analytics />
     </>
   );
 }
