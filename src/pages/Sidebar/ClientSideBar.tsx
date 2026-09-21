@@ -222,7 +222,7 @@ export function ClientSideBar(props: ClientBarProps) {
   useEffect(() => {
     const driverId = location.state?.driverId;
 
-    if (!driverId) return;
+    if (!driverId || towTravel) return;
 
     async function loadDriver() {
       try {

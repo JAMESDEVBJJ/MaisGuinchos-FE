@@ -60,7 +60,7 @@ export function Maps({
   hasActiveTowRequest,
   loadingDriverForCLient,
   loadingRouteClient,
-  setRouteRequestDestination
+  setRouteRequestDestination,
 }: MapProps) {
   const DEFAULT_CENTER = {
     lat: -9.854179,
@@ -343,7 +343,7 @@ export function Maps({
 
       {!loadingDriverForCLient &&
         !loadingRouteClient &&
-        priceEstimate &&
+        priceEstimate > 0 &&
         !isRoutePanelOpen &&
         !towTravel && (
           <PriceHud

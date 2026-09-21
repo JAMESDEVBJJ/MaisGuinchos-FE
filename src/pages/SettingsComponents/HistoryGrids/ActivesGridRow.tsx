@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTowTravel } from "../../../contexts/TowTravelContext";
 
 type Props = {
   status: {
@@ -24,18 +25,22 @@ function ActivesGridRow({
 }: Props) {
   const Icon = status.icon;
 
+  const { towTravel } = useTowTravel();
+
   const navigate = useNavigate();
   return (
     <div className="history-grid-item">
       <div
         className="history-grid-row-header"
-        onClick={() =>
+        onClick={() => {
+          if (towTravel) return;
+
           navigate("/homepage", {
             state: {
               driverId: driverId,
             },
-          })
-        }
+          });
+        }}
       >
         <td className="status-history-row">
           <span>{status.label}</span>
