@@ -49,6 +49,7 @@ export function Maps({
   setRoute,
   route,
   routeG,
+  routeRequest,
   priceEstimate,
   distanceKm,
   duration,
@@ -57,6 +58,8 @@ export function Maps({
   durationMinG,
   setHasActiveTowRequest,
   hasActiveTowRequest,
+  loadingDriverForCLient,
+  loadingRouteClient,
 }: MapProps) {
   const DEFAULT_CENTER = {
     lat: -9.854179,
@@ -71,8 +74,8 @@ export function Maps({
 
   const activeTowRequest = selectedGuincho
     ? activeTowsRequests.find(
-      (p) => p.driverId === selectedGuincho.motorista.userId
-    ) ?? null
+        (p) => p.driverId === selectedGuincho.motorista.userId
+      ) ?? null
     : null;
 
   const [isRoutePanelOpen, setIsRoutePanelOpen] = useState(false);
@@ -83,7 +86,9 @@ export function Maps({
 
   const totalDistance = distanceKmG ? distanceKm + distanceKmG : distanceKm;
   const totalDuration = durationMinG ? duration + durationMinG : duration;
-  const totalPrice = priceEstimateG ? priceEstimate + priceEstimateG : priceEstimate;
+  const totalPrice = priceEstimateG
+    ? priceEstimate + priceEstimateG
+    : priceEstimate;
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -141,18 +146,38 @@ export function Maps({
     popupAnchor: [0, -32],
   });
 
-  const destinationIconMarkup = new L.Icon({
-    iconUrl: destinationIcon,
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
-    popupAnchor: [0, -32],
+  const destinationIconMarkup = L.divIcon({
+    className: "",
+    html: `
+      <div class="destination-marker">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="28"
+          height="28"
+          viewBox="0 0 24 24"
+          fill="orange"
+          stroke="white"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M5 22V4"/>
+          <path d="M5 4c5-3 9 3 14 0v10c-5 3-9-3-14 0"/>
+        </svg>
+      </div>
+    `,
+    iconSize: [28, 28],
+    iconAnchor: [5, 22],
   });
 
   return (
     <div style={{ height: "100vh", width: "100%" }}>
-
       <MapContainer
-        center={userPosition ? [userPosition.lat, userPosition.lon] : [DEFAULT_CENTER.lat, DEFAULT_CENTER.lon]}
+        center={
+          userPosition
+            ? [userPosition.lat, userPosition.lon]
+            : [DEFAULT_CENTER.lat, DEFAULT_CENTER.lon]
+        }
         zoom={5}
         style={{ height: "100%", width: "100%" }}
       >
@@ -205,7 +230,6 @@ export function Maps({
                     setRequestStatus(TowRequestStatus.Idle);
                     if (hasActiveTowRequest) {
                       setHasActiveTowRequest(false);
-                      setRoute(null);
                     }
                     flyToTarget(
                       mapRef.current,
@@ -229,32 +253,37 @@ export function Maps({
               icon={userIcon}
             ></Marker>
           </>
-        ) : userPosition && (
-          <Marker
-            position={[userPosition.lat, userPosition.lon]}
-            icon={user?.isDriver ? guinchoIcon : userIcon}
-          />
+        ) : (
+          userPosition && (
+            <Marker
+              position={[userPosition.lat, userPosition.lon]}
+              icon={user?.isDriver ? guinchoIcon : userIcon}
+            />
+          )
         )}
 
-        {route &&
-          route.length > 0 &&
+        {(routeRequest ?? route) &&
+          (routeRequest ?? route)!.length > 0 &&
           (!towTravel ||
             (towTravel.status !== TowTravelStatus.ArrivedAtDestination &&
               towTravel.status !== TowTravelStatus.Cancelled &&
               towTravel.status !== TowTravelStatus.Finished)) && (
             <>
               <Polyline
-                positions={route}
+                positions={routeRequest ?? route!}
                 pathOptions={{
                   color: "darkorange",
                   weight: 4,
                   opacity: 0.8,
                 }}
               />
+
               <Marker
-                position={route[route.length - 1]}
+                position={
+                  (routeRequest ?? route!)[(routeRequest ?? route!).length - 1]
+                }
                 icon={destinationIconMarkup}
-              ></Marker>
+              />
             </>
           )}
 
@@ -272,8 +301,7 @@ export function Maps({
 
         {routeG &&
           routeG.length > 0 &&
-          (!towTravel ||
-            towTravel.status == TowTravelStatus.GoingToClient) && (
+          (!towTravel || towTravel.status == TowTravelStatus.GoingToClient) && (
             <>
               <Polyline
                 positions={routeG}
@@ -293,18 +321,28 @@ export function Maps({
             </>
           )}
       </MapContainer>
-      {isRoutePanelOpen && !towTravel && (
-        <RoutePanel
-          distanceKm={totalDistance}
-          durationMin={totalDuration}
-          price={totalPrice}
-          onClose={() => setIsRoutePanelOpen(false)}
-        />
-      )}
+      {!loadingDriverForCLient &&
+        !loadingRouteClient &&
+        isRoutePanelOpen &&
+        !towTravel && (
+          <RoutePanel
+            distanceKm={totalDistance}
+            durationMin={totalDuration}
+            price={totalPrice}
+            onClose={() => setIsRoutePanelOpen(false)}
+          />
+        )}
 
-      {priceEstimate && !isRoutePanelOpen && !towTravel && (
-        <PriceHud price={totalPrice} onClick={() => setIsRoutePanelOpen(true)} />
-      )}
+      {!loadingDriverForCLient &&
+        !loadingRouteClient &&
+        priceEstimate &&
+        !isRoutePanelOpen &&
+        !towTravel && (
+          <PriceHud
+            price={totalPrice}
+            onClick={() => setIsRoutePanelOpen(true)}
+          />
+        )}
     </div>
   );
 }

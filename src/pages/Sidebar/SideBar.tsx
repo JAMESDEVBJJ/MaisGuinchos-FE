@@ -11,6 +11,10 @@ import type { TowRequestStatus } from "../../utils/towsRequestsUtils";
 export type SidebarProps = {
   locationText: string;
   hasActiveTowRequest: boolean;
+  setLoadingDriverForCLient: React.Dispatch<React.SetStateAction<boolean>>;
+  loadingDriverForCLient: boolean;
+  setLoadingRouteClient: React.Dispatch<React.SetStateAction<boolean>>;
+  loadingRouteClient: boolean;
   setHasActiveTowRequest: React.Dispatch<React.SetStateAction<boolean>>;
   setLocationText: React.Dispatch<React.SetStateAction<string>>;
   destinationText: string;
@@ -28,6 +32,22 @@ export type SidebarProps = {
   routeG: [number, number][] | null;
   setRoute: React.Dispatch<React.SetStateAction<[number, number][] | null>>;
   route: [number, number][] | null;
+  setRouteRequestDestination: React.Dispatch<
+    React.SetStateAction<[number, number][] | null>
+  >;
+  routeRequestDestination: [number, number][] | null;
+  setPriceRequestDestination: React.Dispatch<
+    React.SetStateAction<number | null>
+  >;
+  priceEstimateRequestDestination: number | null;
+  setDistanceKmRequestDestination: React.Dispatch<
+    React.SetStateAction<number | null>
+  >;
+  distanceKmRequestDestination: number | null;
+  setDurationMinRequestDestination: React.Dispatch<
+    React.SetStateAction<number | null>
+  >;
+  durationMinRequestDestination: number | null;
   mapRef: React.RefObject<L.Map | null>;
   loading: boolean;
   setPrice: React.Dispatch<React.SetStateAction<number>>;

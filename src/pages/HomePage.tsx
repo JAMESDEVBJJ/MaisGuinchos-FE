@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type SetStateAction } from "react";
 import "../styles/Home.css";
 import { api } from "../services/api";
 import { Maps } from "./Maps";
@@ -33,8 +33,10 @@ const HomePage = () => {
 
   const [locationText, setLocationText] = useState<string>("");
   const [destinationText, setDestinationText] = useState<string>("");
+
   const [route, setRoute] = useState<[number, number][] | null>(null);
   const [routeG, setRouteG] = useState<[number, number][] | null>(null);
+
   const [destinationPosition, setDestinationPosition] =
     useState<Position | null>(null);
 
@@ -45,6 +47,19 @@ const HomePage = () => {
   const [priceEstimate, setPrice] = useState<number>(0);
   const [distanceKm, setDistanceKm] = useState<number>(0);
   const [durationMin, setDurationMin] = useState<number>(0);
+
+  const [routeRequestDestination, setRouteRequestDestination] = useState<
+    [number, number][] | null
+  >(null);
+
+  const [priceEstimateRequestDestination, setPriceRequestDestination] =
+    useState<number | null>(null);
+
+  const [distanceKmRequestDestination, setDistanceKmRequestDestination] =
+    useState<number | null>(null);
+
+  const [durationMinRequestDestination, setDurationMinRequestDestination] =
+    useState<number | null>(null);
 
   const [hoveredGuinchoId, setHoveredGuinchoId] = useState<string | null>(null);
 
@@ -63,7 +78,15 @@ const HomePage = () => {
 
   const [activeFilters, setActiveFilters] = useState<FiltroId[]>([]);
 
+  const [loadingRouteClient, setLoadingRouteClient] = useState(false);
+
+  const [loadingDriverForCLient, setLoadingDriverForCLient] = useState(false);
+
   const sideBarProps: SidebarProps = {
+    setLoadingDriverForCLient: setLoadingDriverForCLient,
+    setLoadingRouteClient: setLoadingRouteClient,
+    loadingRouteClient: loadingRouteClient,
+    loadingDriverForCLient: loadingDriverForCLient,
     locationText: locationText,
     setLocationText: setLocationText,
     destinationText: destinationText,
@@ -103,9 +126,21 @@ const HomePage = () => {
     setHasActiveTowRequest: setHasActiveTowRequest,
     setActiveFilters: setActiveFilters,
     activeFilters: activeFilters,
+    setRouteRequestDestination: setRouteRequestDestination,
+    routeRequestDestination: routeRequestDestination,
+    setPriceRequestDestination: setPriceRequestDestination,
+    priceEstimateRequestDestination: priceEstimateRequestDestination,
+    setDistanceKmRequestDestination: setDistanceKmRequestDestination,
+    distanceKmRequestDestination: distanceKmRequestDestination,
+    setDurationMinRequestDestination: setDurationMinRequestDestination,
+    durationMinRequestDestination: durationMinRequestDestination,
   };
 
   const mapsProps: MapProps = {
+    setLoadingDriverForCLient: setLoadingDriverForCLient,
+    setLoadingRouteClient: setLoadingRouteClient,
+    loadingRouteClient: loadingRouteClient,
+    loadingDriverForCLient: loadingDriverForCLient,
     hasActiveTowRequest: hasActiveTowRequest,
     setHasActiveTowRequest: setHasActiveTowRequest,
     motoristasPosition: guinchos,
@@ -123,6 +158,7 @@ const HomePage = () => {
     setRouteG: setRouteG,
     setRoute: setRoute,
     route: route,
+    routeRequest: routeRequestDestination,
     routeG: routeG,
     priceEstimate: priceEstimate,
     distanceKm: distanceKm,
@@ -131,8 +167,13 @@ const HomePage = () => {
     distanceKmG: distanceKmG,
     durationMinG: durationMinG,
   };
+  const hasLoadedLastLocation = useRef(false);
 
   useEffect(() => {
+    if (hasLoadedLastLocation.current) return;
+
+    hasLoadedLastLocation.current = true;
+
     async function loadLastLocation() {
       try {
         const response = await api.get("/maps/last-location");
@@ -144,7 +185,12 @@ const HomePage = () => {
           });
         }
       } catch (error: any) {
+        const status = error.response?.status;
         const data = error.response?.data;
+
+        if (status === 404) {
+          return;
+        }
 
         if (data?.errors) {
           Object.values(data.errors).forEach((messages: any) => {
@@ -159,6 +205,7 @@ const HomePage = () => {
         }
       }
     }
+
     loadLastLocation();
   }, []);
 

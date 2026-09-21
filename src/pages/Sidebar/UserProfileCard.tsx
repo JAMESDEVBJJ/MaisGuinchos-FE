@@ -37,10 +37,10 @@ export default function UserProfileCard({
       <p className="user-profile__title">Perfil do {role}</p>
 
       <div className="user-profile__main">
-        <div className="user-profile__avatar">
+      <div className="user-profile__avatar">
           {photo ? (
             <img
-              src={photo}
+              src={`https://fkcqasauyltygarxrbsb.supabase.co/storage/v1/object/public/Perfil-Photo-MaisGuinchos/${photo}`}
               alt={`Foto do ${role.toLowerCase()}`}
               className="user-profile__avatar-image"
             />

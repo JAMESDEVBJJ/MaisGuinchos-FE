@@ -19,6 +19,7 @@ type ProfileInfoProps = {
 };
 
 function ProfileInfo({ user, setProfile }: ProfileInfoProps) {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [isEditing, setIsEditing] = useState(false);
 
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
@@ -83,14 +84,21 @@ function ProfileInfo({ user, setProfile }: ProfileInfoProps) {
 
       toast.success("Perfil atualizado com sucesso!");
     } catch (error: any) {
-      const message =
-        error?.response?.data?.message ||
-        error?.response?.data?.title ||
-        "Erro inesperado. Tente novamente.";
+      const data = error.response?.data;
 
-      toast.error(message);
+      if (data?.errors) {
+        Object.values(data.errors).forEach((messages: any) => {
+          messages.forEach((message: string) => {
+            toast.error(message);
+          });
+        });
+      } else if (data?.error) {
+        toast.error(data.error);
+      } else {
+        toast.error("Erro ao atualizar perfil.");
+      }
     }
-  } 
+  }
   async function updateUserProfile() {
     const data = new FormData();
 
@@ -119,9 +127,9 @@ function ProfileInfo({ user, setProfile }: ProfileInfoProps) {
           <div className="profile-avatar">
             {previewPhoto ? (
               <img src={previewPhoto} alt="Preview da foto do guincho" />
-            ) : user.guincho.photo ? (
+            ) : user.guincho.photoPath ? (
               <img
-                src={`https://localhost:7120${user.guincho.photo}`}
+                src={`https://fkcqasauyltygarxrbsb.supabase.co/storage/v1/object/public/Perfil-Photo-MaisGuinchos/${user.guincho.photoPath}`}
                 alt="Foto do guincho"
               />
             ) : (
