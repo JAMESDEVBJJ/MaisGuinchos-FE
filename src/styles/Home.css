@@ -201,6 +201,14 @@ input {
   transform: translateY(1px) scale(0.98);
 }
 
+.sign-btn {
+  height: 45px;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  background: linear-gradient(160deg, #e8671d 10%, #f26419 100%);
+}
+
 .empty-state {
   width: 100%;
   padding: 24px;

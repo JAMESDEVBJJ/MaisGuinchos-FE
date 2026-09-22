@@ -180,7 +180,7 @@ function ProfileInfo({ user, setProfile }: ProfileInfoProps) {
         </div>
 
         <div className="profile-field">
-          <label>Email</label>
+          <label>E-mail</label>
 
           <input
             name="email"
