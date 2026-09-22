@@ -130,7 +130,7 @@ function Signup() {
           </svg>
         </button>
       )}
-      {step !== 4 && (
+      {step !== 4 && step !== 3 && (
         <div className="login-card">
           <h2 className="h2-cadastro">Cadastrar</h2>
           {step === 1 && (
@@ -147,24 +147,25 @@ function Signup() {
               onNext={nextStep}
             ></SignStep2>
           )}
-          {step === 3 && (
-            <SignStep3
-              setForm={setForm}
-              onNext={(tipo: number) => {
-                if (tipo === 1) {
-                  setStep(4);
-                } else {
-                  handleSubmit();
-                }
-              }}
-            ></SignStep3>
-          )}
+
           {step !== 4 && (
             <Link to="/login" className="signup">
               Voltar para login
             </Link>
           )}
         </div>
+      )}
+      {step === 3 && (
+        <SignStep3
+          setForm={setForm}
+          onNext={(tipo: number) => {
+            if (tipo === 1) {
+              setStep(4);
+            } else {
+              handleSubmit();
+            }
+          }}
+        ></SignStep3>
       )}
       {step === 4 && (
         <SignStepGuincho

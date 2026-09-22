@@ -2,13 +2,12 @@ import React from "react";
 import type { CreateUserRequest } from "../../dtos/CreateUserRequest";
 
 type Props = {
-    form: CreateUserRequest;
-    setForm: React.Dispatch<React.SetStateAction<CreateUserRequest>>;
-    onNext: () => void;
+  form: CreateUserRequest;
+  setForm: React.Dispatch<React.SetStateAction<CreateUserRequest>>;
+  onNext: () => void;
 };
 
-export default function SignStep2({ form, setForm , onNext }: Props) {
-
+export default function SignStep2({ form, setForm, onNext }: Props) {
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const name = e.target.name;
     const value = e.target.value;
@@ -63,7 +62,7 @@ export default function SignStep2({ form, setForm , onNext }: Props) {
         />
       </label>
 
-      <button type="button" className="login-btn sign-btn" onClick={onNext}>
+      <button type="button" className="loginBtn sign-btn" onClick={onNext}>
         AVANÇAR
       </button>
     </form>
