@@ -21,7 +21,7 @@ import type { RouteDTO } from "../../dtos/RouteDTO";
 import { mapToTowRequest } from "../../mappers/TowRequestMapper";
 import type { TowRequestReceiveDto } from "../../dtos/TowRequestReceiveDTO";
 import { SettingsButton } from "./SettingsButton";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, MapPin } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { LoadingSpinner } from "../Ui/LoadingSpinner";
 import Filtro, { type FiltroId } from "./Filtros";
@@ -157,24 +157,21 @@ export function ClientSideBar(props: ClientBarProps) {
 
   const [showGetCounterModal, setShowGetCounterModal] = useState(false);
 
-  const {
-    towTravel,
-    setTowTravel,
-    clearTowTravel,
-    setTowTravelStatus,
-  } = useTowTravel();
-
+  const { towTravel, setTowTravel, clearTowTravel, setTowTravelStatus } =
+    useTowTravel();
 
   const hasRoute = props.route || props.routeRequestDestination;
 
-  const serviceIsDisabled =
-    !props.routeG ||
-    !hasRoute ||
+  const blockedByStatus =
     props.requestStatus === TowRequestStatus.WaitingDriverResponse ||
     props.requestStatus === TowRequestStatus.CounterOfferRejected ||
     props.requestStatus === TowRequestStatus.Accepted ||
     props.requestStatus === TowRequestStatus.Rejected ||
     props.requestStatus === TowRequestStatus.Cancelled;
+
+  const serviceIsDisabled = !props.routeG || !hasRoute || blockedByStatus;
+
+  const needsDestination = !hasRoute && !blockedByStatus;
 
   const [dots, setDots] = useState("");
 
@@ -1028,7 +1025,7 @@ export function ClientSideBar(props: ClientBarProps) {
             )}
             <div className="detail detail-with-back">
               <div className="detail-top">
-              <UserProfileCard
+                <UserProfileCard
                   initials={
                     (
                       towTravel?.driverName ??
@@ -1053,8 +1050,10 @@ export function ClientSideBar(props: ClientBarProps) {
                     props.selectedGuincho?.motorista?.number ??
                     ""
                   }
-                  photo={towTravel?.driverPhoto ??
-                    props.selectedGuincho?.motorista.foto}
+                  photo={
+                    towTravel?.driverPhoto ??
+                    props.selectedGuincho?.motorista.foto
+                  }
                   role="Motorista"
                 />
               </div>
@@ -1157,6 +1156,17 @@ export function ClientSideBar(props: ClientBarProps) {
 
                         <div className="proposal-rejected-content">
                           <strong>Proposta rejeitada</strong>
+                        </div>
+                      </div>
+                    ) : needsDestination ? (
+                      <div className={"destinationNotice"} role="status">
+                        <MapPin size={20} aria-hidden="true" />
+                        <div>
+                          <strong>Defina o destino</strong>
+                          <span>
+                            Informe para onde levar seu veículo para solicitar o
+                            guincho.
+                          </span>
                         </div>
                       </div>
                     ) : (
