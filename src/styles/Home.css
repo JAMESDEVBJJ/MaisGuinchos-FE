@@ -1429,3 +1429,28 @@ button.waiting:hover {
 .custom-progress-bar {
   background: #ffaa00 !important;
 }
+
+.destinationNotice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: rgba(249, 115, 22, 0.08);
+  border: 1px solid rgba(249, 115, 22, 0.35);
+  color: #f97316;
+}
+
+.destinationNotice strong {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.destinationNotice span {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: #cbd5e1;
+}
