@@ -55,23 +55,19 @@ Entre os principais fluxos da aplicação estão:
 ### 🚚 Motorista / Guincho
 
 * Visualizar solicitações disponíveis
-* Receber solicitações
-* Aceitar solicitações
-* Recusar solicitações
-* Enviar contra propostas
+* Receber solicitações / Aceitar solicitações / Recusar solicitações / Enviar contra propostas
 * Acompanhar corridas ativas
 * Atualizar estados da corrida
-* Visualizar informações da viagem
+* Visualizar informações e dados calculados da viagem
 
 ### 🗺️ Mapas e localização
 
 * Mapa interativo com **Leaflet**
 * Visualização da localização do usuário
 * Visualização de motoristas próximos
-* Definição de localização e destino pelo mapa
+* Localização e destino traçando rotas pelo mapa
 * Cálculo e exibição de rotas
-* Distância estimada
-* Duração estimada
+* Distância / Duração restante estimada
 * Acompanhamento da viagem em tempo real
 
 ## 🔄 Fluxo principal
